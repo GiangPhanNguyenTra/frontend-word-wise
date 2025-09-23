@@ -83,14 +83,14 @@ export default function LandingPage() {
               </p>
               <Button
                 size="lg"
-                className="bg-secondary hover:bg-secondaryShape4 text-white font-bold px-8 py-6 text-lg"
+                className="bg-secondary  text-white font-bold px-8 py-6 text-lg cursor-pointer "
               >
                 Let&#39;s start
               </Button>
             </div>
             <div>
               <Image
-                src="/images/landing/hero-illustration.png" // Thay bằng tên file của bạn
+                src="/images/landing/hero-illustration.png"
                 alt="Hero Illustration"
                 width={600}
                 height={500}

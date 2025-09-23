@@ -15,7 +15,7 @@ export const Header = () => {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <Image src="/logo.svg" alt="Word Wise Logo" width={40} height={40} />
-          <span className="text-xl font-bold text-shape1">Word Wise</span>
+          <span className="text-xl font-bold text-primary">Word Wise</span>
         </Link>
 
         {/* Navigation */}
