@@ -1,6 +1,8 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 const navLinks = [
   { href: "#home", label: "Home" },
@@ -9,8 +11,10 @@ const navLinks = [
 ];
 
 export const Header = () => {
+  const [active, setActive] = useState("#home");
+
   return (
-    <header className="absolute top-0 left-0 w-full py-6 z-10 px-20 bg-[#f3f7fc]">
+    <header className="fixed top-0 left-0 w-full py-4 z-10 px-20 bg-[#f3f7fc] border-b-1">
       <div className="container mx-auto flex justify-between items-center">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
@@ -19,12 +23,17 @@ export const Header = () => {
         </Link>
 
         {/* Navigation */}
-        <nav className="hidden md:flex items-center gap-8 ">
+        <nav className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="text-shape2 font-medium hover:text-primary transition-colors"
+              className={`font-medium transition-colors ${
+                active === link.href
+                  ? "text-primary font-bold"
+                  : "text-shape2 hover:text-primary"
+              }`}
+              onClick={() => setActive(link.href)}
             >
               {link.label}
             </Link>
@@ -32,8 +41,8 @@ export const Header = () => {
         </nav>
 
         {/* Action Button */}
-        <Button className="bg-secondary hover:bg-secondaryShape4 text-white font-bold">
-          Let&#39;s start
+        <Button size="lg" variant={"default"}>
+          <Link href="/login">Let&#39;s start</Link>
         </Button>
       </div>
     </header>

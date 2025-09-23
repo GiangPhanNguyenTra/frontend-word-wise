@@ -9,7 +9,7 @@ const poppins = Poppins({
 });
 
 export const metadata = {
-  title: "My App",
+  title: "Word Wise",
 };
 
 export default function RootLayout({

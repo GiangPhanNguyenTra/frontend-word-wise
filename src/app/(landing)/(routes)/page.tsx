@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Header } from "@/components/landing/Header";
 import { Footer } from "@/components/landing/Footer";
 import { FeatureSection } from "@/components/landing/FeatureSection";
+import Link from "next/link";
 
-// Dữ liệu cho các feature sections để dễ quản lý
 const features = [
   {
     title: (
@@ -15,26 +15,26 @@ const features = [
     ),
     description:
       "Capture new words directly while browsing the web. Each word is saved with context and AI-powered examples, so you can review anytime, anywhere.",
-    imageUrl: "/images/landing/feature-1.png", // Thay bằng tên file của bạn
+    imageUrl: "/images/landing/feature-1.png",
   },
   {
     title: "Learn smarter, remember longer",
     description:
       "Each word you collect is linked with real-world examples, collocations, and grammar hints. Our system ensures you review words just before you're about to forget them, making memorization more natural and long-lasting. Instead of rote learning, you build active vocabulary that you can confidently use in real communication.",
-    imageUrl: "/images/landing/feature-2.png", // Thay bằng tên file của bạn
+    imageUrl: "/images/landing/feature-2.png",
     reverse: true,
   },
   {
     title: "Practice through interactive challenges",
     description:
       "Learning is more effective when it's fun. That's why Word Wise integrates mini-games, quizzes, and pronunciation practice. You can compete with friends in real-time challenge rooms, test your knowledge with flashcards, or let AI score your pronunciation to track your improvement.",
-    imageUrl: "/images/landing/feature-3.png", // Thay bằng tên file của bạn
+    imageUrl: "/images/landing/feature-4.png",
   },
   {
     title: "Learn together, grow together",
     description:
       "Word Wise is not just a personal learning tool, but also a community-driven platform. Share your vocabulary collections with friends, explore trending words from global news sources, or join group discussions about your favorite topics. With Word Wise, you're never learning alone—you're part of a global network of language learners.",
-    imageUrl: "/images/landing/feature-3.png", // Thay bằng tên file của bạn
+    imageUrl: "/images/landing/feature-3.png",
     reverse: true,
   },
 ];
@@ -73,7 +73,7 @@ export default function LandingPage() {
           className="relative bg-gradient-to-r from-blue-500 to-primary pt-32 pb-20 -mx-20 px-20"
         >
           <div className="container mx-auto grid md:grid-cols-2 items-center gap-12">
-            <div className="text-white">
+            <div className="text-white -mr-[60px]">
               <h1 className="text-5xl md:text-6xl font-extrabold leading-tight mb-4">
                 Studying English Vocabulary is now smarter and easier
               </h1>
@@ -81,19 +81,16 @@ export default function LandingPage() {
                 Word Wise is an intelligent platform that helps you learn and
                 master English vocabulary seamlessly, anytime, anywhere.
               </p>
-              <Button
-                size="lg"
-                className="bg-secondary  text-white font-bold px-8 py-6 text-lg cursor-pointer "
-              >
-                Let&#39;s start
+              <Button size="lg" variant={"default"} className="!py-6">
+                <Link href="/login">Let&#39;s start</Link>
               </Button>
             </div>
-            <div>
+            <div className="ml-[100px]">
               <Image
                 src="/images/landing/hero-illustration.png"
                 alt="Hero Illustration"
-                width={600}
-                height={500}
+                width={500}
+                height={400}
               />
             </div>
           </div>

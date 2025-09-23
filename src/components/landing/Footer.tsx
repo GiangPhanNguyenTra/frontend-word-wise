@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Facebook, Linkedin, Twitter } from "lucide-react"; // Cần cài `lucide-react`
+import { Facebook, Linkedin, Instagram } from "lucide-react";
 
 export const Footer = () => {
   return (
@@ -14,14 +14,23 @@ export const Footer = () => {
               for real-life situations.
             </p>
             <div className="flex gap-4">
-              <Link href="#" className="hover:opacity-80">
+              <Link
+                href="https://www.facebook.com/phan.giang.1088893"
+                className="hover:text-secondary"
+              >
                 <Facebook />
               </Link>
-              <Link href="#" className="hover:opacity-80">
+              <Link
+                href="https://www.linkedin.com/in/giang-phan-nguyen-tra-2496471b4/"
+                className="hover:text-secondary"
+              >
                 <Linkedin />
               </Link>
-              <Link href="#" className="hover:opacity-80">
-                <Twitter />
+              <Link
+                href="https://www.instagram.com/yyan.g293/"
+                className="hover:text-secondary"
+              >
+                <Instagram />
               </Link>
             </div>
           </div>
@@ -31,17 +40,17 @@ export const Footer = () => {
             <h4 className="font-bold text-lg mb-4">Products</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="#" className="text-tint3 hover:text-white">
+                <Link href="" className="text-tint3 hover:text-[#dcdcdc]">
                   Landing page
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-tint3 hover:text-white">
+                <Link href="#" className="text-tint3 hover:text-[#dcdcdc]">
                   About us
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-tint3 hover:text-white">
+                <Link href="#" className="text-tint3 hover:text-[#dcdcdc]">
                   Contact us
                 </Link>
               </li>
@@ -53,10 +62,19 @@ export const Footer = () => {
             <h4 className="font-bold text-lg mb-4">Contact information</h4>
             <ul className="space-y-2 text-tint3">
               <li className="flex items-center gap-2">
-                <span>📞</span>+84926200400
+                <span>📞</span>
+                <a href="tel:+84926200400" className="hover:text-[#dcdcdc] ">
+                  +84926200400
+                </a>
               </li>
               <li className="flex items-center gap-2">
-                <span>✉️</span>info@wordwise.we
+                <span>✉️</span>
+                <a
+                  href="mailto:info@wordwise.we"
+                  className="hover:text-[#dcdcdc] "
+                >
+                  info@wordwise.we
+                </a>
               </li>
               <li className="flex items-center gap-2">
                 <span>📍</span>Thu Duc, TP Ho Chi Minh
@@ -69,10 +87,10 @@ export const Footer = () => {
         <div className="container mx-auto py-6 flex flex-col md:flex-row justify-between items-center text-sm text-tint3">
           <p>© 2023 Word Wise. All Rights Reserved.</p>
           <div className="flex gap-6 mt-4 md:mt-0">
-            <Link href="#" className="hover:text-white">
+            <Link href="#" className="hover:text-[#dcdcdc]">
               Terms & Conditions
             </Link>
-            <Link href="#" className="hover:text-white">
+            <Link href="#" className="hover:text-[#dcdcdc]">
               Privacy Policy
             </Link>
           </div>
