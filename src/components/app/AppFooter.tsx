@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Facebook, Linkedin, Instagram } from "lucide-react";
 
-export const Footer = () => {
+export const AppFooter = () => {
   return (
-    <footer id="contact" className="bg-primary text-white -mx-20 px-20 ">
+    <footer id="contact" className="bg-primary text-white max-w-full px-20 ">
       <div className="container mx-auto py-16">
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-12">
           {/* Column 1: Slogan & Social */}

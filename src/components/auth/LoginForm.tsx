@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +26,7 @@ type LoginFormValues = z.infer<typeof LoginSchema>;
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(LoginSchema),
@@ -35,8 +37,8 @@ export function LoginForm() {
   });
 
   function onSubmit(values: LoginFormValues) {
-    // Xử lý logic đăng nhập ở đây
     console.log(values);
+    router.push("/trending");
   }
 
   return (

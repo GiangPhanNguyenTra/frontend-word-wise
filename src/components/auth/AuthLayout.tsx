@@ -32,7 +32,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* Right Side */}
-      <div className="flex items-center justify-center p-8 lg:p-12 bg-card">
+      <div className="flex items-center justify-center p-8 lg:p-12  bg-background">
         <div className="mx-auto w-full max-w-md">{children}</div>
       </div>
     </div>
