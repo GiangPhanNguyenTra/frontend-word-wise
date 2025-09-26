@@ -1,5 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,6 +36,8 @@ const navLinks = [
 ];
 
 export const UserHeader = () => {
+  const pathname = usePathname();
+
   return (
     <header className="sticky top-0 py-2 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 max-w-screen-2xl items-center justify-between">
@@ -44,27 +51,36 @@ export const UserHeader = () => {
 
         {/* Navigation */}
         <nav className="hidden md:flex items-center gap-6">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="flex items-center gap-2 text-sm font-medium text-black transition-colors hover:text-primary"
-            >
-              <link.icon className="h-4 w-4" />
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.map((link) => {
+            const isActive = pathname.startsWith(link.href);
+
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary",
+                  isActive ? "text-primary" : "text-black"
+                )}
+              >
+                <link.icon className="h-4 w-4" />
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* User Actions */}
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon">
-            <Bell className="h-5 w-5" />
-            <span className="sr-only">Notifications</span>
+          <Button variant="icon" size="icon" className="group">
+            <Bell className="h-4 w- text-black group-hover:w-6 group-hover:h-6" />
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                className="!text-primary !border-[#ababab] hover:!border-primary !rounded-4xl shadow-[0_2px_4px_rgba(0,0,0,0.2)] flex items-center gap-2"
+              >
                 <Avatar className="h-8 w-8">
                   <AvatarImage
                     src="https://i.pravatar.cc/150?u=a042581f4e29026704d"

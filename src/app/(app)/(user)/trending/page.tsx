@@ -9,7 +9,8 @@ const mockArticle = {
     "The new AI system can understand and respond to complex queries with human-like accuracy, marking a significant leap in natural language processing technology.",
   category: "VTV",
   publishDate: "June 14, 2023",
-  articleUrl: "#",
+  articleUrl:
+    "https://freshertube.com/tech-giant-unveils-revolutionary-ai-powered-device/",
 };
 
 const mockVocabulary = {

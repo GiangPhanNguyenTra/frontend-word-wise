@@ -119,7 +119,10 @@ export default function DashboardPage() {
               - Ludwig Wittgenstein
             </p>
           </div>
-          <Button className="mt-4 md:mt-0 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-bold py-3 px-6">
+          <Button
+            variant={"default"}
+            className="mt-4 md:mt-0 bg-secondary hover:!bg-yellow-400 text-white font-medium py-3 px-6"
+          >
             Continue learning <Play className="ml-2 h-5 w-5" />
           </Button>
         </section>
