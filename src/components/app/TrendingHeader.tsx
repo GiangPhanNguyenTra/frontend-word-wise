@@ -7,16 +7,18 @@ export const TrendingHeader = () => {
     <header className="sticky top-0 py-2 z-50 -px-20 w-full  border-b-1 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between">
         {/* Logo */}
-        <Link href="/trending" className="flex items-center gap-2">
-          <Image src="/logo.svg" alt="Word Wise Logo" width={40} height={40} />
-          <span className="text-xl font-bold text-primary">Word Wise</span>
+        <Link href="/dashboard" className="flex items-center gap-2">
+          <Image src="/logo.svg" alt="Word Wise Logo" width={32} height={32} />
+          <span className="text-xl font-bold text-primary hidden md:block">
+            Word Wise
+          </span>
         </Link>
         {/* Navigation & User */}
         <div className="flex items-center gap-6">
           <nav>
             <Link
-              href="/dashboard" // Link này sẽ dẫn vào trang Home chính của ứng dụng
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+              href="/dashboard"
+              className="text-sm font-medium text-black transition-colors hover:text-primary"
             >
               Home
             </Link>

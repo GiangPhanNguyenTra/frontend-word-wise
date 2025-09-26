@@ -17,7 +17,7 @@ type VocabularyProps = {
 
 export const VocabularyCard = ({ vocab }: { vocab: VocabularyProps }) => {
   return (
-    <Card className="shadow-md hover:shadow-lg transition-shadow duration-300">
+    <Card className="shadow-lg hover:shadow-[0_8px_40px_rgba(0,0,0,0.2)] transition-shadow duration-300">
       <CardContent className="p-6">
         <div className="flex justify-between items-start mb-4">
           <h4 className="text-xl font-bold text-gray-800">{vocab.word}</h4>
