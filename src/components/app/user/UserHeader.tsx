@@ -40,7 +40,7 @@ export const UserHeader = () => {
 
   return (
     <header className="sticky top-0 py-2 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 max-w-screen-2xl items-center justify-between">
+      <div className="container flex h-16 max-w-screen-2xl items-center justify-between px-10">
         {/* Logo */}
         <Link href="/dashboard" className="flex items-center gap-2">
           <Image src="/logo.svg" alt="Word Wise Logo" width={32} height={32} />
