@@ -7,9 +7,7 @@ export default function RootAppLayout({
 }) {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      <main className="flex-grow container mx-auto px-20 sm:px-10 lg:px-20 ">
-        {children}
-      </main>
+      <main className="flex-grow w-full">{children}</main>
       <AppFooter />
     </div>
   );

@@ -8,7 +8,7 @@ export default function UserLayout({
   return (
     <div className="flex flex-col min-h-screen">
       <UserHeader />
-      <main className="flex-grow">{children}</main>
+      <main className="flex-grow px-10">{children}</main>
     </div>
   );
 }
