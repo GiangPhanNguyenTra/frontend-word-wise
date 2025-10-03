@@ -27,7 +27,7 @@ module.exports = {
         error: "var(--color-error)",
       },
       fontFamily: {
-        sans: ["var(--font-poppins)", ...defaultTheme.fontFamily.sans],
+        sans: ["var(--font-montserrat)", ...defaultTheme.fontFamily.sans],
       },
     },
   },

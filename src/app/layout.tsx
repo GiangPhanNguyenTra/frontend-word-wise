@@ -1,11 +1,9 @@
 import "./globals.css";
-import { Poppins } from "next/font/google";
+import { Montserrat } from "next/font/google";
 
-const poppins = Poppins({
+const montserrat = Montserrat({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"], // chọn các weight cần dùng
-  variable: "--font-poppins", // tạo biến CSS
-  display: "swap",
+  variable: "--font-montserrat",
 });
 
 export const metadata = {
@@ -18,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={poppins.variable}>
+    <html lang="en" className={montserrat.variable}>
       <body>{children}</body>
     </html>
   );
