@@ -2,7 +2,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
+import { PenLine, Trash2 } from "lucide-react";
 interface WordCardProps {
   word: string;
   type: string;
@@ -55,6 +55,11 @@ export function WordCard({
         <p className="text-[#939393] text-[18px]">Example:</p>
         <p className="italic text-black text-[16px]">“{exampleEn}”</p>
         <p className="italic text-[#939393] text-[16px]">“{exampleVi}”</p>
+
+        <div className="flex justify-end gap-2">
+          <PenLine color="#939393" size={20} />
+          <Trash2 color="#C30000" size={20} />
+        </div>
       </CardContent>
     </Card>
   );
