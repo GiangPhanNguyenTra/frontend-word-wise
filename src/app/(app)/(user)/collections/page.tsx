@@ -11,6 +11,7 @@ import {
 import { ChevronDown, PlusCircle } from "lucide-react";
 import { CollectionCard } from "./components/CollectionCard";
 import { wordCollections } from "./data/word-data";
+import Link from "next/link";
 
 export default function CollectionsPage() {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
@@ -74,12 +75,13 @@ export default function CollectionsPage() {
       {/* Grid of cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {sortedCollections.map((col) => (
-          <CollectionCard
-            key={col.id}
-            title={col.title}
-            words={col.words.length}
-            lastStudied={col.lastStudied}
-          />
+          <Link href={`/collections/list/${col.id}`} key={col.id}>
+            <CollectionCard
+              title={col.title}
+              words={col.words.length}
+              lastStudied={col.lastStudied}
+            />
+          </Link>
         ))}
       </div>
     </div>

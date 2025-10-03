@@ -14,7 +14,7 @@ export const Header = () => {
   const [active, setActive] = useState("#home");
 
   return (
-    <header className="fixed top-0 left-0 w-full py-4 z-10 px-20 bg-[#f3f7fc] border-b-1">
+    <header className="fixed top-0 left-0 w-full py-4 z-10 px-28 bg-[#f3f7fc] border-b-1">
       <div className="container mx-auto flex justify-between items-center">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
