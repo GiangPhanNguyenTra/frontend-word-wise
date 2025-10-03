@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { wordCollections } from "../../data/word-data";
 import { WordCard } from "../../components/WordCard";
+import { useRouter } from "next/navigation";
 
 import {
   PlusCircle,
@@ -24,6 +26,7 @@ import {
 export default function CollectionDetailPage() {
   const params = useParams();
   const id = Number(params.id);
+  const router = useRouter();
 
   const collection = wordCollections.find((c) => c.id === id);
 
@@ -44,6 +47,7 @@ export default function CollectionDetailPage() {
       <div className="w-full flex flex-row items-center justify-between">
         <Button
           variant="outline"
+          onClick={() => router.push("/collections")}
           className="border-[#2563EB] text-[#2563EB] hover:bg-blue-50 flex items-center gap-2"
         >
           <CircleArrowLeft className="h-5 w-5 text-[#2563EB]" />

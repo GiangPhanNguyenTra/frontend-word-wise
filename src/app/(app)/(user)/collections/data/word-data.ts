@@ -67,6 +67,33 @@ export const wordCollections: WordCollection[] = [
         definitionVi: "Điểm mà hai hệ thống gặp nhau và tương tác.",
         exampleEn: "The user interface should be intuitive and simple.",
         exampleVi: "Giao diện người dùng nên trực quan và đơn giản."
+      },
+      {
+        word: "innovate",
+        type: "verb",
+        meaning: "đổi mới",
+        definitionEn: "To introduce new methods, ideas, or products.",
+        definitionVi: "Giới thiệu các phương pháp, ý tưởng hoặc sản phẩm mới.",
+        exampleEn: "Tech companies innovate to stay competitive.",
+        exampleVi: "Các công ty công nghệ đổi mới để duy trì lợi thế cạnh tranh."
+      },
+      {
+        word: "efficient",
+        type: "adjective",
+        meaning: "hiệu quả",
+        definitionEn: "Achieving maximum productivity with minimum wasted effort.",
+        definitionVi: "Đạt được năng suất tối đa với nỗ lực lãng phí tối thiểu.",
+        exampleEn: "An efficient algorithm saves time and resources.",
+        exampleVi: "Một thuật toán hiệu quả tiết kiệm thời gian và tài nguyên."
+      },
+      {
+        word: "rapidly",
+        type: "adverb",
+        meaning: "nhanh chóng",
+        definitionEn: "In a quick or speedy manner.",
+        definitionVi: "Theo cách nhanh hoặc tốc độ.",
+        exampleEn: "Technology advances rapidly in the digital age.",
+        exampleVi: "Công nghệ tiến bộ nhanh chóng trong kỷ nguyên kỹ thuật số."
       }
     ],
     lastStudied: "2d ago",
@@ -120,6 +147,33 @@ export const wordCollections: WordCollection[] = [
         definitionVi: "Hành động hoặc quá trình đầu tư tiền để sinh lời.",
         exampleEn: "Real estate is a popular form of investment.",
         exampleVi: "Bất động sản là hình thức đầu tư phổ biến."
+      },
+      {
+        word: "negotiate",
+        type: "verb",
+        meaning: "đàm phán",
+        definitionEn: "To discuss to reach an agreement.",
+        definitionVi: "Thảo luận để đạt được thỏa thuận.",
+        exampleEn: "They negotiated a better deal with the supplier.",
+        exampleVi: "Họ đàm phán một thỏa thuận tốt hơn với nhà cung cấp."
+      },
+      {
+        word: "profitable",
+        type: "adjective",
+        meaning: "có lợi nhuận",
+        definitionEn: "Yielding profit; financially rewarding.",
+        definitionVi: "Mang lại lợi nhuận; mang lại lợi ích tài chính.",
+        exampleEn: "The new strategy proved to be profitable.",
+        exampleVi: "Chiến lược mới chứng minh là có lợi nhuận."
+      },
+      {
+        word: "strategically",
+        type: "adverb",
+        meaning: "chiến lược",
+        definitionEn: "In a planned and clever way.",
+        definitionVi: "Theo cách có kế hoạch và khôn ngoan.",
+        exampleEn: "They invested strategically in emerging markets.",
+        exampleVi: "Họ đầu tư chiến lược vào các thị trường mới nổi."
       },
     ],
     lastStudied: "1d ago",
