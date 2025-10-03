@@ -75,7 +75,7 @@ export default function CollectionsPage() {
       {/* Grid of cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {sortedCollections.map((col) => (
-          <Link href={`/collections/list/${col.id}`} key={col.id}>
+          <Link href={`/collections/${col.id}`} key={col.id}>
             <CollectionCard
               title={col.title}
               words={col.words.length}

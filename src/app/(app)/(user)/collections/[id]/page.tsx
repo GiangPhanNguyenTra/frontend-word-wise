@@ -4,15 +4,14 @@ import { useState } from "react";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { wordCollections } from "../../data/word-data";
-import { WordCard } from "../../components/WordCard";
+import { wordCollections } from "../data/word-data";
+import { WordCard } from "../components/WordCard";
 import { useRouter } from "next/navigation";
 
 import {
@@ -22,13 +21,14 @@ import {
   ChevronDown,
   ArrowRight,
 } from "lucide-react";
+import ContinueLearningButton from "../components/ContinueLearningButton";
 
 export default function CollectionDetailPage() {
   const params = useParams();
-  const id = Number(params.id);
+  const id = params.id as string;
   const router = useRouter();
 
-  const collection = wordCollections.find((c) => c.id === id);
+  const collection = wordCollections.find((c) => c.id === Number(id));
 
   const [search, setSearch] = useState("");
 
@@ -110,10 +110,7 @@ export default function CollectionDetailPage() {
         </div>
 
         {/* Continue Learning button */}
-        <Button>
-          Continue Learning
-          <ArrowRight className="h-5 w-5" />
-        </Button>
+        <ContinueLearningButton id={id} />
       </div>
 
       {/* Word list */}
