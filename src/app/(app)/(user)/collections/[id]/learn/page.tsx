@@ -8,6 +8,7 @@ import { DefinitionChoice } from "../../components/DefinitionChoice";
 import { FillBlank } from "../../components/FillBlank";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
+import { Progress } from "@/components/ui/progress"; // ✅ thêm vào
 
 type WordWithMode = { word: Word; mode: string };
 
@@ -45,17 +46,23 @@ export default function LearnPage() {
 
   if (index >= words.length) {
     return (
-      <div className="p-6 flex flex-col items-center gap-6">
+      <div className="p-6 flex flex-col items-center gap-4">
         <h1 className="text-2xl font-bold text-[#00966D]">🎉 Done!</h1>
         <p>You have finished learning this set.</p>
 
         <div className="flex gap-6 text-lg">
-          <p className="text-[#00966D] font-bold">Studied: {correct}</p>
-          <p className="text-[#C30000] font-bold">Wrong: {wrong}</p>
-          <p className="text-[#EBAD25] font-bold">Skipped: {skip}</p>
+          <p className="text-[#00966D] font-medium text-[20px]">
+            Studied: {correct}
+          </p>
+          <p className="text-[#C30000] font-medium text-[20px]">
+            Wrong: {wrong}
+          </p>
+          <p className="text-[#EBAD25] font-medium text-[20px]">
+            Skipped: {skip}
+          </p>
         </div>
 
-        <div className="w-full self-stretch inline-flex flex-row justify-center items-center gap-2.5">
+        <div className="w-full self-stretch inline-flex flex-row justify-center items-center gap-2.5 mt-4">
           <Button
             className="bg-white border border-[#2563EB] text-[#2563EB] hover:bg-blue-50"
             onClick={() => {
@@ -86,6 +93,7 @@ export default function LearnPage() {
   }
 
   const current = words[index];
+  const progressValue = ((index + 1) / words.length) * 100;
 
   const handleAnswer = (result: "correct" | "wrong") => {
     if (answered) return;
@@ -103,16 +111,29 @@ export default function LearnPage() {
   };
 
   return (
-    <div className="p-6 flex flex-col items-center gap-6">
+    <div className="p-6 flex flex-col items-center gap-2 w-full">
       <h1 className="text-2xl font-bold text-[#2563EB]">{collection.title}</h1>
 
       <div className="flex gap-6 text-lg">
-        <p className="text-[#00966D] font-bold">Correct: {correct}</p>
-        <p className="text-[#C30000] font-bold">Wrong: {wrong}</p>
-        <p className="text-[#EBAD25] font-bold">Skipped: {skip}</p>
-        <p className="text-black font-bold">
+        <p className="text-[#00966D] font-medium text-[20px]">
+          Correct: {correct}
+        </p>
+        <p className="text-[#C30000] font-medium text-[20px]">Wrong: {wrong}</p>
+        <p className="text-[#EBAD25] font-medium text-[20px]">
+          Skipped: {skip}
+        </p>
+        <p className="text-black font-medium">
           Progress: {index + 1}/{words.length}
         </p>
+      </div>
+
+      {/* Thanh progress */}
+      <div className="w-71/100 flex flex-col gap-2">
+        <div className="flex justify-between text-sm font-medium">
+          <span>Progress</span>
+          <span>{Math.round(progressValue)}%</span>
+        </div>
+        <Progress value={progressValue} className="h-3 rounded-full" />
       </div>
 
       <div className="w-3/4 p-6 flex flex-col items-center gap-6">
@@ -124,7 +145,6 @@ export default function LearnPage() {
             forceDontKnow={answered === "wrong"}
           />
         )}
-
         {current.mode === "definition" && (
           <DefinitionChoice
             word={current.word}
@@ -142,7 +162,7 @@ export default function LearnPage() {
 
         <div className="w-full flex-row justify-between inline-flex mt-4 gap-4">
           <Button
-            className="!border !border-[#363538] bg-white text-[#363538]"
+            className="bg-gray-200 text-black hover:bg-gray-300"
             onClick={() => handleAnswer("wrong")}
             disabled={!!answered}
           >
@@ -155,12 +175,12 @@ export default function LearnPage() {
               onClick={() => handleAnswer("correct")}
               disabled={!!answered}
             >
-              <Check />I know this
+              <Check className="mr-1" /> I know this
             </Button>
           )}
 
           <Button
-            className="bg-[#2563EB] hover:bg-blue-800"
+            className="bg-[#2563EB] hover:bg-blue-800 text-white"
             onClick={nextQuestion}
           >
             Next
