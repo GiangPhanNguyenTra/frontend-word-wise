@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Word } from "../data/word-data";
 import { Volume2 } from "lucide-react";
 
-// map style cho loại từ
 const typeStyles: Record<string, string> = {
   noun: "bg-[#E9EFFD] text-[#2563EB]",
   verb: "bg-[#FEE2E2] text-[#C41C1C]",
@@ -13,24 +12,35 @@ const typeStyles: Record<string, string> = {
   adverb: "bg-[#F3ECC0] text-[#C38902]",
 };
 
-export function FillBlank({ word }: { word: Word }) {
+export function FillBlank({
+  word,
+  onAnswer,
+  forceDontKnow = false,
+}: {
+  word: Word;
+  onAnswer?: (r: "correct" | "wrong") => void;
+  forceDontKnow?: boolean;
+}) {
   const [answer, setAnswer] = useState("");
   const [show, setShow] = useState(false);
 
-  // Reset state mỗi khi đổi word
   useEffect(() => {
     setAnswer("");
     setShow(false);
   }, [word]);
 
-  // Tạo câu với chỗ trống (ẩn từ gốc)
-  const sentence = word.exampleEn.replace(new RegExp(word.word, "gi"), "_____");
+  useEffect(() => {
+    if (forceDontKnow && !show) {
+      setShow(true);
+      onAnswer?.("wrong");
+    }
+  }, [forceDontKnow, show, onAnswer]);
 
+  const sentence = word.exampleEn.replace(new RegExp(word.word, "gi"), "_____");
   const isCorrect = answer.trim().toLowerCase() === word.word.toLowerCase();
 
   return (
-    <div className="w-full h-[50vh] p-6 border rounded-xl shadow-md flex flex-col gap-4">
-      {/* Loại từ */}
+    <div className="bg-white w-full h-[50vh] p-6 border rounded-xl shadow-md flex flex-col gap-4">
       <div className="flex justify-center gap-2 items-center">
         <span
           className={`px-3 py-1 rounded-full text-sm font-medium ${
@@ -49,21 +59,22 @@ export function FillBlank({ word }: { word: Word }) {
         placeholder="Your answer..."
         value={answer}
         onChange={(e) => setAnswer(e.target.value)}
-        disabled={show} // disable input sau khi check
+        disabled={show || forceDontKnow}
       />
 
-      {/* Nút Check chỉ hiện khi chưa show */}
-      {!show && (
+      {!show && !forceDontKnow && (
         <Button
-          className="bg-[#2563EB] hover:bg-blue-800"
-          onClick={() => setShow(true)}
-          disabled={!answer.trim()} // thêm: tránh check khi input trống
+          className="bg-[#2563EB] hover:bg-blue-800 mt-4"
+          onClick={() => {
+            setShow(true);
+            onAnswer?.(isCorrect ? "correct" : "wrong");
+          }}
+          disabled={!answer.trim()}
         >
           Check
         </Button>
       )}
 
-      {/* Đáp án */}
       {show && (
         <p className={isCorrect ? "text-green-600" : "text-red-600"}>
           {isCorrect ? "✔ Chính xác!" : `✘ Sai. Đáp án: ${word.word}`}
