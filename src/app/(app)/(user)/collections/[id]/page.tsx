@@ -59,6 +59,7 @@ export default function CollectionDetailPage() {
         <Button
           variant="outline"
           className="border-[#2563EB] text-[#2563EB] hover:bg-blue-50 flex items-center gap-2"
+          onClick={() => router.push(`/collections/${id}/new-word`)}
         >
           <PlusCircle className="h-5 w-5 text-[#2563EB]" />
           New Word
