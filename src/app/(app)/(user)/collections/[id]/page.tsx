@@ -48,9 +48,9 @@ export default function CollectionDetailPage() {
         <Button
           variant="outline"
           onClick={() => router.push("/collections")}
-          className="border-[#2563EB] text-[#2563EB] hover:bg-blue-50 flex items-center gap-2"
+          className="border-[#363538] text-[#363538] hover:bg-grey-100 flex items-center gap-2"
         >
-          <CircleArrowLeft className="h-5 w-5 text-[#2563EB]" />
+          <CircleArrowLeft className="h-5 w-5 text-[#363538]" />
           Back
         </Button>
         <h1 className="text-3xl font-bold text-[#2563EB]">

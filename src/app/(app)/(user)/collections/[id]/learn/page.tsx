@@ -7,8 +7,8 @@ import { Translation } from "../../components/Translation";
 import { DefinitionChoice } from "../../components/DefinitionChoice";
 import { FillBlank } from "../../components/FillBlank";
 import { Button } from "@/components/ui/button";
-import { Check } from "lucide-react";
-import { Progress } from "@/components/ui/progress"; // ✅ thêm vào
+import { Check, CircleArrowLeft } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 
 type WordWithMode = { word: Word; mode: string };
 
@@ -112,7 +112,21 @@ export default function LearnPage() {
 
   return (
     <div className="p-6 flex flex-col items-center gap-2 w-full">
-      <h1 className="text-2xl font-bold text-[#2563EB]">{collection.title}</h1>
+      <div className="relative w-full flex items-center">
+        {/* nút Back bên trái */}
+        <Button
+          className="border border-[#363538] text-[#363538] bg-white hover:bg-gray-100"
+          onClick={() => router.push(`/collections/${id}`)}
+        >
+          <CircleArrowLeft className="mr-1" />
+          Back
+        </Button>
+
+        {/* title căn giữa tuyệt đối */}
+        <h1 className="absolute left-1/2 transform -translate-x-1/2 text-2xl font-bold text-[#2563EB]">
+          {collection.title}
+        </h1>
+      </div>
 
       <div className="flex gap-6 text-lg">
         <p className="text-[#00966D] font-medium text-[20px]">
