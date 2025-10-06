@@ -8,19 +8,44 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { ChevronDown, PlusCircle } from "lucide-react";
 import { CollectionCard } from "./components/CollectionCard";
 import { wordCollections } from "./data/word-data";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function CollectionsPage() {
+  const router = useRouter();
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [words, setWords] = useState("");
 
   const sortedCollections = [...wordCollections].sort((a, b) =>
     sortOrder === "asc"
       ? a.title.localeCompare(b.title)
       : b.title.localeCompare(a.title)
   );
+
+  const handleSave = () => {
+    if (!title || !words) {
+      alert("Please enter all fields.");
+      return;
+    }
+
+    localStorage.setItem("newCollectionData", JSON.stringify({ title, words }));
+
+    router.push(`/collections/new-review?title=${encodeURIComponent(title)}`);
+  };
 
   return (
     <div className="p-6 space-y-6">
@@ -29,7 +54,7 @@ export default function CollectionsPage() {
         <div className="flex items-center gap-4">
           <h1 className="text-xl font-bold">My Vocabulary Collections</h1>
 
-          {/* Filter dropdown (mock) */}
+          {/* Filter dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="flex items-center gap-2">
@@ -65,12 +90,67 @@ export default function CollectionsPage() {
         {/* New collection button */}
         <Button
           variant="outline"
+          onClick={() => setOpen(true)}
           className="border-[#2563EB] text-[#2563EB] hover:bg-blue-50 flex items-center gap-2"
         >
           <PlusCircle className="h-5 w-5 text-[#2563EB]" />
           New Collection
         </Button>
       </div>
+
+      {/* Popup tạo collection */}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle className="text-center text-[#1D1D1D] font-bold text-[24px]">
+              Create New Collection
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div>
+              <label className="text-[18px] font-bold text-[#373346]">
+                Collection Name
+              </label>
+              <Input
+                placeholder="Enter collection name..."
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className="text-[18px] font-bold text-[#373346] block mb-2">
+                Word List
+              </label>
+              <ul className="text-[16px] text-[#373346] list-disc list-inside space-y-1 mb-2">
+                <li>
+                  Just type your words, the system will automatically generate
+                  meanings, contexts, and examples for you.
+                </li>
+                <li>Use line breaks to separate words.</li>
+                <li>Maximum 50 words.</li>
+              </ul>
+              <Textarea
+                rows={5}
+                className="resize-none"
+                placeholder="Enter words..."
+                value={words}
+                onChange={(e) => setWords(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              onClick={handleSave}
+              className="bg-[#2563EB] text-white hover:bg-blue-600"
+            >
+              Save & Review
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Grid of cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
