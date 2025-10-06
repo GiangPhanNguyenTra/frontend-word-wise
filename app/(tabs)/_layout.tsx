@@ -3,9 +3,8 @@ import TabBarBackground from "@/components/ui/TabBarBackground";
 import { useFonts } from "expo-font";
 import { Tabs } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { Compass, Home, Plus, Settings, Users } from "lucide-react-native";
+import { BookOpenText, ChartSpline, Home, Mic, Users } from "lucide-react-native";
 import React, { useCallback } from "react";
-import { View } from "react-native";
 
 export default function TabLayout() {
   const [fontsLoaded] = useFonts({
@@ -35,17 +34,19 @@ export default function TabLayout() {
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
-        tabBarActiveTintColor: "#7F56D9", // Màu icon/text khi chọn
-        tabBarInactiveTintColor: "#BDBDBD", // Màu icon/text khi chưa chọn
+        tabBarActiveTintColor: "#2563EB", // Màu icon/text khi chọn
+        tabBarInactiveTintColor: "#939393", // Màu icon/text khi chưa chọn
         tabBarStyle: {
-          backgroundColor: "#FCFBFF",
+          backgroundColor: "#FFFFFF",
           borderTopColor: "#E5E5E5",
           height: 120,
           paddingTop: 10,
           paddingBottom: 20,
+          borderRadius: 30,
         },
         tabBarLabelStyle: {
-          fontFamily: "Montserrat-Medium",
+          fontFamily: "Montserrat-SemiBold",
+          fontSize: 14,
         },
       }}
     >
@@ -53,52 +54,36 @@ export default function TabLayout() {
         name="home"
         options={{
           title: "Home",
-          tabBarIcon: ({ color }) => <Home size={28} color={color} />,
+          tabBarIcon: ({ color }) => <Home size={20} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="learn"
         options={{
-          title: "Explore",
-          tabBarIcon: ({ color }) => <Compass size={28} color={color} />,
+          title: "Learn",
+          tabBarIcon: ({ color }) => <BookOpenText size={20} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="diary"
+        name="speak"
         options={{
-          tabBarLabel: () => null, // Ẩn chữ Diary
-          tabBarIcon: ({ size }) => (
-            <View className="mt-4">
-              <View
-                style={{
-                  width: 60,
-                  height: 60,
-                  borderRadius: 30,
-                  backgroundColor: "#E0D7F9",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  shadowColor: "#000",
-                }}
-              >
-                <Plus color="#7F56D9" size={size} />
-              </View>
-            </View>
-          ),
+          title: "Speak",
+          tabBarIcon: ({ color }) => <Mic size={20} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="community"
+        name="chat"
         options={{
-          title: "Forum",
+          title: "Chat",
           tabBarIcon: ({ color, size }) => <Users color={color} size={size} />,
         }}
       />
       <Tabs.Screen
-        name="settings"
+        name="progress"
         options={{
-          title: "Settings",
+          title: "Progress",
           tabBarIcon: ({ color, size }) => (
-            <Settings color={color} size={size} />
+            <ChartSpline color={color} size={size} />
           ),
         }}
       />
