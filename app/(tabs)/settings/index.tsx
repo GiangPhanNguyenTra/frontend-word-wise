@@ -29,7 +29,7 @@ export default function Settingscreen() {
             <View className="flex-row justify-between">
               <View className="flex-row items-center gap-2">
                 <CircleUserRound width={24} height={24} strokeWidth={1}/>
-                <Text className="font-[Poppins-Regular] text-base">Account</Text>
+                <Text className="font-[Montserrat-Regular] text-base">Account</Text>
               </View>
               <ChevronRight width={24} height={24} strokeWidth={1} />
             </View>
@@ -42,7 +42,7 @@ export default function Settingscreen() {
             <View className="flex-row justify-between">
               <View className="flex-row items-center gap-2">
                 <Lock width={24} height={24} strokeWidth={1} />
-                <Text className="font-[Poppins-Regular] text-base">Password</Text>
+                <Text className="font-[Montserrat-Regular] text-base">Password</Text>
               </View>
               <ChevronRight width={24} height={24} strokeWidth={1} />
             </View>
@@ -55,7 +55,7 @@ export default function Settingscreen() {
             <View className="flex-row justify-between">
               <View className="flex-row items-center gap-2">
                 <LogOut width={24} height={24} color="#FF0000" />
-                <Text className="text-[#FF0000] font-[Poppins-Bold] text-base">Sign Out</Text>
+                <Text className="text-[#FF0000] font-[Montserrat-Bold] text-base">Sign Out</Text>
               </View>
             </View>
           </TouchableOpacity>
@@ -70,7 +70,7 @@ export default function Settingscreen() {
       >
         <View className="flex-1 bg-black/60 justify-center items-center">
           <View className="bg-white w-4/5 rounded-2xl p-6 items-center">
-            <Text className="text-lg font-[Poppins-SemiBold] mb-6 text-gray-800">
+            <Text className="text-lg font-[Montserrat-SemiBold] mb-6 text-gray-800">
               Are you sure you want to logout?
             </Text>
             
@@ -79,14 +79,14 @@ export default function Settingscreen() {
                 onPress={() => setShowConfirm(false)}
                 className="bg-gray-300 px-8 py-4 rounded-xl"
               >
-                <Text className="text-base font-[Poppins-SemiBold] text-gray-800">No</Text>
+                <Text className="text-base font-[Montserrat-SemiBold] text-gray-800">No</Text>
               </TouchableOpacity>
             
               <TouchableOpacity
                 onPress={handleConfirmCancel}
                 className="bg-red-500 px-8 py-4 rounded-xl"
               >
-                <Text className="text-base font-[Poppins-SemiBold] text-white">Yes</Text>
+                <Text className="text-base font-[Montserrat-SemiBold] text-white">Yes</Text>
               </TouchableOpacity>
             </View>
           </View>

@@ -13,16 +13,16 @@ export default function ExploreScreen() {
   const percent = 24;
 
   const [fontsLoaded] = useFonts({
-    "Poppins-Regular": require("@/assets/fonts/Poppins-Regular.ttf"),
-    "Poppins-Bold": require("@/assets/fonts/Poppins-Bold.ttf"),
-    "Poppins-SemiBold": require("@/assets/fonts/Poppins-SemiBold.ttf"),
-    "Poppins-Medium": require("@/assets/fonts/Poppins-Medium.ttf"),
-    "Poppins-Light": require("@/assets/fonts/Poppins-Light.ttf"),
-    "Poppins-ExtraBold": require("@/assets/fonts/Poppins-ExtraBold.ttf"),
-    "Poppins-Black": require("@/assets/fonts/Poppins-Black.ttf"),
-    "Poppins-Thin": require("@/assets/fonts/Poppins-Thin.ttf"),
-    "Poppins-ExtraLight": require("@/assets/fonts/Poppins-ExtraLight.ttf"),
-    "Poppins-Italic": require("@/assets/fonts/Poppins-Italic.ttf"),
+    "Montserrat-Regular": require("@/assets/fonts/Montserrat-Regular.ttf"),
+    "Montserrat-Bold": require("@/assets/fonts/Montserrat-Bold.ttf"),
+    "Montserrat-SemiBold": require("@/assets/fonts/Montserrat-SemiBold.ttf"),
+    "Montserrat-Medium": require("@/assets/fonts/Montserrat-Medium.ttf"),
+    "Montserrat-Light": require("@/assets/fonts/Montserrat-Light.ttf"),
+    "Montserrat-ExtraBold": require("@/assets/fonts/Montserrat-ExtraBold.ttf"),
+    "Montserrat-Black": require("@/assets/fonts/Montserrat-Black.ttf"),
+    "Montserrat-Thin": require("@/assets/fonts/Montserrat-Thin.ttf"),
+    "Montserrat-ExtraLight": require("@/assets/fonts/Montserrat-ExtraLight.ttf"),
+    "Montserrat-Italic": require("@/assets/fonts/Montserrat-Italic.ttf"),
   });
 
   const onLayoutRootView = useCallback(async () => {
@@ -44,10 +44,10 @@ export default function ExploreScreen() {
       >
         {/* Description */}
         <View className="pt-3">
-          <Text className="text-[#605D67] font-[Poppins-Bold] text-2xl">
+          <Text className="text-[#605D67] font-[Montserrat-Bold] text-2xl">
             Discover Yourself
           </Text>
-          <Text className="text-[#605D67] font-[Poppins-Regular] text-sm mt-1">
+          <Text className="text-[#605D67] font-[Montserrat-Regular] text-sm mt-1">
             Start your journey of self-understanding through engaging
             psychological tests.
           </Text>
@@ -59,7 +59,7 @@ export default function ExploreScreen() {
             className="w-full rounded-xl border border-white bg-[#E0D7F9] p-4 justify-center"
             onPress={() => router.push("/(tabs)/explore/result")}
           >
-            <Text className="text-[#7F56D9] font-[Poppins-Bold] text-xl">
+            <Text className="text-[#7F56D9] font-[Montserrat-Bold] text-xl">
               Tests
             </Text>
             <View className="w-full flex-row items-center mt-3 mb-2 gap-2">
@@ -75,13 +75,13 @@ export default function ExploreScreen() {
               </View>
             </View>
 
-            <Text className="text-[#7F56D9] font-[Poppins-Regular] text-base mt-2">
+            <Text className="text-[#7F56D9] font-[Montserrat-Regular] text-base mt-2">
               to complete
             </Text>
           </TouchableOpacity>
         </View>
 
-        <Text className="p-2 font-[Poppins-Bold] text-xl text-[#605D67] mb-2">
+        <Text className="p-2 font-[Montserrat-Bold] text-xl text-[#605D67] mb-2">
           Explore Tests
         </Text>
         <MBTICard />

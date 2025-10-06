@@ -24,16 +24,16 @@ export default function RegisterScreen() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [fontsLoaded] = useFonts({
-    "Poppins-Regular": require("@/assets/fonts/Poppins-Regular.ttf"),
-    "Poppins-Bold": require("@/assets/fonts/Poppins-Bold.ttf"),
-    "Poppins-SemiBold": require("@/assets/fonts/Poppins-SemiBold.ttf"),
-    "Poppins-Medium": require("@/assets/fonts/Poppins-Medium.ttf"),
-    "Poppins-Light": require("@/assets/fonts/Poppins-Light.ttf"),
-    "Poppins-ExtraBold": require("@/assets/fonts/Poppins-ExtraBold.ttf"),
-    "Poppins-Black": require("@/assets/fonts/Poppins-Black.ttf"),
-    "Poppins-Thin": require("@/assets/fonts/Poppins-Thin.ttf"),
-    "Poppins-ExtraLight": require("@/assets/fonts/Poppins-ExtraLight.ttf"),
-    "Poppins-Italic": require("@/assets/fonts/Poppins-Italic.ttf"),
+    "Montserrat-Regular": require("@/assets/fonts/Montserrat-Regular.ttf"),
+    "Montserrat-Bold": require("@/assets/fonts/Montserrat-Bold.ttf"),
+    "Montserrat-SemiBold": require("@/assets/fonts/Montserrat-SemiBold.ttf"),
+    "Montserrat-Medium": require("@/assets/fonts/Montserrat-Medium.ttf"),
+    "Montserrat-Light": require("@/assets/fonts/Montserrat-Light.ttf"),
+    "Montserrat-ExtraBold": require("@/assets/fonts/Montserrat-ExtraBold.ttf"),
+    "Montserrat-Black": require("@/assets/fonts/Montserrat-Black.ttf"),
+    "Montserrat-Thin": require("@/assets/fonts/Montserrat-Thin.ttf"),
+    "Montserrat-ExtraLight": require("@/assets/fonts/Montserrat-ExtraLight.ttf"),
+    "Montserrat-Italic": require("@/assets/fonts/Montserrat-Italic.ttf"),
   });
 
   const onLayoutRootView = useCallback(async () => {
@@ -61,24 +61,24 @@ export default function RegisterScreen() {
         <View className="mt-8 ml-4">
           <TouchableOpacity
             onPress={() => router.back()}
-            className="w-12 h-12 bg-white rounded-[10px] items-center justify-center"
+            className="w-12 h-12 bg-white rounded-[10px] border border-[#92B1F5] items-center justify-center"
           >
             <ChevronLeft size={30} color="#000000" />
           </TouchableOpacity>
         </View>
         {/* Title */}
         <View className="px-6 mt-24">
-          <Text className="text-black text-3xl font-[Poppins-Bold]">
+          <Text className="text-black text-3xl font-[Montserrat-Bold]">
             Welcome back! Glad
           </Text>
-          <Text className="text-black text-3xl font-[Poppins-Bold] leading-[50px]">
+          <Text className="text-black text-3xl font-[Montserrat-Bold] leading-[50px]">
             to see you, Again!
           </Text>
         </View>
         <View className="px-6 mt-12">
           {/* Username */}
           <View className="mb-4">
-            <Text className="text-[#ABABAB] text-sm mb-1 font-[Poppins-Regular]">
+            <Text className="text-[#ABABAB] text-sm mb-1 font-[Montserrat-Regular]">
               Username
             </Text>
             <TextInput
@@ -86,12 +86,12 @@ export default function RegisterScreen() {
               placeholderTextColor="#8391A1"
               value={username}
               onChangeText={setUsername}
-              className="w-full h-16 bg-transparent border border-[#DADADA] rounded-[10px] px-4 border border-[#DADADA] font-[Poppins-Regular]"
+              className="w-full h-16 bg-[#F7F8F9] border border-[#DADADA] rounded-[10px] px-4 border border-[#DADADA] font-[Montserrat-Regular]"
             />
           </View>
           {/* Email */}
           <View className="mb-4">
-            <Text className="text-[#ABABAB] text-sm mb-1 font-[Poppins-Regular]">
+            <Text className="text-[#ABABAB] text-sm mb-1 font-[Montserrat-Regular]">
               Email Address
             </Text>
             <TextInput
@@ -100,22 +100,22 @@ export default function RegisterScreen() {
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
-              className="w-full h-16 bg-transparent border border-[#DADADA] rounded-[10px] px-4 border border-[#DADADA] font-[Poppins-Regular]"
+              className="w-full h-16 bg-[#F7F8F9] border border-[#DADADA] rounded-[10px] px-4 border border-[#DADADA] font-[Montserrat-Regular]"
             />
           </View>
           {/* Password */}
           <View className="mb-4">
-            <Text className="text-[#ABABAB] text-sm mb-1 font-[Poppins-Regular]">
+            <Text className="text-[#ABABAB] text-sm mb-1 font-[Montserrat-Regular]">
               Password
             </Text>
-            <View className="w-full h-16 bg-transparent border border-[#DADADA] px-4 flex-row items-center border border-[#DADADA] rounded-[10px]">
+            <View className="w-full h-16 bg-[#F7F8F9] border border-[#DADADA] px-4 flex-row items-center border border-[#DADADA] rounded-[10px]">
               <TextInput
                 placeholder="Enter your password"
                 placeholderTextColor="#8391A1"
                 secureTextEntry={!showPassword}
                 value={password}
                 onChangeText={setPassword}
-                className="flex-1 font-[Poppins-Regular]"
+                className="flex-1 font-[Montserrat-Regular]"
               />
               <Pressable onPress={() => setShowPassword(!showPassword)}>
                 {showPassword ? (
@@ -128,17 +128,17 @@ export default function RegisterScreen() {
           </View>
           {/* Confirm Password */}
           <View className="mb-6">
-            <Text className="text-[#ABABAB] text-sm mb-1 font-[Poppins-Regular]">
+            <Text className="text-[#ABABAB] text-sm mb-1 font-[Montserrat-Regular]">
               Confirm Password
             </Text>
-            <View className="w-full h-16 bg-transparent border border-[#DADADA] px-4 flex-row items-center border border-[#DADADA] rounded-[10px]">
+            <View className="w-full h-16 bg-[#F7F8F9] border border-[#DADADA] px-4 flex-row items-center border border-[#DADADA] rounded-[10px]">
               <TextInput
                 placeholder="Confirm your password"
                 placeholderTextColor="#8391A1"
                 secureTextEntry={!showConfirmPassword}
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
-                className="flex-1 font-[Poppins-Regular]"
+                className="flex-1 font-[Montserrat-Regular]"
               />
               <Pressable
                 onPress={() => setShowConfirmPassword(!showConfirmPassword)}
@@ -156,15 +156,15 @@ export default function RegisterScreen() {
             onPress={handleRegister}
             className="w-full h-16 rounded-lg items-center justify-center mb-4 bg-[#2563EB]"
           >
-            <Text className="text-white font-[Poppins-Bold] text-base">
+            <Text className="text-white font-[Montserrat-Bold] text-base">
               Register
             </Text>
           </TouchableOpacity>
           {/* Or Login */}
           <View className="flex-row justify-center">
-            <Text className="text-black font-[Poppins-Regular]">Or </Text>
+            <Text className="text-black font-[Montserrat-Regular]">Or </Text>
             <TouchableOpacity onPress={() => router.replace("/(auth)/login")}>
-              <Text className="text-[#2563EB] font-[Poppins-Medium]">
+              <Text className="text-[#2563EB] font-[Montserrat-Medium]">
                 Login
               </Text>
             </TouchableOpacity>

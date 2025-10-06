@@ -23,14 +23,14 @@ const StatCard: React.FC<StatCardProps> = ({
     <View className={`p-6 rounded-2xl shadow-md ${bg} hover:shadow-lg`}>
       {/* Header */}
       <View className="flex-row justify-between items-center mb-4">
-        <Text className="text-base font-[Poppins-SemiBold] text-gray-700">
+        <Text className="text-base font-[Montserrat-SemiBold] text-gray-700">
           {title}
         </Text>
       </View>
 
       <View className="flex-row wfull justify-between items-center mb-2">
         {/* Value */}
-        <Text className="text-3xl font-[Poppins-Bold] text-gray-900 mb-2">
+        <Text className="text-3xl font-[Montserrat-Bold] text-gray-900 mb-2">
           {value} days
         </Text>
         {/* Change */}
@@ -49,7 +49,7 @@ const StatCard: React.FC<StatCardProps> = ({
             <TrendingDown color="#ef4444" />
           ) : null}
           <Text
-            className={`text-lg font-[Poppins-SemiBold] ${
+            className={`text-lg font-[Montserrat-SemiBold] ${
               change === "up"
                 ? "text-green-600"
                 : change === "down"
@@ -63,7 +63,7 @@ const StatCard: React.FC<StatCardProps> = ({
       </View>
 
       {/* Compare text */}
-      <Text className="text-sm text-gray-500 font-[Poppins-Regular]">
+      <Text className="text-sm text-gray-500 font-[Montserrat-Regular]">
         {compareText}
       </Text>
     </View>

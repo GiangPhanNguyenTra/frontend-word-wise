@@ -22,8 +22,8 @@ export default function Introduce() {
 
   // Load fonts
   const [fontsLoaded] = useFonts({
-    "Poppins-Regular": require("@/assets/fonts/Poppins-Regular.ttf"),
-    "Poppins-Bold": require("@/assets/fonts/Poppins-Bold.ttf"),
+    "Montserrat-Regular": require("@/assets/fonts/Montserrat-Regular.ttf"),
+    "Montserrat-Bold": require("@/assets/fonts/Montserrat-Bold.ttf"),
   });
 
   const onLayoutRootView = useCallback(async () => {
@@ -46,10 +46,10 @@ export default function Introduce() {
 
       {/* Text */}
       <View className="items-center">
-        <Text className="text-2xl font-[Poppins-Bold] text-[#2563EB]">
+        <Text className="text-2xl font-[Montserrat-Bold] text-[#2563EB]">
           Welcome to WordWise
         </Text>
-        <Text className="text-base text-center mt-2 font-[Poppins-Regular] text-black">
+        <Text className="text-base text-center mt-2 font-[Montserrat-Regular] text-black">
           Your smart English vocabulary companion,{"\n"}
           anytime, anywhere.
         </Text>
@@ -105,17 +105,17 @@ export default function Introduce() {
           onPress={() => router.push("/(auth)/introduce")}
           className="py-5 mb-4 bg-[#2563EB] rounded-full shadow-lg"
         >
-          <Text className="text-white text-center font-[Poppins-Bold] text-lg px-10">
+          <Text className="text-white text-center font-[Montserrat-Bold] text-lg px-10">
             Get Started →
           </Text>
         </TouchableOpacity>
       </View>
 
       {/* Sign in */}
-      <Text className="text-center font-[Poppins-Regular] text-gray-500 mb-32">
+      <Text className="text-center font-[Montserrat-Regular] text-gray-500 mb-32">
         Already have an account?{" "}
         <Text
-          className="text-[#2563EB] font-[Poppins-Bold]"
+          className="text-[#2563EB] font-[Montserrat-Bold]"
           onPress={() => router.push("/(auth)/login")}
         >
           Sign In

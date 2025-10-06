@@ -42,7 +42,7 @@ export default function AnalyticScreen() {
               }`}
             >
               <Text
-                className={`text-center font-[Poppins-Bold] ${
+                className={`text-center font-[Montserrat-Bold] ${
                   tab === t ? "text-white" : "text-[#7F56D9]"
                 }`}
               >

@@ -32,7 +32,7 @@ export default function NewPassword({ onValidChange }: Props) {
     <View>
       {/* New Password */}
       <View className="mb-4">
-        <Text className="text-base font-[Poppins-Medium] text-[#ABABAB] mb-2">
+        <Text className="text-base font-[Montserrat-Medium] text-[#ABABAB] mb-2">
           Password
         </Text>
         <View className="w-full h-16 bg-[#F7F8F9] px-4 flex-row items-center border border-[#DADADA] rounded-[10px]">
@@ -42,7 +42,7 @@ export default function NewPassword({ onValidChange }: Props) {
             placeholder="Enter your password"
             placeholderTextColor="#9CA3AF"
             secureTextEntry={!showPw}
-            className="flex-1 h-14 font-[Poppins-Regular]"
+            className="flex-1 h-14 font-[Montserrat-Regular]"
           />
           <TouchableOpacity onPress={() => setShowPw(!showPw)}>
             {showPw ? (
@@ -53,7 +53,7 @@ export default function NewPassword({ onValidChange }: Props) {
           </TouchableOpacity>
         </View>
         {!validatePassword(password) && password.length > 0 && (
-          <Text className="text-xs text-red-500 mt-1 font-[Poppins-Regular]">
+          <Text className="text-xs text-red-500 mt-1 font-[Montserrat-Regular]">
             • At least 8 characters, 1 uppercase letter, and 1 number.
           </Text>
         )}

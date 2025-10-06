@@ -1,11 +1,11 @@
-import React, { useMemo, useRef, useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Animated, Easing } from "react-native";
+import AngryIcon from "@/assets/images/angry.svg";
+import HappyIcon from "@/assets/images/happy.svg";
+import Heading from "@/components/Heading";
 import dayjs from "dayjs";
 import { router } from "expo-router";
-import Heading from "@/components/Heading";
-import HappyIcon from "@/assets/images/happy.svg";
-import AngryIcon from "@/assets/images/angry.svg";
 import { Plus } from "lucide-react-native";
+import React, { useMemo, useRef, useState } from "react";
+import { Animated, Easing, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 interface Entry {
   created_at: string;
@@ -100,13 +100,13 @@ export default function Calendar({ entries = mockEntries }: { entries?: Entry[] 
           }}
         >
           <TouchableOpacity onPress={goPrev}>
-            <Text className="text-3xl font-[Poppins-Regular] text-white">{"<"}</Text>
+            <Text className="text-3xl font-[Montserrat-Regular] text-white">{"<"}</Text>
           </TouchableOpacity>
-          <Text className="text-lg font-[Poppins-Regular] text-white">
+          <Text className="text-lg font-[Montserrat-Regular] text-white">
             {currentDate.format("MMMM YYYY")}
           </Text>
           <TouchableOpacity onPress={goNext}>
-            <Text className="text-3xl font-[Poppins-Regular] text-white">{">"}</Text>
+            <Text className="text-3xl font-[Montserrat-Regular] text-white">{">"}</Text>
           </TouchableOpacity>
         </View>
 
@@ -115,7 +115,7 @@ export default function Calendar({ entries = mockEntries }: { entries?: Entry[] 
           {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((d) => (
             <Text
               key={d}
-              className="text-center text-xs text-gray-500 font-[Poppins-Regular]"
+              className="text-center text-xs text-gray-500 font-[Montserrat-Regular]"
               style={{ width: cellWidth }}
             >
               {d}
@@ -169,17 +169,17 @@ export default function Calendar({ entries = mockEntries }: { entries?: Entry[] 
                 ) : isToday ? (
                   <View className="items-center">
                     <View className="bg-[#7F56D9] rounded-full p-2 mb-4">
-                      <Text className="text-xs text-white w-9 h-7 text-center mt-2 font-[Poppins-Regular]">{day}</Text>
+                      <Text className="text-xs text-white w-9 h-7 text-center mt-2 font-[Montserrat-Regular]">{day}</Text>
                     </View>
                   </View>
                 ) : isFuture ? (
-                  <Text className="text-xs text-gray-400 font-[Poppins-Regular]">{day}</Text>
+                  <Text className="text-xs text-gray-400 font-[Montserrat-Regular]">{day}</Text>
                 ) : (
                   <View className="items-center">
                     <View className="bg-[#F0EAFF] border-[5px] border-[#E0D7F9] rounded-full p-2 mb-1">
                       <Plus width={18} height={18} color={"#7F56D9"} />
                     </View>
-                    <Text className="text-xs text-gray-600 font-[Poppins-Regular]">{day}</Text>
+                    <Text className="text-xs text-gray-600 font-[Montserrat-Regular]">{day}</Text>
                   </View>
                 )}
               </TouchableOpacity>
@@ -189,20 +189,20 @@ export default function Calendar({ entries = mockEntries }: { entries?: Entry[] 
 
         {/* History */}
         <View className="flex-1 w-full gap-2.5 px-4 mt-6">
-          <Text className="text-black text-lg font-[Poppins-SemiBold]">History</Text>
+          <Text className="text-black text-lg font-[Montserrat-SemiBold]">History</Text>
           <TouchableOpacity
             className="w-full flex-row items-center gap-3 rounded-xl border-[2px] border-[#f4f4f4] bg-white p-4 shadow-md"
             onPress={() => router.push("/(tabs)/home/diary/detail")}
           >
             <AngryIcon width={43} height={43} />
             <View className="flex-1">
-              <Text className="text-[16px] leading-6 font-[Poppins-Medium] text-[#090a0a]">
+              <Text className="text-[16px] leading-6 font-[Montserrat-Medium] text-[#090a0a]">
                 22/09/2025
               </Text>
               <Text
                 numberOfLines={1}
                 ellipsizeMode="tail"
-                className="mt-1 text-[16px] h-[22px] font-[Poppins-Regular] text-[#736B66]"
+                className="mt-1 text-[16px] h-[22px] font-[Montserrat-Regular] text-[#736B66]"
               >
                 I felt really angry, and I am still learning ...
               </Text>

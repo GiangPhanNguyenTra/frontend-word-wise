@@ -10,16 +10,16 @@ SplashScreen.preventAutoHideAsync();
 
 export default function TestDoneScreen() {
   const [fontsLoaded] = useFonts({
-    "Poppins-Regular": require("@/assets/fonts/Poppins-Regular.ttf"),
-    "Poppins-Bold": require("@/assets/fonts/Poppins-Bold.ttf"),
-    "Poppins-SemiBold": require("@/assets/fonts/Poppins-SemiBold.ttf"),
-    "Poppins-Medium": require("@/assets/fonts/Poppins-Medium.ttf"),
-    "Poppins-Light": require("@/assets/fonts/Poppins-Light.ttf"),
-    "Poppins-ExtraBold": require("@/assets/fonts/Poppins-ExtraBold.ttf"),
-    "Poppins-Black": require("@/assets/fonts/Poppins-Black.ttf"),
-    "Poppins-Thin": require("@/assets/fonts/Poppins-Thin.ttf"),
-    "Poppins-ExtraLight": require("@/assets/fonts/Poppins-ExtraLight.ttf"),
-    "Poppins-Italic": require("@/assets/fonts/Poppins-Italic.ttf"),
+    "Montserrat-Regular": require("@/assets/fonts/Montserrat-Regular.ttf"),
+    "Montserrat-Bold": require("@/assets/fonts/Montserrat-Bold.ttf"),
+    "Montserrat-SemiBold": require("@/assets/fonts/Montserrat-SemiBold.ttf"),
+    "Montserrat-Medium": require("@/assets/fonts/Montserrat-Medium.ttf"),
+    "Montserrat-Light": require("@/assets/fonts/Montserrat-Light.ttf"),
+    "Montserrat-ExtraBold": require("@/assets/fonts/Montserrat-ExtraBold.ttf"),
+    "Montserrat-Black": require("@/assets/fonts/Montserrat-Black.ttf"),
+    "Montserrat-Thin": require("@/assets/fonts/Montserrat-Thin.ttf"),
+    "Montserrat-ExtraLight": require("@/assets/fonts/Montserrat-ExtraLight.ttf"),
+    "Montserrat-Italic": require("@/assets/fonts/Montserrat-Italic.ttf"),
   });
 
   const onLayoutRootView = useCallback(async () => {
@@ -53,7 +53,7 @@ export default function TestDoneScreen() {
           </TouchableOpacity>
           <Text
             className="ml-3 text-xl text-[#7F56D9]"
-            style={{ fontFamily: "Poppins-Bold" }}
+            style={{ fontFamily: "Montserrat-Bold" }}
           >
             PHQ-9 Test
           </Text>
@@ -69,19 +69,19 @@ export default function TestDoneScreen() {
         <View className="bg-[#E0D7F9] rounded-3xl p-5 items-start">
           <Text
             className="text-5xl text-[#555555]"
-            style={{ fontFamily: "Poppins-Bold" }}
+            style={{ fontFamily: "Montserrat-Bold" }}
           >
             {score}
           </Text>
           <Text
             className="mt-2 text-lg text-[#555555]"
-            style={{ fontFamily: "Poppins-SemiBold" }}
+            style={{ fontFamily: "Montserrat-SemiBold" }}
           >
             Your PHQ-9 Score
           </Text>
           <Text
             className="text-base text-[#555555]"
-            style={{ fontFamily: "Poppins-Regular" }}
+            style={{ fontFamily: "Montserrat-Regular" }}
           >
             Depression level: {level}
           </Text>
@@ -109,7 +109,7 @@ export default function TestDoneScreen() {
           <View className="bg-[#F7F4F2] p-2 rounded-full w-12 h-12 items-center justify-center mb-4">
             <Check color={"#926247"} strokeWidth={2.75} />
           </View>
-          <Text className="font-[Poppins-Bold] text-base text-[#4F3422] mb-2">
+          <Text className="font-[Montserrat-Bold] text-base text-[#4F3422] mb-2">
             Take a few minutes each day to practice deep breathing and calm your
             mind.
           </Text>
@@ -119,7 +119,7 @@ export default function TestDoneScreen() {
           <View className="bg-[#F7F4F2] p-2 rounded-full w-12 h-12 items-center justify-center mb-4">
             <Check color={"#926247"} strokeWidth={2.75} />
           </View>
-          <Text className="font-[Poppins-Bold] text-base text-[#4F3422] mb-2">
+          <Text className="font-[Montserrat-Bold] text-base text-[#4F3422] mb-2">
             Reach out and connect with a mental health professional for support.
           </Text>
         </View>
@@ -128,7 +128,7 @@ export default function TestDoneScreen() {
           <View className="bg-[#FECECE] p-2 rounded-full w-12 h-12 items-center justify-center mb-4">
             <X color={"#ffffff"} strokeWidth={2.75} />
           </View>
-          <Text className="font-[Poppins-Bold] text-base text-[#ffffff] mb-2">
+          <Text className="font-[Montserrat-Bold] text-base text-[#ffffff] mb-2">
             Don’t ignore your feelings—acknowledge them instead of pushing them
             away.
           </Text>
@@ -138,7 +138,7 @@ export default function TestDoneScreen() {
           <View className="bg-[#FECECE] p-2 rounded-full w-12 h-12 items-center justify-center mb-4">
             <X color={"#ffffff"} strokeWidth={2.75} />
           </View>
-          <Text className="font-[Poppins-Bold] text-base text-[#ffffff] mb-2">
+          <Text className="font-[Montserrat-Bold] text-base text-[#ffffff] mb-2">
             Don’t overwork yourself; allow time for rest and recovery.
           </Text>
         </View>

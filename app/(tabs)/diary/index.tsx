@@ -1,8 +1,8 @@
 import EmotionPicker from "@/components/EmotionPicker";
 import Heading from "@/components/Heading";
-import React, { useState } from "react";
 import { router } from "expo-router";
-import { ScrollView, View, Text, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 export default function DiaryScreen() {
   const [selectedEmotion, setSelectedEmotion] = useState<{
@@ -21,7 +21,7 @@ export default function DiaryScreen() {
         <View className="flex-col gap-y-6">
           {/* Emotion */}
           <View>
-            <Text className="text-black text-3xl text-center font-[Poppins-Bold]">
+            <Text className="text-black text-3xl text-center font-[Montserrat-Bold]">
               How are you feeling?
             </Text>
             <EmotionPicker
@@ -35,7 +35,7 @@ export default function DiaryScreen() {
             onPress={() => router.push({ pathname: "/(tabs)/diary/next" })}
             className="bg-[#7F56D9] h-16 rounded-xl items-center justify-center"
           >
-            <Text className="text-white text-base font-[Poppins-Bold]">Next</Text>
+            <Text className="text-white text-base font-[Montserrat-Bold]">Next</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

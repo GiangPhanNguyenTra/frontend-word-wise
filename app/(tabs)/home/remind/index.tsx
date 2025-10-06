@@ -48,16 +48,16 @@ const initialReminders = [
 
 export default function RemindScreen() {
   const [fontsLoaded] = useFonts({
-    "Poppins-Regular": require("@/assets/fonts/Poppins-Regular.ttf"),
-    "Poppins-Bold": require("@/assets/fonts/Poppins-Bold.ttf"),
-    "Poppins-SemiBold": require("@/assets/fonts/Poppins-SemiBold.ttf"),
-    "Poppins-Medium": require("@/assets/fonts/Poppins-Medium.ttf"),
-    "Poppins-Light": require("@/assets/fonts/Poppins-Light.ttf"),
-    "Poppins-ExtraBold": require("@/assets/fonts/Poppins-ExtraBold.ttf"),
-    "Poppins-Black": require("@/assets/fonts/Poppins-Black.ttf"),
-    "Poppins-Thin": require("@/assets/fonts/Poppins-Thin.ttf"),
-    "Poppins-ExtraLight": require("@/assets/fonts/Poppins-ExtraLight.ttf"),
-    "Poppins-Italic": require("@/assets/fonts/Poppins-Italic.ttf"),
+    "Montserrat-Regular": require("@/assets/fonts/Montserrat-Regular.ttf"),
+    "Montserrat-Bold": require("@/assets/fonts/Montserrat-Bold.ttf"),
+    "Montserrat-SemiBold": require("@/assets/fonts/Montserrat-SemiBold.ttf"),
+    "Montserrat-Medium": require("@/assets/fonts/Montserrat-Medium.ttf"),
+    "Montserrat-Light": require("@/assets/fonts/Montserrat-Light.ttf"),
+    "Montserrat-ExtraBold": require("@/assets/fonts/Montserrat-ExtraBold.ttf"),
+    "Montserrat-Black": require("@/assets/fonts/Montserrat-Black.ttf"),
+    "Montserrat-Thin": require("@/assets/fonts/Montserrat-Thin.ttf"),
+    "Montserrat-ExtraLight": require("@/assets/fonts/Montserrat-ExtraLight.ttf"),
+    "Montserrat-Italic": require("@/assets/fonts/Montserrat-Italic.ttf"),
   });
 
   const [reminders, setReminders] = useState(initialReminders);
@@ -97,7 +97,7 @@ export default function RemindScreen() {
           onPress={() => router.push("/(tabs)/home/remind/add")}
         >
           <PlusCircle size={22} color="#7F56D9" />
-          <Text className="ml-2 text-lg font-[Poppins-SemiBold] text-[#7F56D9]">
+          <Text className="ml-2 text-lg font-[Montserrat-SemiBold] text-[#7F56D9]">
             Create a reminder
           </Text>
         </TouchableOpacity>
@@ -116,10 +116,10 @@ export default function RemindScreen() {
                 <Pencil size={20} color="#FF6B6B" strokeWidth={2.75} />
               </View>
               <View>
-                <Text className="text-xl font-[Poppins-SemiBold] text-gray-800">
+                <Text className="text-xl font-[Montserrat-SemiBold] text-gray-800">
                   {item.title}
                 </Text>
-                <Text className="text-base text-gray-500 font-[Poppins-Regular]">
+                <Text className="text-base text-gray-500 font-[Montserrat-Regular]">
                   {item.time}
                 </Text>
               </View>

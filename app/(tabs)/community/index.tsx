@@ -1,8 +1,6 @@
 import Heading from "@/components/Heading";
 import TagSelector from "@/components/TagSelector";
-import { useFonts } from "expo-font";
 import { useRouter } from "expo-router";
-import * as SplashScreen from "expo-splash-screen";
 import {
   EllipsisVertical,
   Heart,
@@ -10,7 +8,7 @@ import {
   Plus,
   SlidersHorizontal,
 } from "lucide-react-native";
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import {
   Modal,
   Pressable,
@@ -119,7 +117,7 @@ export default function CommunityScreen() {
             className="flex-row justify-end items-center mb-4"
             onPress={() => setFilterVisible(true)}
           >
-            <Text className="text-black font-[Poppins-Bold] text-xs mr-2">
+            <Text className="text-black font-[Montserrat-Bold] text-xs mr-2">
               Filter
             </Text>
             <SlidersHorizontal width={20} height={20} color="black" />
@@ -134,10 +132,10 @@ export default function CommunityScreen() {
               {/* Header */}
               <View className="flex-row justify-between items-start">
                 <View>
-                  <Text className="text-black font-[Poppins-SemiBold] text-base">
+                  <Text className="text-black font-[Montserrat-SemiBold] text-base">
                     {post.username}
                   </Text>
-                  <Text className="text-[#7B7B7B] font-[Poppins-Regular] text-sm mt-1">
+                  <Text className="text-[#7B7B7B] font-[Montserrat-Regular] text-sm mt-1">
                     {post.createdAt}
                   </Text>
                 </View>
@@ -156,7 +154,7 @@ export default function CommunityScreen() {
                 activeOpacity={0.8}
                 onPress={() => router.push("/(tabs)/community/comment")}
               >
-                <Text className="text-base mt-3 font-[Poppins-Regular]">
+                <Text className="text-base mt-3 font-[Montserrat-Regular]">
                   {post.content}
                 </Text>
               </TouchableOpacity>
@@ -173,7 +171,7 @@ export default function CommunityScreen() {
                     color={post.isLiked ? "red" : "black"} // đổi màu khi like
                     fill={post.isLiked ? "red" : "transparent"} // trái tim đầy
                   />
-                  <Text className="text-black text-sm font-[Poppins-Regular]">
+                  <Text className="text-black text-sm font-[Montserrat-Regular]">
                     {post.likes}
                   </Text>
                 </TouchableOpacity>
@@ -188,7 +186,7 @@ export default function CommunityScreen() {
                   }
                 >
                   <MessageCircle width={18} height={18} color="black" />
-                  <Text className="text-black text-sm font-[Poppins-Regular]">
+                  <Text className="text-black text-sm font-[Montserrat-Regular]">
                     {post.comments}
                   </Text>
                 </TouchableOpacity>
@@ -215,7 +213,7 @@ export default function CommunityScreen() {
       >
         <View className="flex-1 bg-black/50 items-center justify-center">
           <View className="w-80 bg-white p-6 rounded-2xl">
-            <Text className="text-lg font-[Poppins-Bold] mb-4">Sort</Text>
+            <Text className="text-lg font-[Montserrat-Bold] mb-4">Sort</Text>
             <TagSelector
               options={[
                 { id: 2025, name: "2025" },
@@ -230,7 +228,7 @@ export default function CommunityScreen() {
               className="mt-4 bg-[#7F56D9] py-2 rounded-xl"
               onPress={() => setFilterVisible(false)}
             >
-              <Text className="text-center text-white font-[Poppins-Bold]">
+              <Text className="text-center text-white font-[Montserrat-Bold]">
                 Apply
               </Text>
             </Pressable>
@@ -250,7 +248,7 @@ export default function CommunityScreen() {
             {selectedPost?.userId === currentUserId ? (
               <>
                 <Pressable onPress={handleCancel}>
-                  <Text className="text-red-500 text-lg font-[Poppins-Bold] text-center">
+                  <Text className="text-red-500 text-lg font-[Montserrat-Bold] text-center">
                     Delete
                   </Text>
                 </Pressable>
@@ -271,7 +269,7 @@ export default function CommunityScreen() {
               <Text className="text-lg mt-2">Chia sẻ</Text>
             </Pressable> */}
             <Pressable onPress={() => setMenuVisible(false)}>
-              <Text className="text-center font-[Poppins-Bold] mt-4">
+              <Text className="text-center font-[Montserrat-Bold] mt-4">
                 Cancel
               </Text>
             </Pressable>
@@ -286,7 +284,7 @@ export default function CommunityScreen() {
       >
         <View className="flex-1 bg-black/60 justify-center items-center">
           <View className="bg-white w-4/5 rounded-2xl p-6 items-center">
-            <Text className="text-lg font-[Poppins-SemiBold] mb-6 text-gray-800">
+            <Text className="text-lg font-[Montserrat-SemiBold] mb-6 text-gray-800">
               Are you sure you want to delete this post?
             </Text>
             <View className="flex-row gap-4">
@@ -297,7 +295,7 @@ export default function CommunityScreen() {
                 }}
                 className="bg-gray-300 px-8 py-4 rounded-xl"
               >
-                <Text className="text-base font-[Poppins-SemiBold] text-gray-800">
+                <Text className="text-base font-[Montserrat-SemiBold] text-gray-800">
                   No
                 </Text>
               </TouchableOpacity>
@@ -305,7 +303,7 @@ export default function CommunityScreen() {
                 onPress={() => handleDelete(selectedPost.id)}
                 className="bg-red-500 px-8 py-4 rounded-xl"
               >
-                <Text className="text-base font-[Poppins-SemiBold] text-white">
+                <Text className="text-base font-[Montserrat-SemiBold] text-white">
                   Yes
                 </Text>
               </TouchableOpacity>

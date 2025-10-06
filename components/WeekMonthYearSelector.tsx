@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
   centerLabel: {
     color: "#7F56D9",
     fontSize: 15,
-    fontFamily: "Poppins-Medium",
+    fontFamily: "Montserrat-Medium",
     textAlign: "center",
     maxWidth: "75%",
   },
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
     opacity: 0,
   },
   pickerItem: {
-    fontFamily: "Poppins-Regular",
+    fontFamily: "Montserrat-Regular",
     fontSize: 14,
   },
 });

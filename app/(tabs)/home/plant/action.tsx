@@ -4,19 +4,19 @@ import { router } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useCallback, useEffect, useState } from "react";
 import {
-  Dimensions,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
+    Dimensions,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import Animated, {
-  Easing,
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
+    Easing,
+    runOnJS,
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
 } from "react-native-reanimated";
 
 // SVGs
@@ -35,16 +35,16 @@ const { height } = Dimensions.get("window");
 
 export default function ActionScreen() {
   const [fontsLoaded] = useFonts({
-    "Poppins-Regular": require("@/assets/fonts/Poppins-Regular.ttf"),
-    "Poppins-Bold": require("@/assets/fonts/Poppins-Bold.ttf"),
-    "Poppins-SemiBold": require("@/assets/fonts/Poppins-SemiBold.ttf"),
-    "Poppins-Medium": require("@/assets/fonts/Poppins-Medium.ttf"),
-    "Poppins-Light": require("@/assets/fonts/Poppins-Light.ttf"),
-    "Poppins-ExtraBold": require("@/assets/fonts/Poppins-ExtraBold.ttf"),
-    "Poppins-Black": require("@/assets/fonts/Poppins-Black.ttf"),
-    "Poppins-Thin": require("@/assets/fonts/Poppins-Thin.ttf"),
-    "Poppins-ExtraLight": require("@/assets/fonts/Poppins-ExtraLight.ttf"),
-    "Poppins-Italic": require("@/assets/fonts/Poppins-Italic.ttf"),
+    "Montserrat-Regular": require("@/assets/fonts/Montserrat-Regular.ttf"),
+    "Montserrat-Bold": require("@/assets/fonts/Montserrat-Bold.ttf"),
+    "Montserrat-SemiBold": require("@/assets/fonts/Montserrat-SemiBold.ttf"),
+    "Montserrat-Medium": require("@/assets/fonts/Montserrat-Medium.ttf"),
+    "Montserrat-Light": require("@/assets/fonts/Montserrat-Light.ttf"),
+    "Montserrat-ExtraBold": require("@/assets/fonts/Montserrat-ExtraBold.ttf"),
+    "Montserrat-Black": require("@/assets/fonts/Montserrat-Black.ttf"),
+    "Montserrat-Thin": require("@/assets/fonts/Montserrat-Thin.ttf"),
+    "Montserrat-ExtraLight": require("@/assets/fonts/Montserrat-ExtraLight.ttf"),
+    "Montserrat-Italic": require("@/assets/fonts/Montserrat-Italic.ttf"),
   });
 
   const onLayoutRootView = useCallback(async () => {
@@ -171,7 +171,7 @@ export default function ActionScreen() {
                   position: "absolute",
                   top: height * 0.38,
                   fontSize: 24,
-                  fontFamily: "Poppins-Bold",
+                  fontFamily: "Montserrat-Bold",
                   color: "#7CB342",
                 },
               ]}
@@ -193,7 +193,7 @@ export default function ActionScreen() {
           )}
 
           {/* XP hiện tại */}
-          <Text className="mt-8 text-[#4F3422] font-[Poppins-Medium] text-base">
+          <Text className="mt-8 text-[#4F3422] font-[Montserrat-Medium] text-base">
             {currentXp}/{nextLevelXp} XP
           </Text>
 
@@ -210,7 +210,7 @@ export default function ActionScreen() {
             </View>
           </View>
 
-          <Text className="font-[Poppins-Bold] text-[#4F3422] text-xl mt-10 text-center">
+          <Text className="font-[Montserrat-Bold] text-[#4F3422] text-xl mt-10 text-center">
             Your tree has grown more! Keep cultivating positivity.
           </Text>
 
@@ -220,7 +220,7 @@ export default function ActionScreen() {
               className="bg-[#7F56D9] h-14 rounded-xl mt-10 items-center justify-center w-full"
               onPress={() => router.replace("/(tabs)/home/plant")}
             >
-              <Text className="text-white font-[Poppins-Bold] text-base">
+              <Text className="text-white font-[Montserrat-Bold] text-base">
                 Turn Back to My Tree
               </Text>
             </TouchableOpacity>

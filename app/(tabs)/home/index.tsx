@@ -38,7 +38,7 @@ export default function HomeScreen() {
       <View className="w-full flex-row items-center justify-between py-4 px-4 border-b border-gray-200 bg-[#FAF9FF] mt-8">
         <View className="flex-row items-center">
           <Logo width={80} height={30} />
-          <Text className="font-[Poppins-Bold] text-2xl text-[#7F56D9] ml-2">
+          <Text className="font-[Montserrat-Bold] text-2xl text-[#7F56D9] ml-2">
             SOULSPACE
           </Text>
         </View>
@@ -59,10 +59,10 @@ export default function HomeScreen() {
           <View className="flex-row justify-between items-center bg-[#7F56D9] rounded-2xl">
             {/* Left side*/}
             <View className="flex-1 pl-4 pt-4 pb-4">
-              <Text className="text-white font-[Poppins-Bold] text-2xl">
+              <Text className="text-white font-[Montserrat-Bold] text-2xl">
                 Hello, SE405
               </Text>
-              <Text className="text-white mt-2 font-[Poppins-Regular] text-sm">
+              <Text className="text-white mt-2 font-[Montserrat-Regular] text-sm">
                 Hope you are enjoying your day. If not then we are here for you
                 as always.
               </Text>
@@ -70,7 +70,7 @@ export default function HomeScreen() {
                 className="mt-4 bg-white rounded-full px-4 py-2 self-start"
                 onPress={handleExploreMore}
               >
-                <Text className="text-[#7F56D9] font-[Poppins-SemiBold]">
+                <Text className="text-[#7F56D9] font-[Montserrat-SemiBold]">
                   Explore more
                 </Text>
               </TouchableOpacity>
@@ -81,7 +81,7 @@ export default function HomeScreen() {
           </View>
 
           {/* Progress */}
-          <Text className="text-black font-[Poppins-Bold] text-2xl mt-6">
+          <Text className="text-black font-[Montserrat-Bold] text-2xl mt-6">
             How are you feeling today ?
           </Text>
           <View className="w-full items-center mt-6">
@@ -113,7 +113,7 @@ export default function HomeScreen() {
           </View>
 
           <View onLayout={(e) => setActivitiesY(e.nativeEvent.layout.y)}>
-            <Text className="text-black font-[Poppins-Bold] text-2xl mt-6 mb-6">
+            <Text className="text-black font-[Montserrat-Bold] text-2xl mt-6 mb-6">
               Activities you may like
             </Text>
             <View>

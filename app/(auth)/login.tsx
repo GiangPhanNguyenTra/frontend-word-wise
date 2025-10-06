@@ -16,18 +16,17 @@ import {
 export default function LoginScreen() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  // Load Poppins font
   const [fontsLoaded] = useFonts({
-    "Poppins-Regular": require("@/assets/fonts/Poppins-Regular.ttf"),
-    "Poppins-Bold": require("@/assets/fonts/Poppins-Bold.ttf"),
-    "Poppins-SemiBold": require("@/assets/fonts/Poppins-SemiBold.ttf"),
-    "Poppins-Medium": require("@/assets/fonts/Poppins-Medium.ttf"),
-    "Poppins-Light": require("@/assets/fonts/Poppins-Light.ttf"),
-    "Poppins-ExtraBold": require("@/assets/fonts/Poppins-ExtraBold.ttf"),
-    "Poppins-Black": require("@/assets/fonts/Poppins-Black.ttf"),
-    "Poppins-Thin": require("@/assets/fonts/Poppins-Thin.ttf"),
-    "Poppins-ExtraLight": require("@/assets/fonts/Poppins-ExtraLight.ttf"),
-    "Poppins-Italic": require("@/assets/fonts/Poppins-Italic.ttf"),
+    "Montserrat-Regular": require("@/assets/fonts/Montserrat-Regular.ttf"),
+    "Montserrat-Bold": require("@/assets/fonts/Montserrat-Bold.ttf"),
+    "Montserrat-SemiBold": require("@/assets/fonts/Montserrat-SemiBold.ttf"),
+    "Montserrat-Medium": require("@/assets/fonts/Montserrat-Medium.ttf"),
+    "Montserrat-Light": require("@/assets/fonts/Montserrat-Light.ttf"),
+    "Montserrat-ExtraBold": require("@/assets/fonts/Montserrat-ExtraBold.ttf"),
+    "Montserrat-Black": require("@/assets/fonts/Montserrat-Black.ttf"),
+    "Montserrat-Thin": require("@/assets/fonts/Montserrat-Thin.ttf"),
+    "Montserrat-ExtraLight": require("@/assets/fonts/Montserrat-ExtraLight.ttf"),
+    "Montserrat-Italic": require("@/assets/fonts/Montserrat-Italic.ttf"),
   });
 
   const onLayoutRootView = useCallback(async () => {
@@ -58,27 +57,27 @@ export default function LoginScreen() {
         <View className="w-full">
           {/* Title */}
           <View className="px-6 mt-24">
-            <Text className="text-black text-3xl font-[Poppins-Bold]">
+            <Text className="text-black text-3xl font-[Montserrat-Bold]">
               Welcome back! Glad
             </Text>
-            <Text className="text-black text-3xl font-[Poppins-Bold] leading-[50px]">
+            <Text className="text-black text-3xl font-[Montserrat-Bold] leading-[50px]">
               to see you, Again!
             </Text>
           </View>
 
           {/* Email */}
           <View className="px-6 mt-20">
-            <Text className="text-white mb-1 font-[Poppins-Medium]">
+            <Text className="text-white mb-1 font-[Montserrat-Medium]">
               Email Address
             </Text>
             <TextInput
               placeholder="Enter your email"
               placeholderTextColor="#8391A1"
-              className="w-full h-16 bg-[#F7F8F9] border border-[#DADADA] rounded-xl px-4 mb-4 font-[Poppins-Regular]"
+              className="w-full h-16 bg-[#F7F8F9] border border-[#DADADA] rounded-xl px-4 mb-4 font-[Montserrat-Regular]"
             />
 
             {/* Password */}
-            <Text className="text-white mb-1 font-[Poppins-Medium]">
+            <Text className="text-white mb-1 font-[Montserrat-Medium]">
               Password
             </Text>
             <View className="w-full h-16 bg-[#F7F8F9] border border-[#DADADA] rounded-xl px-4 flex-row items-center">
@@ -86,7 +85,7 @@ export default function LoginScreen() {
                 placeholder="Enter your password"
                 placeholderTextColor="#8391A1"
                 secureTextEntry={!showPassword}
-                className="flex-1 font-[Poppins-Regular]"
+                className="flex-1 font-[Montserrat-Regular]"
               />
               <Pressable onPress={() => setShowPassword(!showPassword)}>
                 {showPassword ? (
@@ -101,7 +100,7 @@ export default function LoginScreen() {
                 onPress={() => router.push("/(auth)/forgot-pw")}
                 className="self-end mt-2"
               >
-                <Text className="text-[#ffffff] font-[Poppins-Italic]">
+                <Text className="text-[#ffffff] font-[Montserrat-Italic]">
                   Forgot Password?
                 </Text>
               </TouchableOpacity>
@@ -117,18 +116,18 @@ export default function LoginScreen() {
           onPress={handleSignIn}
           className="bg-[#2563EB] h-16 rounded-xl items-center justify-center"
         >
-          <Text className="text-white font-[Poppins-Bold] text-base">
+          <Text className="text-white font-[Montserrat-Bold] text-base">
             Login
           </Text>
         </TouchableOpacity>
 
         {/* Register */}
         <View className="flex-row justify-center mt-4">
-          <Text className="text-black font-[Poppins-Regular]">
+          <Text className="text-black font-[Montserrat-Regular]">
             Don’t have an account?{" "}
           </Text>
           <TouchableOpacity onPress={() => router.push("/(auth)/signup")}>
-            <Text className="text-[#2563EB] font-[Poppins-Medium]">
+            <Text className="text-[#2563EB] font-[Montserrat-Medium]">
               Register Now
             </Text>
           </TouchableOpacity>

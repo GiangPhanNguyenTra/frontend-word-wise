@@ -19,7 +19,7 @@ const EmotionLineChart = () => {
 
   return (
     <View className="bg-white rounded-2xl p-4 shadow mt-6">
-      <Text className="font-[Poppins-Bold] text-lg text-black mb-3">
+      <Text className="font-[Montserrat-Bold] text-lg text-black mb-3">
         Weekly Emotion Stats
       </Text>
 
@@ -42,7 +42,7 @@ const EmotionLineChart = () => {
           strokeWidth: 1.5,
           labelColor: () => "#9E9E9E",
           propsForLabels: {
-            fontFamily: "Poppins-Regular",
+            fontFamily: "Montserrat-Regular",
             fontSize: 10,
           },
           fillShadowGradientFrom: "#7F56D9", // trên tím
@@ -83,7 +83,7 @@ const EmotionLineChart = () => {
                 style={{
                   color: "white",
                   fontSize: 12,
-                  fontFamily: "Poppins-SemiBold",
+                  fontFamily: "Montserrat-SemiBold",
                 }}
               >
                 {selected.day}: {emotions[selected.value - 1]}

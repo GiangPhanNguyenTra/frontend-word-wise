@@ -63,7 +63,7 @@ export default function GenericSelector({
             onPress={() => toggleSelect(opt.id)}
           >
             <Text
-              className={`font-[Poppins-Regular] ${
+              className={`font-[Montserrat-Regular] ${
                 selected ? "text-[#7F56D9]" : "text-black"
               }`}
             >

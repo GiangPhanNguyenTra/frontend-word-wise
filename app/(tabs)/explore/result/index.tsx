@@ -8,16 +8,16 @@ import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 export default function TestResultTypeScreen() {
   const [fontsLoaded] = useFonts({
-    "Poppins-Regular": require("@/assets/fonts/Poppins-Regular.ttf"),
-    "Poppins-Bold": require("@/assets/fonts/Poppins-Bold.ttf"),
-    "Poppins-SemiBold": require("@/assets/fonts/Poppins-SemiBold.ttf"),
-    "Poppins-Medium": require("@/assets/fonts/Poppins-Medium.ttf"),
-    "Poppins-Light": require("@/assets/fonts/Poppins-Light.ttf"),
-    "Poppins-ExtraBold": require("@/assets/fonts/Poppins-ExtraBold.ttf"),
-    "Poppins-Black": require("@/assets/fonts/Poppins-Black.ttf"),
-    "Poppins-Thin": require("@/assets/fonts/Poppins-Thin.ttf"),
-    "Poppins-ExtraLight": require("@/assets/fonts/Poppins-ExtraLight.ttf"),
-    "Poppins-Italic": require("@/assets/fonts/Poppins-Italic.ttf"),
+    "Montserrat-Regular": require("@/assets/fonts/Montserrat-Regular.ttf"),
+    "Montserrat-Bold": require("@/assets/fonts/Montserrat-Bold.ttf"),
+    "Montserrat-SemiBold": require("@/assets/fonts/Montserrat-SemiBold.ttf"),
+    "Montserrat-Medium": require("@/assets/fonts/Montserrat-Medium.ttf"),
+    "Montserrat-Light": require("@/assets/fonts/Montserrat-Light.ttf"),
+    "Montserrat-ExtraBold": require("@/assets/fonts/Montserrat-ExtraBold.ttf"),
+    "Montserrat-Black": require("@/assets/fonts/Montserrat-Black.ttf"),
+    "Montserrat-Thin": require("@/assets/fonts/Montserrat-Thin.ttf"),
+    "Montserrat-ExtraLight": require("@/assets/fonts/Montserrat-ExtraLight.ttf"),
+    "Montserrat-Italic": require("@/assets/fonts/Montserrat-Italic.ttf"),
   });
 
   const onLayoutRootView = useCallback(async () => {
@@ -46,10 +46,10 @@ export default function TestResultTypeScreen() {
                   <BookCheck color="#7F56D9" />
                 </View>
                 <View>
-                  <Text className="font-[Poppins-Bold] text-xl text-black">
+                  <Text className="font-[Montserrat-Bold] text-xl text-black">
                     PHQ-10
                   </Text>
-                  <Text className="font-[Poppins-Regular] text-xs text-gray-500">
+                  <Text className="font-[Montserrat-Regular] text-xs text-gray-500">
                     Completed on April 26, 2025
                   </Text>
                 </View>
@@ -58,7 +58,7 @@ export default function TestResultTypeScreen() {
               {/* Right */}
               <View className="items-end">
                 <View className="bg-[#FFE9F2] px-3 py-1 rounded-full mb-2">
-                  <Text className="text-base font-[Poppins-SemiBold] text-[#F43F5E]">
+                  <Text className="text-base font-[Montserrat-SemiBold] text-[#F43F5E]">
                     Severe
                   </Text>
                 </View>
@@ -66,13 +66,13 @@ export default function TestResultTypeScreen() {
             </View>
 
             <View className="flex-row justify-between items-center mt-4">
-              <Text className="text-3xl font-[Poppins-Bold] text-black">
+              <Text className="text-3xl font-[Montserrat-Bold] text-black">
                 19/20
               </Text>
               <TouchableOpacity
                 onPress={() => router.push("/(tabs)/explore/test/done")}
               >
-                <Text className="text-sm font-[Poppins-SemiBold] text-[#7F56D9]">
+                <Text className="text-sm font-[Montserrat-SemiBold] text-[#7F56D9]">
                   View results
                 </Text>
               </TouchableOpacity>

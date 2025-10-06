@@ -1,16 +1,16 @@
-import { useState, useRef } from "react";
 import { router } from "expo-router";
+import { X } from "lucide-react-native";
+import { useRef, useState } from "react";
 import {
+  KeyboardAvoidingView,
   Modal,
+  Platform,
+  ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
 } from "react-native";
-import { X } from "lucide-react-native";
 
 export default function AddScreen() {
   const textInputRef = useRef<TextInput>(null);
@@ -39,7 +39,7 @@ export default function AddScreen() {
           <X width={24} height={24} color="black" />
         </TouchableOpacity>
 
-        <Text className="text-lg font-[Poppins-Bold] text-black">
+        <Text className="text-lg font-[Montserrat-Bold] text-black">
           Write a post
         </Text>
 
@@ -48,7 +48,7 @@ export default function AddScreen() {
           className={`${!postContent ? "opacity-40" : ""}`}
           onPress={handlePost}
         >
-          <Text className="text-base font-[Poppins-Bold] text-black">Post</Text>
+          <Text className="text-base font-[Montserrat-Bold] text-black">Post</Text>
         </TouchableOpacity>
       </View>
 
@@ -66,7 +66,7 @@ export default function AddScreen() {
             flexGrow: 1,
             minHeight: 300,
             fontSize: 16,
-            fontFamily: "Poppins-Regular",
+            fontFamily: "Montserrat-Regular",
             color: "black",
             textAlignVertical: "top",
           }}
@@ -80,7 +80,7 @@ export default function AddScreen() {
       <Modal transparent animationType="fade" visible={showConfirm}>
         <View className="flex-1 bg-black/60 justify-center items-center">
           <View className="bg-white w-4/5 rounded-2xl p-6 items-center">
-            <Text className="text-lg font-[Poppins-SemiBold] mb-6 text-gray-800">
+            <Text className="text-lg font-[Montserrat-SemiBold] mb-6 text-gray-800">
               Are you sure you want to discard this post?
             </Text>
             <View className="flex-row gap-4">
@@ -88,7 +88,7 @@ export default function AddScreen() {
                 onPress={() => setShowConfirm(false)}
                 className="bg-gray-300 px-8 py-4 rounded-xl"
               >
-                <Text className="text-base font-[Poppins-SemiBold] text-gray-800">
+                <Text className="text-base font-[Montserrat-SemiBold] text-gray-800">
                   No
                 </Text>
               </TouchableOpacity>
@@ -96,7 +96,7 @@ export default function AddScreen() {
                 onPress={handleConfirmCancel}
                 className="bg-red-500 px-8 py-4 rounded-xl"
               >
-                <Text className="text-base font-[Poppins-SemiBold] text-white">
+                <Text className="text-base font-[Montserrat-SemiBold] text-white">
                   Yes
                 </Text>
               </TouchableOpacity>

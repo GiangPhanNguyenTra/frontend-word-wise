@@ -1,5 +1,4 @@
 import Heading from "@/components/Heading";
-import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
@@ -15,7 +14,7 @@ export default function ChangePassword() {
             <View className="py-2 px-4 gap-4">
                 {/* Old Password */}
                 <TextInput
-                    className="h-16 w-full rounded-xl border border-[#EEEEEE] bg-white px-3 font-[Poppins-Regular]"
+                    className="h-16 w-full rounded-xl border border-[#EEEEEE] bg-white px-3 font-[Montserrat-Regular]"
                     value={old_password}
                     onChangeText={setOldPassword}
                     placeholder="Old Password"
@@ -23,7 +22,7 @@ export default function ChangePassword() {
                 />
                 {/* New Password */}
                 <TextInput
-                    className="h-16 w-full rounded-xl border border-[#EEEEEE] bg-white px-3 font-[Poppins-Regular]"
+                    className="h-16 w-full rounded-xl border border-[#EEEEEE] bg-white px-3 font-[Montserrat-Regular]"
                     value={new_password}
                     onChangeText={setNewPassword}
                     placeholder="New Password"
@@ -31,7 +30,7 @@ export default function ChangePassword() {
                 />
                 {/* Confirm Password */}
                 <TextInput
-                    className="h-16 w-full rounded-xl border border-[#EEEEEE] bg-white px-3 font-[Poppins-Regular]"
+                    className="h-16 w-full rounded-xl border border-[#EEEEEE] bg-white px-3 font-[Montserrat-Regular]"
                     value={confirm_password}
                     onChangeText={setConfirmPassword}
                     placeholder="Confirm Password"
@@ -45,7 +44,7 @@ export default function ChangePassword() {
                     onPress={() => router.push("/(tabs)/settings")}
                 >
                    
-                        <Text className="text-white text-base font-[Poppins-Bold]">SAVE</Text>
+                        <Text className="text-white text-base font-[Montserrat-Bold]">SAVE</Text>
                 </TouchableOpacity>
             </View>
         </View>

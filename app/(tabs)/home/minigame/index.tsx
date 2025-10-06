@@ -1,10 +1,10 @@
+import Minigame from "@/assets/images/minigame.svg";
 import Heading from "@/components/Heading";
 import { router } from "expo-router";
 import { HandHeart, Heart, Radar, Rainbow, Sun, SunMoon } from "lucide-react-native";
 import React from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import * as Progress from "react-native-progress";
-import Minigame from "@/assets/images/minigame.svg";
 
 export default function MinigameScreen() {
     return (
@@ -18,10 +18,10 @@ export default function MinigameScreen() {
                     <View className="flex-1 rounded-lg bg-[#FFFFFF] border border-[#EEEEEE] p-2 justify-center items-center overflow-hidden">
                         <View className="py-2 gap-2 items-center w-full">
                             <Minigame width={100} height={100} />
-                            <Text className="text-lg font-[Poppins-Bold] text-center">
+                            <Text className="text-lg font-[Montserrat-Bold] text-center">
                                 Build your mental habits
                             </Text>
-                            <Text className="text-base font-[Poppins-Regular] text-center">
+                            <Text className="text-base font-[Montserrat-Regular] text-center">
                                 Overcome challenges to earn badges and improve your mental health
                             </Text>
                         </View>
@@ -43,15 +43,15 @@ export default function MinigameScreen() {
                                             <Heart width={24} height={24} color="#3A6FE6" />
                                         </View>
                                         <View className="h-full gap-1 flex-1">
-                                            <Text className="text-base font-[Poppins-Bold]">Inner Explorer</Text>
-                                            <Text className="text-base font-[Poppins-Regular]">
+                                            <Text className="text-base font-[Montserrat-Bold]">Inner Explorer</Text>
+                                            <Text className="text-base font-[Montserrat-Regular]">
                                                 Write your feelings daily for a week
                                             </Text>
                                         </View>
                                     </View>
                                     <View className="mb-10 ml-2">
                                         <View className="flex-row items-center justify-center h-8 bg-[#3A6FE6]/30 rounded-lg px-3">
-                                            <Text className="text-[#3A6FE6] font-[Poppins-SemiBold] text-base">+30 pts</Text>
+                                            <Text className="text-[#3A6FE6] font-[Montserrat-SemiBold] text-base">+30 pts</Text>
                                         </View>
                                     </View>
                                 </View>
@@ -63,7 +63,7 @@ export default function MinigameScreen() {
                                         color="#3A6FE6"
                                         borderRadius={10}
                                     />
-                                    <Text className="text-sm font-[Poppins-Bold] ml-3">
+                                    <Text className="text-sm font-[Montserrat-Bold] ml-3">
                                         6/7 days
                                     </Text>
                                 </View>
@@ -87,15 +87,15 @@ export default function MinigameScreen() {
                                             <Sun width={24} height={24} color="#4CAADD" />
                                         </View>
                                         <View className="h-full gap-1 flex-1">
-                                            <Text className="text-base font-[Poppins-Bold]">Spreading Smile</Text>
-                                            <Text className="font-[Poppins-Regular] text-base">
+                                            <Text className="text-base font-[Montserrat-Bold]">Spreading Smile</Text>
+                                            <Text className="font-[Montserrat-Regular] text-base">
                                                 Share three posts on the forum for a month
                                             </Text>
                                         </View>
                                     </View>
                                     <View className="mb-10 ml-2">
                                         <View className="flex-row items-center justify-center h-8 bg-[#4CAADD]/30 rounded-lg px-3">
-                                            <Text className="text-[#4CAADD] font-[Poppins-SemiBold] text-base">+50 pts</Text>
+                                            <Text className="text-[#4CAADD] font-[Montserrat-SemiBold] text-base">+50 pts</Text>
                                         </View>
                                     </View>
                                 </View>
@@ -107,7 +107,7 @@ export default function MinigameScreen() {
                                         color="#4CAADD"
                                         borderRadius={10}
                                     />
-                                    <Text className="text-sm font-[Poppins-Bold] ml-3">
+                                    <Text className="text-sm font-[Montserrat-Bold] ml-3">
                                         1/3 posts
                                     </Text>
                                 </View>
@@ -131,15 +131,15 @@ export default function MinigameScreen() {
                                             <Rainbow width={24} height={24} color="#34D1BF" />
                                         </View>
                                         <View className="h-full gap-1 flex-1">
-                                            <Text className="text-base font-[Poppins-Bold]">Light Bearer</Text>
-                                            <Text className="font-[Poppins-Regular] text-base">
+                                            <Text className="text-base font-[Montserrat-Bold]">Light Bearer</Text>
+                                            <Text className="font-[Montserrat-Regular] text-base">
                                                 Leave positive messages on five different posts
                                             </Text>
                                         </View>
                                     </View>
                                     <View className="mb-10 ml-2">
                                         <View className="flex-row items-center justify-center h-8 bg-[#34D1BF]/30 rounded-lg px-3">
-                                            <Text className="text-[#34D1BF] font-[Poppins-SemiBold] text-base">+70 pts</Text>
+                                            <Text className="text-[#34D1BF] font-[Montserrat-SemiBold] text-base">+70 pts</Text>
                                         </View>
                                     </View>
                                 </View>
@@ -151,7 +151,7 @@ export default function MinigameScreen() {
                                         color="#34D1BF"
                                         borderRadius={10}
                                     />
-                                    <Text className="text-sm font-[Poppins-Bold] ml-3">
+                                    <Text className="text-sm font-[Montserrat-Bold] ml-3">
                                         0/5 posts
                                     </Text>
                                 </View>
@@ -163,28 +163,28 @@ export default function MinigameScreen() {
                 {/* Badges */}
                 <View className="mt-6">
                     <View className="flex-col gap-6">
-                        <Text className="font-[Poppins-Bold] text-lg">My Badges</Text>
+                        <Text className="font-[Montserrat-Bold] text-lg">My Badges</Text>
                         <View className="flex-row px-6 justify-between">
                             {/* Badge 1 */}
                             <View className="flex-col items-center gap-2">
                                 <View className="rounded-full bg-[#3A6FE6]/30 border border-[#3A6FE6] p-2">
                                     <Radar width={36} height={36} className="rounded-full overflow-hidden" color="#3A6FE6" />
                                 </View>
-                                <Text className="text-base text-[#3A6FE6] font-[Poppins-SemiBold]">PathFinder</Text>
+                                <Text className="text-base text-[#3A6FE6] font-[Montserrat-SemiBold]">PathFinder</Text>
                             </View>
                             {/* Badge 2 */}
                             <View className="flex-col items-center gap-2">
                                 <View className="rounded-full bg-[#CCCCCC]/30 border border-[#CCCCCC] p-2">
                                     <HandHeart width={36} height={36} className="rounded-full overflow-hidden" color="#CCCCCC" />
                                 </View>
-                                <Text className="text-[#CCCCCC] text-base text-base font-[Poppins-SemiBold]">SilentHealer</Text>
+                                <Text className="text-[#CCCCCC] text-base text-base font-[Montserrat-SemiBold]">SilentHealer</Text>
                             </View>
                             {/* Badge 3 */}
                             <View className="flex-col items-center gap-2">
                                 <View className="rounded-full bg-[#CCCCCC]/30 border border-[#CCCCCC] p-2">
                                     <SunMoon width={36} height={36} className="rounded-full overflow-hidden" color="#CCCCCC" />
                                 </View>
-                                <Text className="text-[#CCCCCC] text-base text-base font-[Poppins-SemiBold]">LightBearer</Text>
+                                <Text className="text-[#CCCCCC] text-base text-base font-[Montserrat-SemiBold]">LightBearer</Text>
                             </View>
                         </View>
                     </View>

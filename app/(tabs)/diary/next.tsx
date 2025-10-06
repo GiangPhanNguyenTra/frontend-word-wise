@@ -1,20 +1,20 @@
+import AngryIcon from "@/assets/images/angry.svg";
 import Heading from "@/components/Heading";
 import TagSelector from "@/components/TagSelector";
 import { Audio } from "expo-av";
 import { router } from "expo-router";
 import { AudioLines, Mic } from "lucide-react-native";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Alert,
+  Animated,
+  Easing,
   ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-  Animated,
-  Easing,
 } from "react-native";
-import AngryIcon from "@/assets/images/angry.svg";
 
 export default function DiaryNextScreen() {
   const [tags, setTags] = useState<{ tag_id: string; tag_name: string }[]>([]);
@@ -157,7 +157,7 @@ export default function DiaryNextScreen() {
         contentContainerStyle={{ paddingBottom: 40 }}
       >
         <View className="gap-6 items-center">
-          <Text className="text-black text-3xl text-center font-[Poppins-Bold]">
+          <Text className="text-black text-3xl text-center font-[Montserrat-Bold]">
             How are you feeling?
           </Text>
           <AngryIcon width={100} height={100} />
@@ -166,7 +166,7 @@ export default function DiaryNextScreen() {
           <TextInput
             value={thoughts}
             onChangeText={setThoughts}
-            className="p-4 text-black text-base font-[Poppins-Italic] text-center"
+            className="p-4 text-black text-base font-[Montserrat-Italic] text-center"
             placeholder="What are you thinking..."
             placeholderTextColor="#AEA8A5"
             multiline
@@ -228,7 +228,7 @@ export default function DiaryNextScreen() {
               </TouchableOpacity>
             </View>
 
-            <Text className="text-black font-[Poppins-SemiBold] text-sm tracking-wide mt-2">
+            <Text className="text-black font-[Montserrat-SemiBold] text-sm tracking-wide mt-2">
               {recording ? "Stop Recording" : "Start Recording"}
             </Text>
 
@@ -238,7 +238,7 @@ export default function DiaryNextScreen() {
                 onPress={playRecording}
               >
                 <AudioLines width={30} height={30} color="#4ADE80" />
-                <Text className="text-black font-[Poppins-SemiBold] text-sm tracking-wide">
+                <Text className="text-black font-[Montserrat-SemiBold] text-sm tracking-wide">
                   Play Recording
                 </Text>
               </TouchableOpacity>
@@ -253,7 +253,7 @@ export default function DiaryNextScreen() {
             }`}
             onPress={handleSave}
           >
-            <Text className="text-white font-[Poppins-Bold] text-lg tracking-wide">
+            <Text className="text-white font-[Montserrat-Bold] text-lg tracking-wide">
               SAVE
             </Text>
           </TouchableOpacity>

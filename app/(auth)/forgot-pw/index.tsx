@@ -4,6 +4,7 @@ import { ChevronLeft } from "lucide-react-native";
 import React, { useRef, useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import PagerView from "react-native-pager-view";
+import FooterAgreement from "./components/FooterAgreement";
 import NewPassword from "./components/NewPassword";
 import OTPInput from "./components/OTPInput";
 
@@ -50,7 +51,7 @@ export default function SignupPager() {
           >
             <ChevronLeft size={30} color="#000000" />
           </TouchableOpacity>
-          <Text className="text-2xl font-[Poppins-Medium] text-black">
+          <Text className="text-2xl font-[Montserrat-Medium] text-black">
             {headings[page]}
           </Text>
         </View>
@@ -88,7 +89,7 @@ export default function SignupPager() {
       >
         {/* Screen 1 */}
         <View key="1" className="flex-1 px-6">
-          <Text className="text-base font-[Poppins-Medium] text-[#ABABAB] mb-2 mt-8">
+          <Text className="text-base font-[Montserrat-Medium] text-[#ABABAB] mb-2 mt-8">
             Email Address
           </Text>
           <TextInput
@@ -96,26 +97,27 @@ export default function SignupPager() {
             placeholderTextColor="#9CA3AF"
             value={email}
             onChangeText={setEmail}
-            className="w-full h-16 bg-[#F7F8F9] rounded-[10px] px-4 border border-[#DADADA] font-[Poppins-Regular]"
+            className="w-full h-16 bg-[#F7F8F9] rounded-[10px] px-4 border border-[#DADADA] font-[Montserrat-Regular]"
           />
 
           <TouchableOpacity
             onPress={goNext}
-            className="w-full h-16 rounded-lg items-center justify-center mb-4 bg-[#2563EB] mt-8"
+            className="w-full h-16 rounded-lg items-center justify-center bg-[#2563EB] mt-10"
           >
-            <Text className="text-white font-[Poppins-Bold] text-base">
+            <Text className="text-white font-[Montserrat-Bold] text-base">
               Create an account
             </Text>
           </TouchableOpacity>
+          <FooterAgreement />
         </View>
 
         {/* Screen 2 */}
         <View key="2" className="flex-1 px-6">
-          <Text className="text-base font-[Poppins-Medium] text-[#27252E] mb-2 mt-8 text-center">
+          <Text className="text-base font-[Montserrat-Medium] text-[#27252E] mb-8 mt-8 text-center">
             We just sent a 4-digit code to {email || "exampleemail@gmail.com"},
             enter it below:
           </Text>
-          <Text className="text-[#ABABAB] font-[Poppins-Bold]">Code</Text>
+          <Text className="text-[#ABABAB] font-[Montserrat-Bold]">Code</Text>
           <OTPInput length={4} onComplete={(val) => setCode(val)} />
 
           <TouchableOpacity
@@ -125,12 +127,12 @@ export default function SignupPager() {
               code.length < 4 ? "bg-gray-300" : "bg-[#2563EB]"
             }`}
           >
-            <Text className="text-white font-[Poppins-Bold] text-base">
+            <Text className="text-white font-[Montserrat-Bold] text-base">
               Verify email
             </Text>
           </TouchableOpacity>
           <View className="flex-row justify-center mt-4">
-            <Text className="text-black font-[Poppins-Regular]">
+            <Text className="text-black font-[Montserrat-Regular]">
               Wrong email?{" "}
             </Text>
             <TouchableOpacity
@@ -140,11 +142,12 @@ export default function SignupPager() {
                 setEmail("");
               }}
             >
-              <Text className="text-[#2563EB] font-[Poppins-Medium]">
+              <Text className="text-[#2563EB] font-[Montserrat-Medium]">
                 Send to different email
               </Text>
             </TouchableOpacity>
           </View>
+          <FooterAgreement />
         </View>
 
         {/* Screen 3 */}
@@ -162,32 +165,34 @@ export default function SignupPager() {
               code.length < 3 ? "bg-gray-300" : "bg-[#2563EB]"
             }`}
           >
-            <Text className="text-white font-[Poppins-Bold] text-base">
+            <Text className="text-white font-[Montserrat-Bold] text-base">
               Continue
             </Text>
           </TouchableOpacity>
+          <FooterAgreement />
         </View>
 
         {/* Screen 4: Success */}
-        <View className="flex-1 items-center justify-center px-6">
+        <View className="flex-1 items-center justify-center mt-40 px-6">
           <CreateAccount width={100} height={100} />
-          <Text className="text-3xl font-[Poppins-Bold] mb-6 text-center mt-20">
+          <Text className="text-3xl font-[Montserrat-Bold] mb-6 text-center mt-20">
             Your account was successfully created!
           </Text>
-          <Text className="text-xl font-[Poppins-Regular] mb-6 text-center">
-            Only one click to explore SoulSpace.
+          <Text className="text-lg font-[Montserrat-Regular] mb-6 text-center">
+            Only one click to explore online education.
           </Text>
           <TouchableOpacity
             className="w-full h-16 rounded-lg items-center justify-center bg-[#2563EB]"
             onPress={() => router.push("/login")}
           >
             <Text
-              className="text-white font-[Poppins-Bold]"
+              className="text-white font-[Montserrat-Bold]"
               onPress={() => router.push("/(auth)/login")}
             >
               Log In
             </Text>
           </TouchableOpacity>
+          <FooterAgreement />
         </View>
       </PagerView>
     </View>

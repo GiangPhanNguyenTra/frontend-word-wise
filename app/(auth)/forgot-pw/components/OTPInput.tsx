@@ -36,7 +36,7 @@ const OTPInput: React.FC<OTPInputProps> = ({ length = 4, onComplete }) => {
   };
 
   return (
-    <View className="w-full flex-row justify-center space-x-2">
+    <View className="w-full flex-row justify-between space-x-2">
       {values.map((val, i) => (
         <TextInput
           key={i}

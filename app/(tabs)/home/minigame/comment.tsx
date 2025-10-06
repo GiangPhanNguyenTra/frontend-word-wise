@@ -19,7 +19,7 @@ export default function CommentScreen() {
               <View className="rounded-full bg-[#34D1BF]/30 border border-[#34D1BF] p-2">
                 <Rainbow width={36} height={36} color="#34D1BF" />
               </View>
-              <Text className="text-lg font-[Poppins-Bold] text-[#34D1BF] text-center">
+              <Text className="text-lg font-[Montserrat-Bold] text-[#34D1BF] text-center">
                 Light Bearer
               </Text>
               <View className="mt-6">
@@ -31,7 +31,7 @@ export default function CommentScreen() {
                       <HeartHandshake width={24} height={24} color="#34D1BF" />
                     </View>
                     <Text
-                      className="text-base text-[#34D1BF] font-[Poppins-Regular] text-center"
+                      className="text-base text-[#34D1BF] font-[Montserrat-Regular] text-center"
                       numberOfLines={2}
                     >
                       HeartListener
@@ -43,7 +43,7 @@ export default function CommentScreen() {
                       <CircleStar width={24} height={24} color="#CCCCCC" />
                     </View>
                     <Text
-                      className="text-[#CCCCCC] text-base font-[Poppins-Regular] text-center"
+                      className="text-[#CCCCCC] text-base font-[Montserrat-Regular] text-center"
                       numberOfLines={2}
                     >
                       CircleLight
@@ -55,7 +55,7 @@ export default function CommentScreen() {
                       <Rainbow width={24} height={24} color="#CCCCCC" />
                     </View>
                     <Text
-                      className="text-[#CCCCCC] text-base font-[Poppins-Regular] text-center"
+                      className="text-[#CCCCCC] text-base font-[Montserrat-Regular] text-center"
                       numberOfLines={2}
                     >
                       LightBearer
@@ -80,16 +80,16 @@ export default function CommentScreen() {
               </View>
               <View className="flex-1 gap-2">
                 <View className="flex-col">
-                  <Text className="font-[Poppins-Bold] text-base">
+                  <Text className="font-[Montserrat-Bold] text-base">
                     user1
                   </Text>
-                  <Text className="text-[#7B7B7B] font-[Poppins-Regular] text-base">
+                  <Text className="text-[#7B7B7B] font-[Montserrat-Regular] text-base">
                     aaaaaaaaaaaaaaaaa
                   </Text>
                 </View>
                 <View className="gap-1">
-                  <Text className="text-[#7B7B7B] text-sm font-[Poppins-Regular]">Jan 01, 19:01</Text>
-                  <Text className="text-base font-[Poppins-Regular]">
+                  <Text className="text-[#7B7B7B] text-sm font-[Montserrat-Regular]">Jan 01, 19:01</Text>
+                  <Text className="text-base font-[Montserrat-Regular]">
                     bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
                   </Text>
                 </View>

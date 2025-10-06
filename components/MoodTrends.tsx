@@ -1,11 +1,11 @@
 import { router } from "expo-router";
 import { useState } from "react";
 import {
-  Dimensions,
-  Pressable,
-  Text,
-  TouchableOpacity,
-  View,
+    Dimensions,
+    Pressable,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 
@@ -38,7 +38,7 @@ export default function MoodTrends() {
     <View className="bg-white rounded-2xl p-4 shadow mt-10">
       {/* Header */}
       <View className="flex-row justify-between items-center mb-4">
-        <Text className="font-[Poppins-Bold] text-lg text-black">
+        <Text className="font-[Montserrat-Bold] text-lg text-black">
           Your mood trends
         </Text>
         <View className="flex-row bg-purple-100 rounded-full overflow-hidden">

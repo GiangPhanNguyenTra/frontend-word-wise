@@ -12,16 +12,16 @@ export default function TestInfoScreen() {
   const percentage = 25;
 
   const [fontsLoaded] = useFonts({
-    "Poppins-Regular": require("@/assets/fonts/Poppins-Regular.ttf"),
-    "Poppins-Bold": require("@/assets/fonts/Poppins-Bold.ttf"),
-    "Poppins-SemiBold": require("@/assets/fonts/Poppins-SemiBold.ttf"),
-    "Poppins-Medium": require("@/assets/fonts/Poppins-Medium.ttf"),
-    "Poppins-Light": require("@/assets/fonts/Poppins-Light.ttf"),
-    "Poppins-ExtraBold": require("@/assets/fonts/Poppins-ExtraBold.ttf"),
-    "Poppins-Black": require("@/assets/fonts/Poppins-Black.ttf"),
-    "Poppins-Thin": require("@/assets/fonts/Poppins-Thin.ttf"),
-    "Poppins-ExtraLight": require("@/assets/fonts/Poppins-ExtraLight.ttf"),
-    "Poppins-Italic": require("@/assets/fonts/Poppins-Italic.ttf"),
+    "Montserrat-Regular": require("@/assets/fonts/Montserrat-Regular.ttf"),
+    "Montserrat-Bold": require("@/assets/fonts/Montserrat-Bold.ttf"),
+    "Montserrat-SemiBold": require("@/assets/fonts/Montserrat-SemiBold.ttf"),
+    "Montserrat-Medium": require("@/assets/fonts/Montserrat-Medium.ttf"),
+    "Montserrat-Light": require("@/assets/fonts/Montserrat-Light.ttf"),
+    "Montserrat-ExtraBold": require("@/assets/fonts/Montserrat-ExtraBold.ttf"),
+    "Montserrat-Black": require("@/assets/fonts/Montserrat-Black.ttf"),
+    "Montserrat-Thin": require("@/assets/fonts/Montserrat-Thin.ttf"),
+    "Montserrat-ExtraLight": require("@/assets/fonts/Montserrat-ExtraLight.ttf"),
+    "Montserrat-Italic": require("@/assets/fonts/Montserrat-Italic.ttf"),
   });
 
   const onLayoutRootView = useCallback(async () => {
@@ -49,16 +49,16 @@ export default function TestInfoScreen() {
           {/* Nội dung */}
           <View className="w-full flex-row self-stretch inline-flex justify-between items-center">
             <View>
-              <Text className="text-[#605D67] text-3xl font-[Poppins-Bold]">
+              <Text className="text-[#605D67] text-3xl font-[Montserrat-Bold]">
                 Feeling low or losing
               </Text>
-              <Text className="text-[#605D67] text-3xl font-[Poppins-Bold]">
+              <Text className="text-[#605D67] text-3xl font-[Montserrat-Bold]">
                 interest?
               </Text>
             </View>
             <CircularProgress percentage={percentage} />
           </View>
-          <Text className="text-[#605D67] font-[Poppins-Regular] text-base">
+          <Text className="text-[#605D67] font-[Montserrat-Regular] text-base">
             This test helps you reflect on mood changes and signs of depression.
             It offers a simple way to notice patterns in your emotions and
             energy levels. By completing it, you can gain clearer insights into
@@ -71,11 +71,11 @@ export default function TestInfoScreen() {
               <View className="rounded-[10px] bg-[#7F56D9] p-2">
                 <Clock color={"#ffffff"} />
               </View>
-              <Text className="text-black text-base font-[Poppins-Regular]">
+              <Text className="text-black text-base font-[Montserrat-Regular]">
                 Estimated time:
               </Text>
             </View>
-            <Text className="text-[#FF4267] text-base font-[Poppins-Regular]">
+            <Text className="text-[#FF4267] text-base font-[Montserrat-Regular]">
               10 minutes
             </Text>
           </View>
@@ -86,11 +86,11 @@ export default function TestInfoScreen() {
               <View className="rounded-[10px] bg-[#FF4267] p-2">
                 <Grip color={"#ffffff"} />
               </View>
-              <Text className="text-black text-base font-[Poppins-Regular]">
+              <Text className="text-black text-base font-[Montserrat-Regular]">
                 Number of Questions:
               </Text>
             </View>
-            <Text className="text-[#FF4267] text-base font-[Poppins-Regular]">
+            <Text className="text-[#FF4267] text-base font-[Montserrat-Regular]">
               10 questions
             </Text>
           </View>
@@ -101,11 +101,11 @@ export default function TestInfoScreen() {
               <View className="rounded-[10px] bg-[#67C6E3] p-2">
                 <CheckCheck color={"#ffffff"} />
               </View>
-              <Text className="text-black text-base font-[Poppins-Regular]">
+              <Text className="text-black text-base font-[Montserrat-Regular]">
                 Purpose:
               </Text>
             </View>
-            <Text className="text-[#918D8D] text-base font-[Poppins-Regular] max-w-[70%] text-right">
+            <Text className="text-[#918D8D] text-base font-[Montserrat-Regular] max-w-[70%] text-right">
               Explore mood and depressive symptoms.
             </Text>
           </View>
@@ -115,7 +115,7 @@ export default function TestInfoScreen() {
               className="bg-[#7F56D9] h-16 rounded-xl items-center justify-center w-1/2"
               onPress={() => router.push("/(tabs)/explore/test/doing")}
             >
-              <Text className="text-white font-[Poppins-Bold] text-base">
+              <Text className="text-white font-[Montserrat-Bold] text-base">
                 Start Test Now
               </Text>
             </TouchableOpacity>

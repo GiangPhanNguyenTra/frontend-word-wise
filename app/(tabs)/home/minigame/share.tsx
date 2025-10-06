@@ -1,5 +1,4 @@
 import Heading from "@/components/Heading";
-import { router } from "expo-router";
 import { Flame, Heart, MessageCircle, MessageCircleHeart, Sun } from "lucide-react-native";
 import React from "react";
 import { ScrollView, Text, View } from "react-native";
@@ -20,7 +19,7 @@ export default function ShareScreen() {
               <View className="rounded-full bg-[#4CAADD]/30 border border-[#4CAADD] p-2">
                 <Sun width={36} height={36} color="#4CAADD" />
               </View>
-              <Text className="text-lg font-[Poppins-Bold] text-[#4CAADD] text-center">
+              <Text className="text-lg font-[Montserrat-Bold] text-[#4CAADD] text-center">
                 Spreading Smile
               </Text>
               <View className="mt-6">
@@ -31,7 +30,7 @@ export default function ShareScreen() {
                       <View className="p-2">
                         <MessageCircleHeart width={24} height={24} color="#4CAADD" />
                       </View>
-                      <Text className="text-[#4CAADD] text-base font-[Poppins-Regular] text-center">
+                      <Text className="text-[#4CAADD] text-base font-[Montserrat-Regular] text-center">
                         Teller
                       </Text>
                     </View>
@@ -41,7 +40,7 @@ export default function ShareScreen() {
                       <View className="p-2">
                         <Flame width={24} height={24} color="#CCCCCC" />
                       </View>
-                      <Text className="text-[#CCCCCC] text-base font-[Poppins-Regular] text-center">
+                      <Text className="text-[#CCCCCC] text-base font-[Montserrat-Regular] text-center">
                         Beacon
                       </Text>
                     </View>
@@ -51,7 +50,7 @@ export default function ShareScreen() {
                       <View className="p-2">
                         <Sun width={24} height={24} color="#CCCCCC" />
                       </View>
-                      <Text className="text-[#CCCCCC] text-base font-[Poppins-Regular] text-center">
+                      <Text className="text-[#CCCCCC] text-base font-[Montserrat-Regular] text-center">
                         Spreading Smile
                     </Text>
                   </View>
@@ -67,24 +66,24 @@ export default function ShareScreen() {
           <View className="mt-4 p-4 rounded-2xl bg-white border border-[#EEEEEE]">
             {/* Header */}
             <View>
-              <Text className="font-[Poppins-SemiBold] text-base">
+              <Text className="font-[Montserrat-SemiBold] text-base">
                 user01234567
               </Text>
-              <Text className="text-[#7B7B7B] font-[Poppins-Regular] text-sm mt-1">
+              <Text className="text-[#7B7B7B] font-[Montserrat-Regular] text-sm mt-1">
                 12:20:20 26/4/2025
               </Text>
             </View>
             {/* Content */}
-            <Text className="font-[Poppins-Regular] text-base mt-3">Tôi vui lắm</Text>
+            <Text className="font-[Montserrat-Regular] text-base mt-3">Tôi vui lắm</Text>
             {/* Interaction */}
             <View className="flex-row mt-3 gap-6">
               <View className="flex-row items-center gap-1">
                 <Heart width={18} height={18} />
-                <Text className="text-sm font-[Poppins-Regular]">10</Text>
+                <Text className="text-sm font-[Montserrat-Regular]">10</Text>
               </View>
               <View className="flex-row items-center gap-1">
                 <MessageCircle width={18} height={18} />
-                <Text className="text-sm font-[Poppins-Regular]">10</Text>
+                <Text className="text-sm font-[Montserrat-Regular]">10</Text>
               </View>
             </View>
           </View>

@@ -35,7 +35,7 @@ const slides = [
     id: 2,
     step: "Step Two",
     title: "",
-    highlight: "Quickly Access ",
+    highlight: "Quickly Access",
     subtitle: " Any Word You Saved",
     description: "Tap to view meaning, example sentences, and practice right away.",
     image: Illustrator2,
@@ -88,10 +88,9 @@ export default function Introduce() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef<FlatList<any>>(null);
 
-  // Load Poppins font
   const [fontsLoaded] = useFonts({
-    "Poppins-Regular": require("@/assets/fonts/Poppins-Regular.ttf"),
-    "Poppins-Bold": require("@/assets/fonts/Poppins-Bold.ttf"),
+    "Montserrat-Regular": require("@/assets/fonts/Montserrat-Regular.ttf"),
+    "Montserrat-Bold": require("@/assets/fonts/Montserrat-Bold.ttf"),
   });
 
   const onLayoutRootView = useCallback(async () => {
@@ -130,7 +129,7 @@ export default function Introduce() {
             {/* Step chip */}
             <View className="items-center mt-[20px]">
               <View className="rounded-[32px] border border-stone-700 px-3.5 py-2">
-                <Text className="text-center text-stone-700 text-base font-[Poppins-Regular]">
+                <Text className="text-center text-stone-700 text-base font-[Montserrat-Regular]">
                   {item.step}
                 </Text>
               </View>
@@ -138,17 +137,17 @@ export default function Introduce() {
 
             {/* Illustration */}
             <View className="flex-1 items-center justify-center w-full">
-              <item.image width="100%" height={550} style={{ zIndex: -2 }} />
+              <item.image width="100%" height={400} style={{ zIndex: -2 }} />
             </View>
             <View
               className="absolute"
               style={{
-                width: 700,
-                height: 800,
-                borderRadius: 300,
+                width: 500,  
+                height: 650,
+                borderRadius: 200,
                 backgroundColor: "white",
-                bottom: "-85%",
-                left: "-40%",
+                bottom: "-60%",
+                left: "-15%",
                 zIndex: -1,
               }}
             />
@@ -162,14 +161,14 @@ export default function Introduce() {
               </View>
             </View>
             {/* Title */}
-            <Text className="text-center font-[Poppins-Bold] text-3xl mb-4">
+            <Text className="text-center font-[Montserrat-Bold] text-3xl mb-4">
               {item.title}
               <Text style={{ color: item.highlightColor }}>
                 {item.highlight}
               </Text>
               {item.subtitle}
             </Text>
-            <Text className="text-center font-[Poppins-Regular] text-base mb-4 px-6">{item.description}</Text>
+            <Text className="text-center font-[Montserrat-Regular] text-base mb-4 px-6">{item.description}</Text>
           </View>
         )}
       />

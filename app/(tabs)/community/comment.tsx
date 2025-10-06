@@ -1,16 +1,16 @@
-import { useEffect, useRef, useState } from "react";
 import Heading from "@/components/Heading";
 import { useLocalSearchParams } from "expo-router";
 import { ArrowUp, Heart, MessageCircle } from "lucide-react-native";
+import { useEffect, useRef, useState } from "react";
 import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-  KeyboardAvoidingView,
-  Platform,
-  Keyboard,
 } from "react-native";
 
 export default function CommentScreen() {
@@ -72,28 +72,28 @@ export default function CommentScreen() {
           <View className="mt-2">
             <View className="p-4 mb-2">
               <View>
-                <Text className="font-[Poppins-SemiBold] text-base">
+                <Text className="font-[Montserrat-SemiBold] text-base">
                   user01234567
                 </Text>
-                <Text className="text-[#7B7B7B] font-[Poppins-Regular] text-sm mt-1">
+                <Text className="text-[#7B7B7B] font-[Montserrat-Regular] text-sm mt-1">
                   12:20:20 26/4/2025
                 </Text>
               </View>
 
-              <Text className="mt-3 font-[Poppins-Regular] text-base">
+              <Text className="mt-3 font-[Montserrat-Regular] text-base">
                 Tôi vui lắm
               </Text>
 
               <View className="flex-row mt-3 gap-4">
                 <View className="flex-row items-center gap-1.5">
                   <Heart width={18} height={18} color="black" />
-                  <Text className="font-[Poppins-Regular] text-sm">
+                  <Text className="font-[Montserrat-Regular] text-sm">
                     10
                   </Text>
                 </View>
                 <View className="flex-row items-center gap-1.5">
                   <MessageCircle width={18} height={18} color="black" />
-                  <Text className="font-[Poppins-Regular] text-sm">
+                  <Text className="font-[Montserrat-Regular] text-sm">
                     10
                   </Text>
                 </View>
@@ -103,7 +103,7 @@ export default function CommentScreen() {
 
           {/* Comments list */}
           <View className="mt-4 mb-4">
-            <Text className="font-[Poppins-Bold] text-lg mb-2">
+            <Text className="font-[Montserrat-Bold] text-lg mb-2">
               All comments
             </Text>
 
@@ -112,13 +112,13 @@ export default function CommentScreen() {
                 key={i}
                 className="mt-3 ml-2 p-3 rounded-xl border border-[#EEEEEE] bg-[#FFFFFF]"
               >
-                <Text className="font-[Poppins-SemiBold] text-base">
+                <Text className="font-[Montserrat-SemiBold] text-base">
                   user01234567
                 </Text>
-                <Text className="text-[#7B7B7B] font-[Poppins-Regular] text-sm mt-1">
+                <Text className="text-[#7B7B7B] font-[Montserrat-Regular] text-sm mt-1">
                   12:20:20 26/4/2025
                 </Text>
-                <Text className="mt-2.5 font-[Poppins-Regular] text-base">
+                <Text className="mt-2.5 font-[Montserrat-Regular] text-base">
                   Tôi vui lắm
                 </Text>
               </View>
@@ -142,7 +142,7 @@ export default function CommentScreen() {
                   onPress={() => setComment(reply)}
                   className="bg-[#FFFFFF] h-10 px-4 rounded-full justify-center mr-2"
                 >
-                  <Text className="font-[Poppins-Regular] text-base">
+                  <Text className="font-[Montserrat-Regular] text-base">
                     {reply}
                   </Text>
                 </TouchableOpacity>
@@ -165,7 +165,7 @@ export default function CommentScreen() {
               }}
               style={{
                 height: Math.max(44, safeInputHeight),
-                fontFamily: "Poppins-Regular",
+                fontFamily: "Montserrat-Regular",
               }}
               className="flex-1 bg-[#FFFFFF] rounded-2xl px-3 py-2 text-base"
               textAlignVertical="top"

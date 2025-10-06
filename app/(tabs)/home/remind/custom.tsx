@@ -1,27 +1,25 @@
-import { useFonts } from "expo-font";
-import { useCallback } from "react";
-import * as SplashScreen from "expo-splash-screen";
 import Heading from "@/components/Heading";
+import { useFonts } from "expo-font";
 import { router } from "expo-router";
-import { View, Text, ScrollView, TouchableOpacity, Modal } from "react-native";
-import { ChevronRight } from "lucide-react-native";
-import React, { useState } from "react";
-import { Check } from "lucide-react-native";
+import * as SplashScreen from "expo-splash-screen";
+import { Check, ChevronRight } from "lucide-react-native";
+import React, { useCallback, useState } from "react";
+import { Modal, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 export default function CustomScreen() {
   const [fontsLoaded] = useFonts({
-    "Poppins-Regular": require("@/assets/fonts/Poppins-Regular.ttf"),
-    "Poppins-Bold": require("@/assets/fonts/Poppins-Bold.ttf"),
-    "Poppins-SemiBold": require("@/assets/fonts/Poppins-SemiBold.ttf"),
-    "Poppins-Medium": require("@/assets/fonts/Poppins-Medium.ttf"),
-    "Poppins-Light": require("@/assets/fonts/Poppins-Light.ttf"),
-    "Poppins-ExtraBold": require("@/assets/fonts/Poppins-ExtraBold.ttf"),
-    "Poppins-Black": require("@/assets/fonts/Poppins-Black.ttf"),
-    "Poppins-Thin": require("@/assets/fonts/Poppins-Thin.ttf"),
-    "Poppins-ExtraLight": require("@/assets/fonts/Poppins-ExtraLight.ttf"),
-    "Poppins-Italic": require("@/assets/fonts/Poppins-Italic.ttf"),
+    "Montserrat-Regular": require("@/assets/fonts/Montserrat-Regular.ttf"),
+    "Montserrat-Bold": require("@/assets/fonts/Montserrat-Bold.ttf"),
+    "Montserrat-SemiBold": require("@/assets/fonts/Montserrat-SemiBold.ttf"),
+    "Montserrat-Medium": require("@/assets/fonts/Montserrat-Medium.ttf"),
+    "Montserrat-Light": require("@/assets/fonts/Montserrat-Light.ttf"),
+    "Montserrat-ExtraBold": require("@/assets/fonts/Montserrat-ExtraBold.ttf"),
+    "Montserrat-Black": require("@/assets/fonts/Montserrat-Black.ttf"),
+    "Montserrat-Thin": require("@/assets/fonts/Montserrat-Thin.ttf"),
+    "Montserrat-ExtraLight": require("@/assets/fonts/Montserrat-ExtraLight.ttf"),
+    "Montserrat-Italic": require("@/assets/fonts/Montserrat-Italic.ttf"),
   });
             
   const onLayoutRootView = useCallback(async () => {
@@ -61,7 +59,7 @@ export default function CustomScreen() {
               onPress={() => router.back()}
             >
               <View className="flex-row items-center justify-between">
-                <Text className="text-white font-[Poppins-Bold] text-base">Once</Text>
+                <Text className="text-white font-[Montserrat-Bold] text-base">Once</Text>
               </View>
             </TouchableOpacity>
 
@@ -71,7 +69,7 @@ export default function CustomScreen() {
               onPress={() => router.back()}
             >
               <View className="flex-row items-center justify-between">
-                <Text className="text-white font-[Poppins-Bold] text-base">Daily</Text>
+                <Text className="text-white font-[Montserrat-Bold] text-base">Daily</Text>
               </View>
             </TouchableOpacity>
 
@@ -81,7 +79,7 @@ export default function CustomScreen() {
               onPress={() => setShowModal(true)}
             >
               <View className="flex-row items-center justify-between">
-                <Text className="text-white font-[Poppins-Bold] text-base">Custom</Text>
+                <Text className="text-white font-[Montserrat-Bold] text-base">Custom</Text>
                 <ChevronRight width={20} height={20} color="#BBBBBB" />
               </View>
             </TouchableOpacity>
@@ -90,7 +88,7 @@ export default function CustomScreen() {
             <Modal visible={showModal} animationType="slide" transparent>
               <View className="flex-1 justify-end bg-black/50">
                 <View className="bg-[#2b2b2b] rounded-t-2xl p-4 max-h-[70%]">
-                  <Text className="text-white text-lg font-[Poppins-Bold] mb-4 text-center">Customize</Text>
+                  <Text className="text-white text-lg font-[Montserrat-Bold] mb-4 text-center">Customize</Text>
 
                   <ScrollView>
                     {days.map((day) => (
@@ -99,7 +97,7 @@ export default function CustomScreen() {
                         className="flex-row justify-between items-center py-4 border-b border-white/10"
                         onPress={() => toggleDay(day)}
                       >
-                        <Text className="text-white font-[Poppins-Regular] text-base">{day}</Text>
+                        <Text className="text-white font-[Montserrat-Regular] text-base">{day}</Text>
                         <View
                           className={`w-6 h-6 rounded-full border items-center justify-center ${
                             selectedDays.includes(day) ? "bg-blue-500 border-blue-500" : "border-white/40"
@@ -117,7 +115,7 @@ export default function CustomScreen() {
                       className="px-5 py-2 rounded-lg bg-gray-500"
                       onPress={() => setShowModal(false)}
                     >
-                      <Text className="text-white font-[Poppins-Bold]">Cancel</Text>
+                      <Text className="text-white font-[Montserrat-Bold]">Cancel</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       className="px-5 py-2 rounded-lg bg-blue-600"
@@ -126,7 +124,7 @@ export default function CustomScreen() {
                         setShowModal(false);
                       }}
                     >
-                      <Text className="text-white font-[Poppins-Bold]">OK</Text>
+                      <Text className="text-white font-[Montserrat-Bold]">OK</Text>
                     </TouchableOpacity>
                   </View>
                 </View>

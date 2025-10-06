@@ -19,8 +19,8 @@ export default function TestDoingScreen() {
   );
 
   const [fontsLoaded] = useFonts({
-    "Poppins-Bold": require("@/assets/fonts/Poppins-Bold.ttf"),
-    "Poppins-Regular": require("@/assets/fonts/Poppins-Regular.ttf"),
+    "Montserrat-Bold": require("@/assets/fonts/Montserrat-Bold.ttf"),
+    "Montserrat-Regular": require("@/assets/fonts/Montserrat-Regular.ttf"),
   });
 
   const onLayoutRootView = useCallback(async () => {
@@ -51,16 +51,16 @@ export default function TestDoingScreen() {
           <TouchableOpacity onPress={() => router.back()}>
             <ArrowLeft width={28} height={28} />
           </TouchableOpacity>
-          <Text className="font-[Poppins-Bold] text-xl text-[#7F56D9] ml-3">
+          <Text className="font-[Montserrat-Bold] text-xl text-[#7F56D9] ml-3">
             PHQ-9 Test
           </Text>
         </View>
 
         <View className="flex-row items-center">
-          <Text className="text-black text-lg font-[Poppins-Bold]">
+          <Text className="text-black text-lg font-[Montserrat-Bold]">
             {current + 1}
           </Text>
-          <Text className="text-[#ADADAD] text-lg font-[Poppins-Bold]">
+          <Text className="text-[#ADADAD] text-lg font-[Montserrat-Bold]">
             /{total}
           </Text>
         </View>
@@ -80,7 +80,7 @@ export default function TestDoingScreen() {
         contentContainerStyle={{ paddingBottom: 24 }}
         showsVerticalScrollIndicator={false}
       >
-        <Text className="text-2xl font-[Poppins-Bold] text-[#605D67] mb-6">
+        <Text className="text-2xl font-[Montserrat-Bold] text-[#605D67] mb-6">
           {questions[current].question}
         </Text>
 
@@ -97,7 +97,7 @@ export default function TestDoingScreen() {
               }`}
             >
               <Text
-                className={`text-base font-[Poppins-Regular] ${
+                className={`text-base font-[Montserrat-Regular] ${
                   selected ? "text-[#7F56D9]" : "text-gray-800"
                 }`}
               >
@@ -122,7 +122,7 @@ export default function TestDoingScreen() {
             }`}
           >
             <Text
-              className={`font-[Poppins-Bold] text-base ${
+              className={`font-[Montserrat-Bold] text-base ${
                 current === 0 ? "text-white" : "text-[#7F56D9]"
               }`}
             >
@@ -134,7 +134,7 @@ export default function TestDoingScreen() {
             onPress={nextQuestion}
             className="bg-[#7F56D9] h-14 rounded-xl flex-1 ml-2 items-center justify-center"
           >
-            <Text className="text-white font-[Poppins-Bold] text-base">
+            <Text className="text-white font-[Montserrat-Bold] text-base">
               {current === total - 1 ? "Finish" : "Next"}
             </Text>
           </TouchableOpacity>
