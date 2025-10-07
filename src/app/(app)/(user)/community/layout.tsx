@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { Home, Users, MessageSquare, Trophy, BarChart3 } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const tabs = [
   { id: "feed", label: "New Feed", icon: Home, href: "/community" },
@@ -32,22 +32,24 @@ export default function CommunityLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [active, setActive] = useState("feed");
+  const pathname = usePathname();
 
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar for desktop */}
-      <aside className="hidden lg:flex lg:flex-col lg:w-64 bg-white p-4">
+      <aside className="hidden lg:flex lg:flex-col lg:w-64 bg-white p-4 border-r">
         <h2 className="text-lg font-semibold mb-4 text-gray-800">Community</h2>
         <nav className="flex flex-col gap-2">
           {tabs.map((tab) => {
             const Icon = tab.icon;
-            const isActive = active === tab.id;
+            const isActive =
+              pathname === tab.href ||
+              (tab.href !== "/community" && pathname.startsWith(tab.href));
+
             return (
               <Link
                 key={tab.id}
                 href={tab.href}
-                onClick={() => setActive(tab.id)}
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg transition ${
                   isActive
                     ? "bg-[#E9EFFD] text-[#2563EB] font-semibold"
@@ -66,12 +68,14 @@ export default function CommunityLayout({
       <div className="lg:hidden fixed left-0 right-0 z-20 bg-white border-b flex justify-around items-center py-5 shadow-sm">
         {tabs.map((tab) => {
           const Icon = tab.icon;
-          const isActive = active === tab.id;
+          const isActive =
+            pathname === tab.href ||
+            (tab.href !== "/community" && pathname.startsWith(tab.href));
+
           return (
             <Link
               key={tab.id}
               href={tab.href}
-              onClick={() => setActive(tab.id)}
               className={`flex flex-col items-center justify-center text-xs ${
                 isActive ? "text-[#2563EB]" : "text-gray-500"
               }`}
