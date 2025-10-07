@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send } from "lucide-react";
+import { Send, BookOpenText } from "lucide-react";
 
 type Message = {
   id: number;
@@ -97,11 +97,24 @@ export default function ChatbotPage() {
   };
 
   return (
-    <div className="w-full max-h-[90vh] flex flex-col items-center justify-between h-screen bg-white">
+    <div className="w-full max-h-[90vh] flex flex-col items-center justify-between h-screen bg-white mt-2 rounded-[16px] shadow-[0_4px_20px_rgba(0,0,0,0.1)] overflow-hidden">
+      {/* Header */}
+      <div className="w-full bg-white p-4 flex items-center gap-3 sticky top-0 z-10 rounded-t-[16px]">
+        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[#E9EFFD]">
+          {/* Icon sách */}
+          <BookOpenText color="#2563EB" />
+        </div>
+        <div>
+          <h2 className="text-base font-semibold text-gray-800">
+            Vocabulary Assistant
+          </h2>
+          <p>AI-powered language learning</p>
+        </div>
+      </div>
       {/* Chat area */}
       <div
         ref={scrollRef}
-        className="flex-1 w-full max-h-[80vh] overflow-y-auto p-6 space-y-4"
+        className="flex-1 w-full max-h-[80vh] overflow-y-auto p-6 space-y-4 bg-[#F3F4F6]"
       >
         {messages.map((msg) => (
           <div
@@ -111,10 +124,10 @@ export default function ChatbotPage() {
             }`}
           >
             <div
-              className={`p-3 rounded-2xl max-w-[75%] whitespace-pre-line ${
+              className={`max-w-[75%] whitespace-pre-line ${
                 msg.sender === "user"
-                  ? "bg-[#3675FF] text-white"
-                  : "bg-gray-100 text-gray-800"
+                  ? "bg-[#3675FF] text-white px-4 py-2 rounded-2xl rounded-br-none"
+                  : "text-gray-800"
               }`}
             >
               {msg.text}
@@ -156,22 +169,21 @@ export default function ChatbotPage() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="flex-1"
+            className="flex-1 rounded-full h-12"
           />
           <Button
-            className="bg-[#3675FF] hover:bg-[#2563EB]"
+            className="bg-[#3675FF] hover:bg-[#2563EB] rounded-full"
             onClick={handleSend}
           >
             <Send className="h-4 w-4" />
           </Button>
         </div>
-        <div className="flex items-center justify-center gap-3">
+        <div className="flex items-center justify-start gap-3">
           <Button
-            variant="ghost"
-            className={`px-4 py-2 rounded-lg border text-sm font-medium ${
+            className={`h-8 px-4 rounded-full border text-[12px] font-medium ${
               selectedOption === "help"
-                ? "border-[#3675FF] text-[#3675FF] font-semibold bg-[#E9EFFD]"
-                : "border-gray-300 text-gray-500 hover:bg-gray-100"
+                ? "border-[#3675FF] text-[#3675FF] font-semibold bg-[#E9EFFD] hover:bg-[#2563EB] hover:text-white"
+                : "border-gray-300 bg-white text-gray-500 hover:bg-[#E9EFFD]"
             }`}
             onClick={() => handleUserOption("help")}
           >
@@ -179,11 +191,10 @@ export default function ChatbotPage() {
           </Button>
 
           <Button
-            variant="ghost"
-            className={`px-4 py-2 rounded-lg border text-sm font-medium ${
+            className={`h-8 px-4 rounded-full border text-[12px] font-medium ${
               selectedOption === "add"
-                ? "border-[#3675FF] text-[#3675FF] font-semibold bg-[#E9EFFD]"
-                : "border-gray-300 text-gray-500 hover:bg-gray-100"
+                ? "border-[#3675FF] text-[#3675FF] font-semibold bg-[#E9EFFD] hover:bg-[#2563EB] hover:text-white"
+                : "border-gray-300 bg-white text-gray-500 hover:bg-[#E9EFFD]"
             }`}
             onClick={() => handleUserOption("add")}
           >
