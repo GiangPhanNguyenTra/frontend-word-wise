@@ -34,6 +34,15 @@ export default function CommunityLayout({
 }) {
   const pathname = usePathname();
 
+  const isChatDetail =
+    pathname?.startsWith("/community/messages/") &&
+    pathname !== "/community/messages";
+
+  if (isChatDetail) {
+    return <>{children}</>;
+  }
+
+  // Ngược lại → render layout như bình thường
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar for desktop */}
@@ -64,7 +73,7 @@ export default function CommunityLayout({
         </nav>
       </aside>
 
-      {/* Top bar for mobile (below header) */}
+      {/* Top bar for mobile */}
       <div className="lg:hidden fixed left-0 right-0 z-20 bg-white border-b flex justify-around items-center py-5 shadow-sm">
         {tabs.map((tab) => {
           const Icon = tab.icon;
