@@ -129,7 +129,8 @@ export default function DefinitionMatchPage() {
             >
               <ArrowLeft className="h-5 w-5" />
             </Link>
-            <h1 className="text-xl font-semibold">Definition Match</h1>
+            <h1 className="text-xl font-semibold">Challenge room: </h1>
+            <p className="text-xl font-bold text-[#2563EB]">Definition Match</p>
           </div>
           <div className="flex items-center space-x-4">
             <div className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full flex items-center">
