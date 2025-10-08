@@ -48,7 +48,6 @@ export default function ChallengePage() {
 
           {/* Nội dung chính */}
           <CardContent className="p-8 flex flex-col gap-4 relative">
-            {/* Nút share góc phải */}
             <Share2 className="absolute top-8 right-8 w-5 h-5 text-gray-500 cursor-pointer hover:text-gray-700" />
 
             <div>

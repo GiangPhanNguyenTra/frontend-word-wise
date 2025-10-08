@@ -102,7 +102,6 @@ const challenges = [
     icon: Gamepad2,
     color: "bg-green-100 text-green-600",
   },
-  { name: "Timed Quiz", icon: Timer, color: "bg-blue-100 text-blue-600" },
 ];
 
 // Main Dashboard Page Component
@@ -310,15 +309,26 @@ export default function DashboardPage() {
                 <CardTitle>Challenge Rooms</CardTitle>
               </CardHeader>
               <CardContent className="grid grid-cols-2 gap-4">
-                {challenges.map((challenge) => (
-                  <div
-                    key={challenge.name}
-                    className={`p-4 rounded-lg flex flex-col items-center justify-center text-center gap-2 cursor-pointer hover:shadow-md transition-opacity ${challenge.color}`}
-                  >
-                    <challenge.icon className="h-6 w-6" />
-                    <p className="text-sm font-semibold">{challenge.name}</p>
-                  </div>
-                ))}
+                {challenges.map((challenge) => {
+                  // xác định route tương ứng theo tên
+                  const hrefMap: Record<string, string> = {
+                    "Definition Match": "/community/challenge/definition",
+                    "Fill in the Blank": "/community/challenge/fill-blank",
+                    "Word Shooter": "/community/challenge/word-shooter",
+                  };
+                  const href = hrefMap[challenge.name] || "#";
+
+                  return (
+                    <Link
+                      key={challenge.name}
+                      href={href}
+                      className={`p-4 rounded-lg flex flex-col items-center justify-center text-center gap-2 cursor-pointer hover:shadow-md transition-opacity ${challenge.color}`}
+                    >
+                      <challenge.icon className="h-6 w-6" />
+                      <p className="text-sm font-semibold">{challenge.name}</p>
+                    </Link>
+                  );
+                })}
               </CardContent>
             </Card>
           </div>
