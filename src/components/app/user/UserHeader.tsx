@@ -95,8 +95,12 @@ export const UserHeader = () => {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Profile</DropdownMenuItem>
-              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <Link href="/setting">
+                <DropdownMenuItem>Setting</DropdownMenuItem>
+              </Link>
+              <Link href="/setting/reminder">
+                <DropdownMenuItem>Reminder</DropdownMenuItem>
+              </Link>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Logout</DropdownMenuItem>
             </DropdownMenuContent>
