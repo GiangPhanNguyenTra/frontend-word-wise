@@ -2,7 +2,8 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Link, Pencil, Crosshair, Share2 } from "lucide-react";
+import { Pencil, Crosshair, Share2, Link as LinkIcon } from "lucide-react";
+import Link from "next/link";
 
 export default function ChallengePage() {
   const games = [
@@ -10,9 +11,10 @@ export default function ChallengePage() {
       title: "Definition Match",
       description:
         "Drag words to their correct definitions. Test your vocabulary knowledge!",
-      icon: <Link className="w-12 h-12 text-white" />,
+      icon: <LinkIcon className="w-12 h-12 text-white" />,
       color: "bg-gradient-to-r from-[#2563EB] to-[#5087FF]",
       buttonColor: "bg-[#2563EB] hover:bg-[#1E4FCC]",
+      href: "/community/challenge/definition",
     },
     {
       title: "Fill in the Blank",
@@ -21,6 +23,7 @@ export default function ChallengePage() {
       icon: <Pencil className="w-12 h-12 text-white" />,
       color: "bg-gradient-to-r from-[#00966D] to-[#27F8BF]",
       buttonColor: "bg-[#00966D] hover:bg-[#007C5A]",
+      href: "/community/challenge/fill-blank",
     },
     {
       title: "Word Shooter",
@@ -29,6 +32,7 @@ export default function ChallengePage() {
       icon: <Crosshair className="w-12 h-12 text-white" />,
       color: "bg-gradient-to-r from-[#C30000] to-[#FD9898]",
       buttonColor: "bg-[#C30000] hover:bg-[#A00000]",
+      href: "/community/challenge/word-shooter",
     },
   ];
 
@@ -57,11 +61,13 @@ export default function ChallengePage() {
               <p className="text-sm text-gray-600 mt-1">{game.description}</p>
             </div>
 
-            {/* Nút Play now ở dưới cùng */}
+            {/* Nút Play now */}
             <div className="pt-2 w-full inline-flex justify-center">
-              <Button className={`${game.buttonColor} text-white px-6 mt-2`}>
-                Play now
-              </Button>
+              <Link href={game.href} className="w-fit">
+                <Button className={`${game.buttonColor} text-white px-6 mt-2`}>
+                  Play now
+                </Button>
+              </Link>
             </div>
           </CardContent>
         </Card>
