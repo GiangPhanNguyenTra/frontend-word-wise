@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Word Wise</title>
+    <style>
+      .wwise-btn-primary {
+        transition: background-color 0.2s ease-in-out;
+      }
+      .wwise-btn-primary:hover {
+        background-color: #2563eb !important;
+      }
+      .wwise-tag {
+        cursor: pointer;
+        transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+      }
+      .wwise-tag.selected {
+        background-color: #dbeafe !important;
+        color: #1d4ed8 !important;
+        font-weight: 500;
+      }
+    </style>
+  </head>
+  <body
+    style="
+      width: 24rem;
+      padding: 1.25rem;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      background-color: #ffffff;
+    "
+  >
+    <div id="main-menu-view">
+      <div style="text-align: center">
+        <h1
+          style="
+            color: #2563eb;
+            font-weight: 600;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+          "
+        >
+          Word Wise
+        </h1>
+        <p style="color: #4b5563; font-size: 0.875rem">
+          Smart Vocabulary Assistant
+        </p>
+      </div>
+      <div
+        style="
+          margin-top: 1.5rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        "
+      >
+        <a
+          href="pages/add-word.html"
+          style="
+            background-color: #3b82f6;
+            color: #ffffff;
+            border-radius: 0.5rem;
+            padding: 0.5rem 0;
+            text-align: center;
+            text-decoration: none;
+          "
+          >Add New Word</a
+        >
+        <a
+          href="pages/recommendation.html"
+          style="
+            background-color: #6366f1;
+            color: #ffffff;
+            border-radius: 0.5rem;
+            padding: 0.5rem 0;
+            text-align: center;
+            text-decoration: none;
+          "
+          >Recommendation</a
+        >
+        <a
+          href="pages/practice.html"
+          style="
+            background-color: #22c55e;
+            color: #ffffff;
+            border-radius: 0.5rem;
+            padding: 0.5rem 0;
+            text-align: center;
+            text-decoration: none;
+          "
+          >Practice</a
+        >
+      </div>
+    </div>
+
+    <div id="add-word-view" style="display: none"></div>
+    <script src="popup.js"></script>
+  </body>
+</html>

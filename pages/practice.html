@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Practice</title>
+    <style>
+      .wwise-btn-primary {
+        transition: background-color 0.2s ease-in-out;
+      }
+      .wwise-btn-primary:hover {
+        background-color: #2563eb !important;
+      }
+      .wwise-link-btn:hover {
+        text-decoration: underline !important;
+      }
+      .practice-option-btn {
+        transition: background-color 0.2s ease-in-out,
+          border-color 0.2s ease-in-out;
+      }
+      .practice-option-btn:hover {
+        border-color: #93c5fd !important;
+        background-color: #eff6ff !important;
+      }
+    </style>
+  </head>
+  <body
+    style="
+      padding: 1.25rem;
+      background-color: #ffffff;
+      border-radius: 0.5rem;
+      width: 24rem;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      box-sizing: border-box;
+    "
+  >
+    <h1
+      style="
+        color: #2563eb;
+        font-weight: 600;
+        font-size: 1.25rem;
+        margin: 0 0 1rem 0;
+      "
+    >
+      Word Wise
+    </h1>
+    <h2
+      style="
+        font-weight: 700;
+        font-size: 1.125rem;
+        margin: 0 0 0.5rem 0;
+        color: #1f2937;
+      "
+    >
+      Practice
+      <span style="color: #9ca3af; font-size: 0.875rem">(1/10)</span>
+    </h2>
+
+    <div
+      style="
+        display: flex;
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 1.5rem;
+      "
+    >
+      <button
+        id="translation-tab"
+        data-tab-target="translation"
+        style="
+          flex: 1;
+          color: #2563eb;
+          border-bottom-width: 2px;
+          border-color: #2563eb;
+          padding: 0.5rem 0;
+          background-color: transparent;
+          border-top: none;
+          border-left: none;
+          border-right: none;
+          cursor: pointer;
+          margin-bottom: -1px;
+          font-size: 0.875rem;
+        "
+      >
+        Translation
+      </button>
+      <button
+        id="definition-tab"
+        data-tab-target="definition"
+        style="
+          flex: 1;
+          color: #9ca3af;
+          padding: 0.5rem 0;
+          background-color: transparent;
+          border: none;
+          border-bottom: 2px solid transparent;
+          cursor: pointer;
+          font-size: 0.875rem;
+        "
+      >
+        Definition
+      </button>
+      <button
+        id="fill-blank-tab"
+        data-tab-target="fill-blank"
+        style="
+          flex: 1;
+          color: #9ca3af;
+          padding: 0.5rem 0;
+          background-color: transparent;
+          border: none;
+          border-bottom: 2px solid transparent;
+          cursor: pointer;
+          font-size: 0.875rem;
+        "
+      >
+        Fill blank
+      </button>
+    </div>
+
+    <!-- Translation Content -->
+    <div id="translation-content">
+      <p style="text-align: center; font-size: 1.125rem; margin: 0 0 1.5rem 0">
+        Translate to English<br /><span
+          style="font-weight: 700; font-size: 1.25rem"
+          >"Thoáng qua"</span
+        >
+      </p>
+      <input
+        type="text"
+        placeholder="Type the English word ..."
+        style="
+          width: 100%;
+          border: 1px solid #d1d5db;
+          border-radius: 0.5rem;
+          padding: 0.75rem;
+          margin-bottom: 1rem;
+          box-sizing: border-box;
+          font-size: 1rem;
+        "
+      />
+    </div>
+
+    <!-- Definition Content -->
+    <div id="definition-content" style="display: none">
+      <p style="text-align: center; font-size: 1rem; margin: 0 0 1.5rem 0">
+        What is the definition of
+        <span style="font-weight: 700; font-size: 1.125rem">"Ephemeral"</span>?
+      </p>
+      <div style="display: flex; flex-direction: column; gap: 0.75rem">
+        <button
+          class="practice-option-btn"
+          style="
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            font-size: 0.9rem;
+            text-align: left;
+            background: white;
+            cursor: pointer;
+          "
+        >
+          Lasting for a very short time.
+        </button>
+        <button
+          class="practice-option-btn"
+          style="
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            font-size: 0.9rem;
+            text-align: left;
+            background: white;
+            cursor: pointer;
+          "
+        >
+          Something that is very important.
+        </button>
+        <button
+          class="practice-option-btn"
+          style="
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            font-size: 0.9rem;
+            text-align: left;
+            background: white;
+            cursor: pointer;
+          "
+        >
+          A feeling of great happiness.
+        </button>
+        <button
+          class="practice-option-btn"
+          style="
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            font-size: 0.9rem;
+            text-align: left;
+            background: white;
+            cursor: pointer;
+          "
+        >
+          Difficult to understand.
+        </button>
+      </div>
+    </div>
+
+    <!-- Fill Blank Content -->
+    <div id="fill-blank-content" style="display: none">
+      <p
+        style="
+          text-align: center;
+          font-size: 1rem;
+          margin: 0 0 1.5rem 0;
+          line-height: 1.5;
+        "
+      >
+        The beauty of the cherry blossoms is __________, lasting only for a
+        week.
+      </p>
+      <div
+        style="
+          min-height: 2rem;
+          border-bottom: 1px solid #d1d5db;
+          margin-bottom: 1.5rem;
+        "
+      ></div>
+      <div
+        style="
+          display: flex;
+          justify-content: center;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+        "
+      >
+        <button
+          class="practice-option-btn"
+          style="
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+          "
+        >
+          phe
+        </button>
+        <button
+          class="practice-option-btn"
+          style="
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+          "
+        >
+          ral
+        </button>
+        <button
+          class="practice-option-btn"
+          style="
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+          "
+        >
+          e
+        </button>
+        <button
+          class="practice-option-btn"
+          style="
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+          "
+        >
+          me
+        </button>
+      </div>
+    </div>
+
+    <div
+      style="
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1.5rem;
+      "
+    >
+      <button
+        class="wwise-link-btn"
+        style="
+          color: #3b82f6;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          padding: 0.25rem;
+        "
+      >
+        Try another
+      </button>
+      <button
+        class="wwise-btn-primary"
+        style="
+          background-color: #3b82f6;
+          color: #ffffff;
+          border-radius: 0.5rem;
+          padding: 0.5rem 1rem;
+          border: none;
+          cursor: pointer;
+          font-size: 0.875rem;
+          font-weight: 500;
+        "
+      >
+        Check answer
+      </button>
+    </div>
+  </body>
+  <script defer src="practice.js"></script>
+</html>

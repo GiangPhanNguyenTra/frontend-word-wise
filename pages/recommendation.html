@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script defer src="recommendation.js"></script>
+    <title>Recommendation</title>
+    <style>
+      .wwise-btn-primary {
+        transition: background-color 0.2s ease-in-out;
+      }
+      .wwise-btn-primary:hover {
+        background-color: #2563eb !important; /* Tailwind's blue-600 */
+      }
+      .wwise-link-btn:hover {
+        text-decoration: underline !important;
+      }
+    </style>
+  </head>
+  <body
+    style="
+      padding: 1.25rem; /* p-5 */
+      background-color: #ffffff; /* bg-white */
+      width: 24rem; /* w-96 */
+      border-radius: 0.5rem; /* rounded-lg */
+      font-family: ui-sans-serif, system-ui, sans-serif;
+    "
+  >
+    <div
+      style="
+        background-color: #eff6ff; /* bg-blue-50 */
+        padding: 1rem; /* p-4 */
+        border-radius: 0.5rem; /* rounded-lg */
+        box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1),
+          0 1px 2px -1px rgb(0 0 0 / 0.1); /* shadow */
+      "
+    >
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center; /* Sửa ở đây */
+          margin-bottom: 0.25rem;
+        "
+      >
+        <h3
+          style="
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #111827;
+            line-height: 1.2;
+            margin: 0; /* Thêm ở đây */
+          "
+        >
+          Revolutionary
+        </h3>
+        <span
+          style="
+            background-color: #e9effd;
+            color: #2563eb;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            white-space: nowrap;
+          "
+          >Technology</span
+        >
+      </div>
+      <p
+        style="
+          font-style: italic; /* italic */
+          color: #4b5563; /* text-gray-600 */
+          font-size: 0.875rem; /* text-sm */
+          line-height: 1.25rem;
+          margin-bottom: 0.5rem; /* mb-2 */
+        "
+      >
+        adj
+      </p>
+      <p
+        style="
+          color: #1f2937; /* text-gray-800 */
+          margin-bottom: 0.25rem; /* mb-1 */
+        "
+      >
+        cách mạng, đột phá
+      </p>
+      <p
+        style="
+          color: #374151; /* text-gray-700 */
+          margin-bottom: 0.5rem; /* mb-2 */
+          font-size: 0.875rem; /* text-sm */
+          line-height: 1.25rem;
+        "
+      >
+        involving or causing a complete or dramatic change
+      </p>
+      <p
+        style="
+          color: #6b7280; /* text-gray-500 */
+          font-size: 0.875rem; /* text-sm */
+          line-height: 1.25rem;
+          font-style: italic; /* italic */
+          margin-bottom: 0.75rem; /* mb-3 */
+        "
+      >
+        "This new drug is revolutionary in its approach to treating cancer."
+      </p>
+      <div
+        style="
+          display: flex; /* flex */
+          justify-content: space-between; /* justify-between */
+          align-items: center; /* Thêm để căn giữa các nút theo chiều dọc */
+        "
+      >
+        <button
+          id="dismiss"
+          class="wwise-link-btn"
+          style="
+            color: #3b82f6; /* text-blue-500 */
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0.25rem;
+          "
+        >
+          Dismiss
+        </button>
+        <button
+          id="save"
+          class="wwise-btn-primary"
+          style="
+            background-color: #3b82f6; /* bg-blue-500 */
+            color: #ffffff; /* text-white */
+            border-radius: 0.5rem; /* rounded-lg */
+            padding-left: 1rem; /* px-4 */
+            padding-right: 1rem;
+            padding-top: 0.25rem; /* py-1 */
+            padding-bottom: 0.25rem;
+            border: none;
+            cursor: pointer;
+          "
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  </body>
+</html>
