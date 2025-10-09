@@ -45,12 +45,15 @@ export const ArticleCard = ({ article }: { article: ArticleProps }) => {
           <div className="flex justify-between items-center text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
-              <span>Published: {article.publishDate}</span>
+              <span className="hidden sm:inline">
+                Published: {article.publishDate}
+              </span>
+              <span className="sm:hidden">{article.publishDate}</span>
             </div>
             <Link
               href={article.articleUrl}
               target="_blank"
-              className="flex items-center gap-1 text-primary hover:underline"
+              className="flex items-center gap-1 text-primary hover:underline whitespace-nowrap"
             >
               Read full article
               <ArrowUpRight className="h-4 w-4" />
