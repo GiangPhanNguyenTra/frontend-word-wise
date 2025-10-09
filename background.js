@@ -4,6 +4,12 @@ chrome.runtime.onInstalled.addListener(() => {
     title: "Add to WordWise",
     contexts: ["selection"],
   });
+
+  // Tạo báo thức CHỈ CHẠY MỘT LẦN sau 10 giây để test
+  // Không có `periodInMinutes` nghĩa là nó sẽ không lặp lại.
+  chrome.alarms.create("practiceReminder", {
+    delayInMinutes: 0.16, // ~10 giây
+  });
 });
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
@@ -27,6 +33,17 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   }
 });
 
+// Lắng nghe sự kiện khi báo thức reo
+chrome.alarms.onAlarm.addListener(async (alarm) => {
+  if (alarm.name === "practiceReminder") {
+    // 1. Đặt một "tín hiệu" trong storage để báo cho popup biết
+    await chrome.storage.session.set({ openPracticeView: true });
+    // 2. Mở popup của extension
+    chrome.action.openPopup();
+  }
+});
+
+// Gửi gợi ý từ vựng (vẫn giữ lại)
 setInterval(() => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const activeTab = tabs[0];

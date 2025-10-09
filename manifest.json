@@ -3,7 +3,14 @@
   "name": "WordWise Extension",
   "version": "1.0",
   "description": "Smart English vocabulary assistant",
-  "permissions": ["contextMenus", "scripting", "activeTab", "storage", "tabs"],
+  "permissions": [
+    "contextMenus",
+    "scripting",
+    "activeTab",
+    "storage",
+    "tabs",
+    "alarms"
+  ],
   "background": {
     "service_worker": "background.js"
   },
