@@ -42,7 +42,7 @@ export default function CollectionDetailPage() {
   );
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="py-4 lg:p-6 space-y-6">
       {/* Collection name */}
       <div className="w-full flex flex-row items-center justify-between">
         <Button
@@ -53,7 +53,7 @@ export default function CollectionDetailPage() {
           <CircleArrowLeft className="h-5 w-5 text-[#363538]" />
           Back
         </Button>
-        <h1 className="text-3xl font-bold text-[#2563EB]">
+        <h1 className="text-2xl lg:text-3xl font-bold text-[#2563EB]">
           {collection.title}
         </h1>
         <Button
@@ -68,14 +68,10 @@ export default function CollectionDetailPage() {
 
       {/* Collection information */}
       <div className="flex justify-center">
-        <div className="w-1/2 flex flex-row items-center justify-center gap-3">
-          <p className="text-[#939393]">{collection.words.length} words</p>
-          <p className="text-[#939393] before:content-['•'] before:mx-2">
-            Last studied: {collection.lastStudied}
-          </p>
-          <p className="text-[#939393] before:content-['•'] before:mx-2">
-            Created: {collection.createdAt}
-          </p>
+        <div className="w-full sm:w-1/2 flex flex-row flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs sm:text-sm text-[#939393] text-center">
+          <p>{collection.words.length} words</p>
+          <p className="before:content-['•'] before:mx-2">{`Last studied: ${collection.lastStudied}`}</p>
+          <p className="before:content-['•'] before:mx-2">{`Created: ${collection.createdAt}`}</p>
         </div>
       </div>
 

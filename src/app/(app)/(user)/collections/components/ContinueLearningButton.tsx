@@ -71,9 +71,11 @@ export default function ContinueLearningButton({ id }: { id: string }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>
-          Continue Learning
-          <ArrowRight className="ml-2 h-5 w-5" />
+        <Button className="flex items-center gap-2">
+          {/* Text responsive */}
+          <span className="hidden sm:inline">Continue Learning</span>
+          <span className="inline sm:hidden">Continue</span>
+          <ArrowRight className="h-5 w-5" />
         </Button>
       </DialogTrigger>
 

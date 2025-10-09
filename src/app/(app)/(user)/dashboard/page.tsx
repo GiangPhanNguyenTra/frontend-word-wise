@@ -141,10 +141,12 @@ export default function DashboardPage() {
         <section>
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-20">
-              <h2 className="text-2xl font-bold">My Vocabulary Collections</h2>
+              <h2 className="text-xl lg:text-2xl font-bold">
+                My Vocabulary Collections
+              </h2>
               <Button
                 variant="outline"
-                className="!text-primary !border-primary shadow-[0_2px_4px_rgba(0,0,0,0.2)]"
+                className="hidden sm:flex !text-primary !border-primary shadow-[0_2px_4px_rgba(0,0,0,0.2)]"
               >
                 <Plus className="h-4 w-4 mr-2 text-primary" />
                 New Collection
@@ -193,7 +195,7 @@ export default function DashboardPage() {
         {/* Today's Trending Vocabulary */}
         <section>
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold">
+            <h2 className=" text-xl lg:text-2xl font-bold">
               Today&#39;s Trending Vocabulary
             </h2>
             <Link
@@ -248,7 +250,9 @@ export default function DashboardPage() {
 
         {/* Community Activities */}
         <section>
-          <h2 className="text-2xl font-bold mb-4">Community Activities</h2>
+          <h2 className=" text-xllg:text-2xl font-bold mb-4">
+            Community Activities
+          </h2>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <Card className="shadow-lg transition-shadow">
               <CardHeader>

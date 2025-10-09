@@ -31,30 +31,47 @@ export default function NewReviewPage() {
     router.push(`/collections/${newId}`);
   };
 
-  // Lọc từ theo input search
   const filteredWords = words.filter((word) =>
     word.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 sm:p-6 space-y-6">
       {/* Header */}
-      <div className="relative w-full flex items-center">
-        <Button
-          className="border border-[#363538] text-[#363538] bg-white hover:bg-gray-100"
-          onClick={() => router.push(`/collections`)}
-        >
-          <CircleArrowLeft className="mr-1" />
-          Back
-        </Button>
-        <h1 className="absolute left-1/2 transform -translate-x-1/2 text-2xl font-bold text-[#2563EB]">
-          Review New Collection: {title}
-        </h1>
+      <div className="relative w-full">
+        {/* Desktop layout */}
+        <div className="hidden sm:flex items-center relative">
+          <Button
+            className="border border-[#363538] text-[#363538] bg-white hover:bg-gray-100 flex items-center gap-1"
+            onClick={() => router.push(`/collections`)}
+          >
+            <CircleArrowLeft className="h-5 w-5" />
+            <span>Back</span>
+          </Button>
+
+          <h1 className="absolute left-1/2 transform -translate-x-1/2 text-xl lg:text-2xl font-bold text-[#2563EB] text-center">
+            Review New Collection: {title}
+          </h1>
+        </div>
+
+        {/* Mobile layout */}
+        <div className="flex sm:hidden items-center justify-between w-full">
+          <Button
+            className="border border-[#363538] text-[#363538] bg-white hover:bg-gray-100 flex items-center gap-1"
+            onClick={() => router.push(`/collections`)}
+          >
+            <CircleArrowLeft className="h-5 w-5" />
+          </Button>
+
+          <h1 className="text-lg font-bold text-[#2563EB] text-right truncate max-w-[70%]">
+            Review collection: {title}
+          </h1>
+        </div>
       </div>
 
-      <div className="flex items-center justify-between w-full gap-4">
+      <div className="flex flex-wrap items-center justify-between w-full gap-3">
         {/* Search input */}
-        <div className="relative flex-1 max-w-lg bg-white">
+        <div className="relative flex-1 min-w-[200px] max-w-6xl bg-white">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#ABABAB]" />
           <Input
             placeholder="Search word..."
@@ -69,7 +86,9 @@ export default function NewReviewPage() {
           onClick={handleSave}
           className="bg-[#2563EB] text-white hover:bg-blue-600 whitespace-nowrap"
         >
-          Save Collection
+          {/* Trên mobile chỉ hiện chữ “Save” */}
+          <span className="sm:hidden">Save</span>
+          <span className="hidden sm:inline">Save Collection</span>
         </Button>
       </div>
 

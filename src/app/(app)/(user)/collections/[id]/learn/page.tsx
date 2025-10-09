@@ -46,23 +46,17 @@ export default function LearnPage() {
 
   if (index >= words.length) {
     return (
-      <div className="p-6 flex flex-col items-center gap-4">
+      <div className="p-6 flex flex-col items-center gap-4 text-center">
         <h1 className="text-2xl font-bold text-[#00966D]">🎉 Done!</h1>
         <p>You have finished learning this set.</p>
 
-        <div className="flex gap-6 text-lg">
-          <p className="text-[#00966D] font-medium text-[20px]">
-            Studied: {correct}
-          </p>
-          <p className="text-[#C30000] font-medium text-[20px]">
-            Wrong: {wrong}
-          </p>
-          <p className="text-[#EBAD25] font-medium text-[20px]">
-            Skipped: {skip}
-          </p>
+        <div className="flex flex-wrap justify-center gap-4 text-base sm:text-lg">
+          <p className="text-[#00966D] font-medium">Studied: {correct}</p>
+          <p className="text-[#C30000] font-medium">Wrong: {wrong}</p>
+          <p className="text-[#EBAD25] font-medium">Skipped: {skip}</p>
         </div>
 
-        <div className="w-full self-stretch inline-flex flex-row justify-center items-center gap-2.5 mt-4">
+        <div className="flex flex-wrap justify-center gap-3 mt-4">
           <Button
             className="bg-white border border-[#2563EB] text-[#2563EB] hover:bg-blue-50"
             onClick={() => {
@@ -103,54 +97,66 @@ export default function LearnPage() {
   };
 
   const nextQuestion = () => {
-    if (!answered) {
-      setSkip((s) => s + 1);
-    }
+    if (!answered) setSkip((s) => s + 1);
     setAnswered(null);
     setIndex((i) => i + 1);
   };
 
   return (
-    <div className="p-6 flex flex-col items-center gap-2 w-full">
-      <div className="relative w-full flex items-center">
-        {/* nút Back bên trái */}
-        <Button
-          className="border border-[#363538] text-[#363538] bg-white hover:bg-gray-100"
-          onClick={() => router.push(`/collections/${id}`)}
-        >
-          <CircleArrowLeft className="mr-1" />
-          Back
-        </Button>
+    <div className="p-4 sm:p-6 flex flex-col items-center gap-4 w-full">
+      {/* Header */}
+      <div className="relative w-full">
+        {/* Desktop layout */}
+        <div className="hidden sm:flex items-center relative">
+          <Button
+            className="border border-[#363538] text-[#363538] bg-white hover:bg-gray-100 flex items-center gap-1"
+            onClick={() => router.push(`/collections`)}
+          >
+            <CircleArrowLeft className="h-5 w-5" />
+            <span>Back</span>
+          </Button>
 
-        {/* title căn giữa tuyệt đối */}
-        <h1 className="absolute left-1/2 transform -translate-x-1/2 text-2xl font-bold text-[#2563EB]">
-          {collection.title}
-        </h1>
+          <h1 className="absolute left-1/2 transform -translate-x-1/2 text-xl lg:text-2xl font-bold text-[#2563EB] text-center">
+            Review New Collection: {collection.title}
+          </h1>
+        </div>
+
+        {/* Mobile layout */}
+        <div className="flex sm:hidden items-center justify-between w-full">
+          <Button
+            className="border border-[#363538] text-[#363538] bg-white hover:bg-gray-100 flex items-center gap-1"
+            onClick={() => router.push(`/collections`)}
+          >
+            <CircleArrowLeft className="h-5 w-5" />
+          </Button>
+
+          <h1 className="text-base font-bold text-[#2563EB] text-right truncate max-w-[70%]">
+            {collection.title}
+          </h1>
+        </div>
       </div>
 
-      <div className="flex gap-6 text-lg">
-        <p className="text-[#00966D] font-medium text-[20px]">
-          Correct: {correct}
-        </p>
-        <p className="text-[#C30000] font-medium text-[20px]">Wrong: {wrong}</p>
-        <p className="text-[#EBAD25] font-medium text-[20px]">
-          Skipped: {skip}
-        </p>
+      {/* Stats row */}
+      <div className="flex flex-wrap justify-center gap-4 text-sm sm:text-lg">
+        <p className="text-[#00966D] font-medium">Correct: {correct}</p>
+        <p className="text-[#C30000] font-medium">Wrong: {wrong}</p>
+        <p className="text-[#EBAD25] font-medium">Skipped: {skip}</p>
         <p className="text-black font-medium">
           Progress: {index + 1}/{words.length}
         </p>
       </div>
 
-      {/* Thanh progress */}
-      <div className="w-71/100 flex flex-col gap-2">
-        <div className="flex justify-between text-sm font-medium">
+      {/* Progress bar */}
+      <div className="w-full sm:w-3/4 md:w-2/3 flex flex-col gap-2 px-2 sm:px-0">
+        <div className="flex justify-between text-xs sm:text-sm font-medium">
           <span>Progress</span>
           <span>{Math.round(progressValue)}%</span>
         </div>
-        <Progress value={progressValue} className="h-3 rounded-full" />
+        <Progress value={progressValue} className="h-2 sm:h-3 rounded-full" />
       </div>
 
-      <div className="w-3/4 p-6 flex flex-col items-center gap-6">
+      {/* Main content */}
+      <div className="w-full sm:w-3/4 lg:w-2/3 p-4 sm:p-6 flex flex-col items-center gap-6">
         {current.mode === "flashcards" && <Flashcard word={current.word} />}
         {current.mode === "translation" && (
           <Translation
@@ -174,9 +180,10 @@ export default function LearnPage() {
           />
         )}
 
-        <div className="w-full flex-row justify-between inline-flex mt-4 gap-4">
+        {/* Buttons */}
+        <div className="w-full flex flex-col sm:flex-row justify-between gap-3 sm:gap-4 mt-2">
           <Button
-            className="bg-gray-200 text-black hover:bg-gray-300"
+            className="bg-gray-200 text-black hover:bg-gray-300 w-full sm:w-auto"
             onClick={() => handleAnswer("wrong")}
             disabled={!!answered}
           >
@@ -185,7 +192,7 @@ export default function LearnPage() {
 
           {current.mode === "flashcards" && (
             <Button
-              className="bg-[#00966D] hover:bg-green-800 text-white"
+              className="bg-[#00966D] hover:bg-green-800 text-white w-full sm:w-auto"
               onClick={() => handleAnswer("correct")}
               disabled={!!answered}
             >
@@ -194,7 +201,7 @@ export default function LearnPage() {
           )}
 
           <Button
-            className="bg-[#2563EB] hover:bg-blue-800 text-white"
+            className="bg-[#2563EB] hover:bg-blue-800 text-white w-full sm:w-auto"
             onClick={nextQuestion}
           >
             Next
