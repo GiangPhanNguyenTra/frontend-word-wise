@@ -4,7 +4,7 @@ import { Facebook, Linkedin, Instagram } from "lucide-react";
 export const Footer = () => {
   return (
     <footer id="contact" className="bg-primary text-white -mx-20 px-20 ">
-      <div className="container mx-auto py-16">
+      <div className="container mx-auto py-16 px-8 lg:px-20">
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-12">
           {/* Column 1: Slogan & Social */}
           <div className="lg:col-span-2">
@@ -83,7 +83,7 @@ export const Footer = () => {
           </div>
         </div>
       </div>
-      <div className="border-t border-shape2">
+      <div className="border-t border-shape2 px-8 lg:px-20">
         <div className="container mx-auto py-6 flex flex-col md:flex-row justify-between items-center text-sm text-tint3">
           <p>© 2023 Word Wise. All Rights Reserved.</p>
           <div className="flex gap-6 mt-4 md:mt-0">

@@ -63,17 +63,17 @@ const testimonials = [
 
 export default function LandingPage() {
   return (
-    <div className="bg-baseBackground px-20">
+    <div className="bg-baseBackground overflow-x-hidden">
       <Header />
 
       <main>
         {/* Hero Section */}
         <section
           id="home"
-          className="relative bg-gradient-to-r from-blue-500 to-primary pt-32 pb-20 -mx-20 px-20"
+          className="relative bg-gradient-to-r from-blue-500 to-primary pt-32 pb-20 overflow-hidden"
         >
-          <div className="container mx-auto grid md:grid-cols-2 items-center gap-12">
-            <div className="text-white -mr-[60px]">
+          <div className="container mx-auto px-6 md:px-12 lg:px-20 grid md:grid-cols-2 items-center gap-12">
+            <div className="text-white">
               <h1 className="text-5xl md:text-6xl font-extrabold leading-tight mb-4">
                 Studying English Vocabulary is now smarter and easier
               </h1>
@@ -81,30 +81,33 @@ export default function LandingPage() {
                 Word Wise is an intelligent platform that helps you learn and
                 master English vocabulary seamlessly, anytime, anywhere.
               </p>
-              <Button size="lg" variant={"default"} className="!py-6">
+              <Button size="lg" variant="default" className="!py-6">
                 <Link href="/login">Let&#39;s start</Link>
               </Button>
             </div>
-            <div className="ml-[100px]">
+            <div className="flex justify-center md:justify-end">
               <Image
                 src="/images/landing/hero-illustration.png"
                 alt="Hero Illustration"
                 width={500}
                 height={400}
+                className="max-w-full h-auto"
               />
             </div>
           </div>
         </section>
 
         {/* Feature Sections */}
-        <section className="bg-vector-pattern">
-          {features.map((feature, index) => (
-            <FeatureSection key={index} {...feature} />
-          ))}
+        <section className="bg-vector-pattern px-6 md:px-12 lg:px-20">
+          <div className="max-w-screen-xl mx-auto">
+            {features.map((feature, index) => (
+              <FeatureSection key={index} {...feature} />
+            ))}
+          </div>
         </section>
 
         {/* About Us Section */}
-        <section id="about" className="py-24">
+        <section id="about" className="py-24 px-6 md:px-12 lg:px-20">
           <div className="container mx-auto text-center">
             <h2 className="text-3xl font-bold mb-4">About Us</h2>
             <h3 className="text-4xl font-bold text-shape4 leading-tight mb-12">
@@ -132,7 +135,7 @@ export default function LandingPage() {
         </section>
 
         {/* Testimonials Section */}
-        <section className="bg-vector-pattern py-24">
+        <section className="bg-vector-pattern py-24 px-6 md:px-12 lg:px-20">
           <div className="container mx-auto text-center">
             <h2 className="text-3xl font-bold mb-4">
               Here&#39;s what others love about Word Wise

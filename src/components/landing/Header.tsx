@@ -14,8 +14,8 @@ export const Header = () => {
   const [active, setActive] = useState("#home");
 
   return (
-    <header className="fixed top-0 left-0 w-full py-4 z-10 px-28 bg-[#f3f7fc] border-b-1">
-      <div className="container mx-auto flex justify-between items-center">
+    <header className="fixed top-0 left-0 right-0 w-full py-4 z-10 bg-[#f3f7fc] border-b border-gray-200 overflow-x-hidden">
+      <div className="max-w-screen-xl mx-auto flex justify-between items-center px-4 md:px-8">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <Image src="/logo.svg" alt="Word Wise Logo" width={40} height={40} />
@@ -41,7 +41,11 @@ export const Header = () => {
         </nav>
 
         {/* Action Button */}
-        <Button size="lg" variant={"default"}>
+        <Button
+          size="lg"
+          variant="default"
+          className="px-4 py-2 text-sm md:px-6 md:py-3 md:text-base"
+        >
           <Link href="/login">Let&#39;s start</Link>
         </Button>
       </div>
