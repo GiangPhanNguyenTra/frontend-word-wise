@@ -82,154 +82,81 @@ export default function FillBlankPage() {
         </div>
       </header>
 
-      {/* Main content */}
       <main className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Question area */}
-          <div className="lg:col-span-2 bg-white rounded-xl shadow-md p-6">
-            <div className="mb-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold">Question 3 of 10</h2>
-                <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                  Medium
-                </span>
-              </div>
-
-              <div className="bg-gray-50 rounded-lg p-6 mb-6">
-                <p className="text-xl mb-4">
-                  Complete the sentence with the most appropriate word:
-                </p>
-                <p className="text-2xl font-medium text-center">
-                  &quot;He said{" "}
-                  <span
-                    className={`border-b-2 border-dashed px-2 ${
-                      blankWord
-                        ? "text-green-600 font-semibold"
-                        : "border-indigo-500"
-                    }`}
-                  >
-                    {blankWord || " "}
-                  </span>{" "}
-                  when he met me.&quot;
-                </p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                {options.map((opt, index) => {
-                  const isCorrect = opt === correctAnswer;
-                  const isSelected = selected === opt;
-                  let style =
-                    "bg-white border-2 border-gray-200 rounded-lg p-4 text-left hover:border-indigo-300 transition-all";
-                  if (selected) {
-                    if (isSelected && isCorrect)
-                      style += " bg-green-100 border-green-500";
-                    else if (isSelected && !isCorrect)
-                      style += " bg-red-100 border-red-500";
-                    else if (!isSelected && isCorrect)
-                      style += " bg-green-50 border-green-400";
-                    else style += " opacity-60";
-                  }
-                  return (
-                    <button
-                      key={opt}
-                      disabled={!!selected}
-                      onClick={() => handleSelect(opt)}
-                      className={style}
-                    >
-                      <span className="font-semibold mr-1">
-                        {String.fromCharCode(65 + index)}.
-                      </span>{" "}
-                      {opt}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="flex justify-between">
-                <Button
-                  variant="secondary"
-                  className="bg-gray-200 text-gray-700 hover:bg-gray-300"
-                >
-                  Previous
-                </Button>
-                <Button className="bg-indigo-600 text-white hover:bg-indigo-700">
-                  Next Question
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          {/* Leaderboard */}
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-lg font-semibold mb-4 flex items-center">
-              <Award className="w-5 h-5 mr-2" />
-              Live Leaderboard
-            </h2>
-            <div className="space-y-3">
-              <LeaderboardItem
-                rank={1}
-                name="GrammarGuru"
-                points={450}
-                highlight={false}
-              />
-              <LeaderboardItem
-                rank={2}
-                name="SentenceMaster"
-                points={420}
-                highlight={false}
-              />
-              <LeaderboardItem rank={7} name="You" points={score} highlight />
+        {/* Question area full width */}
+        <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">Question 3 of 10</h2>
+              <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                Medium
+              </span>
             </div>
 
-            <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-              <h3 className="font-semibold mb-2 flex items-center">
-                <Zap className="w-4 h-4 mr-2" />
-                Speed Bonus
-              </h3>
-              <p className="text-sm text-blue-700">
-                Answer quickly to earn bonus points! +2 points for every second
-                remaining.
+            <div className="bg-gray-50 rounded-lg p-6 mb-6">
+              <p className="text-xl mb-4">
+                Complete the sentence with the most appropriate word:
               </p>
+              <p className="text-2xl font-medium text-center">
+                &quot;He said{" "}
+                <span
+                  className={`border-b-2 border-dashed px-2 ${
+                    blankWord
+                      ? "text-green-600 font-semibold"
+                      : "border-indigo-500"
+                  }`}
+                >
+                  {blankWord || " "}
+                </span>{" "}
+                when he met me.&quot;
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              {options.map((opt, index) => {
+                const isCorrect = opt === correctAnswer;
+                const isSelected = selected === opt;
+                let style =
+                  "bg-white border-2 border-gray-200 rounded-lg p-4 text-left hover:border-indigo-300 transition-all";
+                if (selected) {
+                  if (isSelected && isCorrect)
+                    style += " bg-green-100 border-green-500";
+                  else if (isSelected && !isCorrect)
+                    style += " bg-red-100 border-red-500";
+                  else if (!isSelected && isCorrect)
+                    style += " bg-green-50 border-green-400";
+                  else style += " opacity-60";
+                }
+                return (
+                  <button
+                    key={opt}
+                    disabled={!!selected}
+                    onClick={() => handleSelect(opt)}
+                    className={style}
+                  >
+                    <span className="font-semibold mr-1">
+                      {String.fromCharCode(65 + index)}.
+                    </span>{" "}
+                    {opt}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="flex justify-between">
+              <Button
+                variant="secondary"
+                className="bg-gray-200 text-gray-700 hover:bg-gray-300"
+              >
+                Previous
+              </Button>
+              <Button className="bg-indigo-600 text-white hover:bg-indigo-700">
+                Next Question
+              </Button>
             </div>
           </div>
         </div>
       </main>
-    </div>
-  );
-}
-
-function LeaderboardItem({
-  rank,
-  name,
-  points,
-  highlight = false,
-}: {
-  rank: number;
-  name: string;
-  points: number;
-  highlight?: boolean;
-}) {
-  return (
-    <div
-      className={`flex justify-between items-center p-3 rounded-lg ${
-        highlight ? "bg-indigo-50 border-l-4 border-indigo-500" : "bg-gray-50"
-      }`}
-    >
-      <div className="flex items-center space-x-3">
-        <div
-          className={`w-8 h-8 rounded-full flex items-center justify-center ${
-            highlight
-              ? "bg-white"
-              : rank === 1
-              ? "bg-yellow-100"
-              : "bg-gray-100"
-          }`}
-        >
-          <span className="font-semibold">{rank}</span>
-        </div>
-        <span className="font-medium">{name}</span>
-      </div>
-      <span className="font-semibold text-indigo-600">{points}</span>
     </div>
   );
 }

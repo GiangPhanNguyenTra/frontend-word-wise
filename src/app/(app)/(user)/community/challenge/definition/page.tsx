@@ -222,19 +222,6 @@ export default function DefinitionMatchPage() {
             </div>
           </div>
         </div>
-
-        {/* Leaderboard */}
-        <div className="bg-white rounded-xl shadow-md p-6 mt-8">
-          <h2 className="text-lg font-semibold mb-4 flex items-center">
-            <Award className="w-5 h-5 mr-2" />
-            Live Leaderboard
-          </h2>
-          <div className="space-y-3">
-            <LeaderboardItem rank={1} name="VocabMaster" points={320} />
-            <LeaderboardItem rank={2} name="WordWizard" points={280} />
-            <LeaderboardItem rank={5} name="You" points={score} highlight />
-          </div>
-        </div>
       </main>
     </div>
   );
