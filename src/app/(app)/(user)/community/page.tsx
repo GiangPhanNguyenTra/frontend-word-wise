@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 export default function CommunityPage() {
   const router = useRouter();
   return (
-    <div className="flex flex-col lg:flex-row w-full gap-6 px-4 sm:px-6 lg:px-4 py-4">
+    <div className="flex flex-col lg:flex-row w-full gap-6 sm:px-6 lg:px-4 py-4">
       {/* Main Feed */}
       <div className="flex-1 max-w-2xl mx-auto">
         {/* Post creation card */}

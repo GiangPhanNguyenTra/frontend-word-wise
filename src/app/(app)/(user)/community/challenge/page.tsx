@@ -100,7 +100,7 @@ export default function ChallengePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 flex flex-col items-center gap-8">
+    <div className="min-h-screen bg-gray-50 lg:p-4 flex flex-col items-center gap-8">
       {games.map((game, index) => (
         <Card
           key={index}

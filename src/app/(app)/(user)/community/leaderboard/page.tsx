@@ -76,7 +76,7 @@ export default function LeaderboardPage() {
 
   return (
     <div className="min-h-screen text-slate-800 bg-gradient-to-br from-[#F5F7FA] to-[#E2E8F0]">
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
+      <div className="container mx-auto lg:px-4 py-8 max-w-6xl">
         {/* Header */}
         <header className="text-center mb-8">
           <h1 className="text-4xl font-bold text-[#2563EB] mb-2">
@@ -94,11 +94,15 @@ export default function LeaderboardPage() {
               (tab, i) => (
                 <button
                   key={tab}
-                  className={`px-6 py-2 rounded-full font-medium transition-all ${
-                    i === 0
-                      ? "bg-[#2563EB] text-white"
-                      : "text-slate-700 hover:bg-slate-100"
-                  }`}
+                  className={`px-6 py-2 rounded-full font-medium transition-all
+          text-[12px] sm:text-base
+          ${
+            i === 0
+              ? "bg-[#2563EB] text-white"
+              : "text-slate-700 hover:bg-slate-100"
+          }
+          px-4 sm:px-6 py-1.5 sm:py-2
+        `}
                 >
                   {tab}
                 </button>
@@ -198,73 +202,75 @@ export default function LeaderboardPage() {
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 mb-8">
+        <div className="w-full bg-white rounded-2xl shadow-sm p-6 mb-8">
           <h2 className="text-2xl font-bold text-[#2563EB] mb-6">
             Full Leaderboard
           </h2>
-          <table className="w-full text-slate-700">
-            <thead>
-              <tr className="border-b border-slate-200">
-                <th className="pb-3 text-left">Rank</th>
-                <th className="pb-3 text-left">Player</th>
-                <th className="pb-3 text-right">Score</th>
-                <th className="pb-3 text-right">Accuracy</th>
-                <th className="pb-3 text-right">Time</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                {
-                  rank: 4,
-                  name: "GrammarGuru",
-                  score: 820,
-                  acc: "83%",
-                  time: "02:30",
-                },
-                {
-                  rank: 5,
-                  name: "SyntaxSavant",
-                  score: 800,
-                  acc: "81%",
-                  time: "02:45",
-                },
-                {
-                  rank: 6,
-                  name: "LinguisticsLover",
-                  score: 780,
-                  acc: "79%",
-                  time: "02:50",
-                },
-                {
-                  rank: 7,
-                  name: "PhraseFinder",
-                  score: 760,
-                  acc: "77%",
-                  time: "03:05",
-                },
-                {
-                  rank: 8,
-                  name: "YourUsername",
-                  score: 740,
-                  acc: "75%",
-                  time: "03:15",
-                },
-              ].map((row) => (
-                <tr
-                  key={row.rank}
-                  className="hover:bg-slate-50 transition-colors border-b border-slate-100"
-                >
-                  <td className="py-3 font-semibold text-[#2563EB]">
-                    {row.rank}
-                  </td>
-                  <td className="py-3">{row.name}</td>
-                  <td className="py-3 text-right">{row.score}</td>
-                  <td className="py-3 text-right">{row.acc}</td>
-                  <td className="py-3 text-right">{row.time}</td>
+          <div className="overflow-x-auto max-w-full">
+            <table className="w-full text-slate-700">
+              <thead>
+                <tr className="border-b border-slate-200">
+                  <th className="pb-3 text-left">Rank</th>
+                  <th className="pb-3 text-left">Player</th>
+                  <th className="pb-3 text-right">Score</th>
+                  <th className="pb-3 text-right">Accuracy</th>
+                  <th className="pb-3 text-right">Time</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {[
+                  {
+                    rank: 4,
+                    name: "GrammarGuru",
+                    score: 820,
+                    acc: "83%",
+                    time: "02:30",
+                  },
+                  {
+                    rank: 5,
+                    name: "SyntaxSavant",
+                    score: 800,
+                    acc: "81%",
+                    time: "02:45",
+                  },
+                  {
+                    rank: 6,
+                    name: "LinguisticsLover",
+                    score: 780,
+                    acc: "79%",
+                    time: "02:50",
+                  },
+                  {
+                    rank: 7,
+                    name: "PhraseFinder",
+                    score: 760,
+                    acc: "77%",
+                    time: "03:05",
+                  },
+                  {
+                    rank: 8,
+                    name: "YourUsername",
+                    score: 740,
+                    acc: "75%",
+                    time: "03:15",
+                  },
+                ].map((row) => (
+                  <tr
+                    key={row.rank}
+                    className="hover:bg-slate-50 transition-colors border-b border-slate-100"
+                  >
+                    <td className="py-3 font-semibold text-[#2563EB]">
+                      {row.rank}
+                    </td>
+                    <td className="py-3">{row.name}</td>
+                    <td className="py-3 text-right">{row.score}</td>
+                    <td className="py-3 text-right">{row.acc}</td>
+                    <td className="py-3 text-right">{row.time}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* Buttons */}

@@ -109,7 +109,7 @@ export default function SettingLayout({
       </div>
 
       {/* Main content */}
-      <main className="flex-1 p-4 pt-[80px] lg:pt-8 w-full">{children}</main>
+      <main className="flex-1 lg:p-4 pt-[80px] lg:pt-8 w-full">{children}</main>
     </div>
   );
 }
