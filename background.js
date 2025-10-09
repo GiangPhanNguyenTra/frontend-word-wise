@@ -47,4 +47,4 @@ setInterval(() => {
       () => chrome.runtime.lastError
     );
   });
-}, 60000);
+}, 10000);

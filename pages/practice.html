@@ -21,6 +21,31 @@
         border-color: #93c5fd !important;
         background-color: #eff6ff !important;
       }
+      .char-input {
+        width: 2rem;
+        height: 2.25rem;
+        text-align: center;
+        font-size: 1.125rem;
+        font-weight: 500;
+        border-radius: 0.375rem;
+        border: 1px solid #d1d5db;
+        outline: none;
+        caret-color: transparent;
+      }
+      .char-input.focused {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 2px #bfdbfe;
+      }
+      .char-hint {
+        width: 2rem;
+        height: 2.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.125rem;
+        font-weight: 500;
+        color: #1f2937;
+      }
     </style>
   </head>
   <body
@@ -52,7 +77,9 @@
       "
     >
       Practice
-      <span style="color: #9ca3af; font-size: 0.875rem">(1/10)</span>
+      <span id="progress-counter" style="color: #9ca3af; font-size: 0.875rem"
+        >(0/0)</span
+      >
     </h2>
 
     <div
@@ -63,7 +90,6 @@
       "
     >
       <button
-        id="translation-tab"
         data-tab-target="translation"
         style="
           flex: 1;
@@ -83,7 +109,6 @@
         Translation
       </button>
       <button
-        id="definition-tab"
         data-tab-target="definition"
         style="
           flex: 1;
@@ -99,7 +124,6 @@
         Definition
       </button>
       <button
-        id="fill-blank-tab"
         data-tab-target="fill-blank"
         style="
           flex: 1;
@@ -116,13 +140,11 @@
       </button>
     </div>
 
-    <!-- Translation Content -->
     <div id="translation-content">
       <p style="text-align: center; font-size: 1.125rem; margin: 0 0 1.5rem 0">
         Translate to English<br /><span
           style="font-weight: 700; font-size: 1.25rem"
-          >"Thoáng qua"</span
-        >
+        ></span>
       </p>
       <input
         type="text"
@@ -139,77 +161,14 @@
       />
     </div>
 
-    <!-- Definition Content -->
     <div id="definition-content" style="display: none">
       <p style="text-align: center; font-size: 1rem; margin: 0 0 1.5rem 0">
         What is the definition of
-        <span style="font-weight: 700; font-size: 1.125rem">"Ephemeral"</span>?
+        <span style="font-weight: 700; font-size: 1.125rem"></span>?
       </p>
-      <div style="display: flex; flex-direction: column; gap: 0.75rem">
-        <button
-          class="practice-option-btn"
-          style="
-            width: 100%;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            padding: 0.75rem;
-            font-size: 0.9rem;
-            text-align: left;
-            background: white;
-            cursor: pointer;
-          "
-        >
-          Lasting for a very short time.
-        </button>
-        <button
-          class="practice-option-btn"
-          style="
-            width: 100%;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            padding: 0.75rem;
-            font-size: 0.9rem;
-            text-align: left;
-            background: white;
-            cursor: pointer;
-          "
-        >
-          Something that is very important.
-        </button>
-        <button
-          class="practice-option-btn"
-          style="
-            width: 100%;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            padding: 0.75rem;
-            font-size: 0.9rem;
-            text-align: left;
-            background: white;
-            cursor: pointer;
-          "
-        >
-          A feeling of great happiness.
-        </button>
-        <button
-          class="practice-option-btn"
-          style="
-            width: 100%;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            padding: 0.75rem;
-            font-size: 0.9rem;
-            text-align: left;
-            background: white;
-            cursor: pointer;
-          "
-        >
-          Difficult to understand.
-        </button>
-      </div>
+      <div style="display: flex; flex-direction: column; gap: 0.75rem"></div>
     </div>
 
-    <!-- Fill Blank Content -->
     <div id="fill-blank-content" style="display: none">
       <p
         style="
@@ -218,81 +177,30 @@
           margin: 0 0 1.5rem 0;
           line-height: 1.5;
         "
-      >
-        The beauty of the cherry blossoms is __________, lasting only for a
-        week.
-      </p>
+      ></p>
       <div
+        id="fill-blank-inputs"
         style="
-          min-height: 2rem;
-          border-bottom: 1px solid #d1d5db;
+          display: flex;
+          justify-content: center;
+          gap: 0.25rem;
+          flex-wrap: wrap;
           margin-bottom: 1.5rem;
         "
       ></div>
       <div
+        id="fill-blank-options"
         style="
           display: flex;
           justify-content: center;
           flex-wrap: wrap;
           gap: 0.5rem;
         "
-      >
-        <button
-          class="practice-option-btn"
-          style="
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            padding: 0.5rem 1rem;
-            font-size: 1rem;
-            background: white;
-            cursor: pointer;
-          "
-        >
-          phe
-        </button>
-        <button
-          class="practice-option-btn"
-          style="
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            padding: 0.5rem 1rem;
-            font-size: 1rem;
-            background: white;
-            cursor: pointer;
-          "
-        >
-          ral
-        </button>
-        <button
-          class="practice-option-btn"
-          style="
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            padding: 0.5rem 1rem;
-            font-size: 1rem;
-            background: white;
-            cursor: pointer;
-          "
-        >
-          e
-        </button>
-        <button
-          class="practice-option-btn"
-          style="
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            padding: 0.5rem 1rem;
-            font-size: 1rem;
-            background: white;
-            cursor: pointer;
-          "
-        >
-          me
-        </button>
-      </div>
+      ></div>
     </div>
 
     <div
+      id="action-container"
       style="
         display: flex;
         justify-content: space-between;
