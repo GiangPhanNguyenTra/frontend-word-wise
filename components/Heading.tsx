@@ -1,7 +1,7 @@
 import { useFonts } from "expo-font";
-import { useRouter } from "expo-router"; // ✅ Dùng expo-router
+import { useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { ArrowLeft, Bell, Settings } from "lucide-react-native";
+import { ChevronLeft } from "lucide-react-native";
 import React, { useCallback } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
@@ -35,22 +35,21 @@ const Heading: React.FC<HeadingProps> = ({ title }) => {
   return (
     <View
       onLayout={onLayoutRootView}
-      className="w-full flex-row items-center justify-between py-4 px-4 border-b border-gray-200 bg-[#FAF9FF] mt-8"
+      className="w-full flex-row items-center justify-between py-4 px-4 mt-8"
     >
       <View className="flex-row items-center">
-        {/* Nút quay lại → quay về trang trước trong stack */}
-        <TouchableOpacity onPress={() => router.back()}>
-          <ArrowLeft width={40} height={30} />
-        </TouchableOpacity>
+        <View className="px-4">
+          <TouchableOpacity
+            onPress={() => router.back()}
+            className="w-12 h-12 bg-white rounded-full items-center justify-center"
+          >
+            <ChevronLeft size={30} color="#000000" />
+          </TouchableOpacity>
+        </View>
 
-        <Text className="font-[Montserrat-Bold] text-2xl text-[#7F56D9] ml-4">
-          {title || "SOULSPACE"}
+        <Text className="font-[Montserrat-Bold] text-xl">
+          {title || "WORDWISE"}
         </Text>
-      </View>
-
-      <View className="flex-row items-center gap-4">
-        <Bell strokeWidth={1.5} />
-        <Settings strokeWidth={1.5} />
       </View>
     </View>
   );
