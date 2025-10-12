@@ -48,7 +48,7 @@ const Heading: React.FC<HeadingProps> = ({ title }) => {
         </View>
 
         <Text className="font-[Montserrat-Bold] text-xl">
-          {title || "WORDWISE"}
+          {title}
         </Text>
       </View>
     </View>

@@ -11,6 +11,7 @@ export default function LearnLayout() {
       <Stack.Screen name="collection/preview" options={{ title: "Preview collection details" }} />
       <Stack.Screen name="collection/edit" options={{ title: "Edit word" }} />
       <Stack.Screen name="collection/view/index" options={{ title: "View collection details" }} />
+      <Stack.Screen name="collection/learn/flashcard/index" options={{ title: "Learn flashcards" }} />
     </Stack>
   );
 }

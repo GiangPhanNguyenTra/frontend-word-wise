@@ -149,6 +149,13 @@ export default function CollectionViewPage() {
             onConfirm={(selected) => {
               console.log("Selected to learn:", selected);
               setLearnModalVisible(false);
+              router.push({
+                pathname: "/(tabs)/learn/collection/learn/flashcard",
+                params: {
+                  collectionName,
+                  selected: JSON.stringify(selected),
+                },
+              });
             }}
             options={[
               { id: "All", label: "All" },
