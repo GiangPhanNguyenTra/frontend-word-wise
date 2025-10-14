@@ -1,15 +1,16 @@
 "use client";
 
 import Heading from "@/components/Heading";
-import { useFocusEffect, useNavigation } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams, useNavigation } from "expo-router";
 import * as Speech from "expo-speech";
 import { CheckCheck, Frown, Laugh, Volume2 } from "lucide-react-native";
-import React, { useCallback, useState } from "react";
-import { Alert, Text, TouchableOpacity, View } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
 
 type WordQuestion = {
   id: number;
   word: string;
+  type: string;
   phonetic: string;
   correctAnswer: string;
   options: string[];
@@ -20,6 +21,7 @@ const mockQuestions: WordQuestion[] = [
   {
     id: 1,
     word: "Accommodation",
+    type: "Noun",
     phonetic: "/əˌkɒməˈdeɪʃən/",
     correctAnswer: "Chỗ ở",
     options: ["Chỗ ở", "Đồ uống", "Thế giới", "Chắc chắn"],
@@ -28,6 +30,7 @@ const mockQuestions: WordQuestion[] = [
   {
     id: 2,
     word: "Innovate",
+    type: "Verb",
     phonetic: "/ˈɪnəveɪt/",
     correctAnswer: "Đổi mới",
     options: ["Đổi mới", "Thất bại", "Thành công", "Tự tin"],
@@ -36,6 +39,7 @@ const mockQuestions: WordQuestion[] = [
   {
     id: 3,
     word: "Compassion",
+    type: "Noun",
     phonetic: "/kəmˈpæʃ.ən/",
     correctAnswer: "Lòng trắc ẩn",
     options: ["Lòng trắc ẩn", "Cạnh tranh", "Nỗ lực", "Tự do"],
@@ -50,6 +54,21 @@ export default function QuizFlashcardScreen() {
   const [checked, setChecked] = useState(false);
   const [learnedCount, setLearnedCount] = useState(0);
   const currentQuestion = mockQuestions[currentIndex];
+  const [correctCount, setCorrectCount] = useState(0);
+  const [wrongCount, setWrongCount] = useState(0);
+  const [results, setResults] = useState<any[]>([]);
+  const { reset } = useLocalSearchParams();
+
+  useEffect(() => {
+    if (reset === "true") {
+      setCurrentIndex(0);
+      setSelectedAnswer(null);
+      setChecked(false);
+      setLearnedCount(0);
+      setCorrectCount(0);
+      setWrongCount(0);
+    }
+  }, [reset]);
 
   const speak = (text: string) => {
     Speech.speak(text, { language: "en", rate: 0.9 });
@@ -57,7 +76,28 @@ export default function QuizFlashcardScreen() {
 
   const handleCheck = () => {
     if (selectedAnswer === null) return;
+    const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
     setChecked(true);
+
+    if (isCorrect) {
+      setCorrectCount((prev) => prev + 1);
+    } else {
+      setWrongCount((prev) => prev + 1);
+    }
+
+    setResults((prev) => [
+      ...prev,
+      {
+        id: currentQuestion.id,
+        word: currentQuestion.word,
+        type: currentQuestion.type,
+        phonetic: currentQuestion.phonetic,
+        meaning: currentQuestion.meaning,
+        selectedAnswer,
+        correctAnswer: currentQuestion.correctAnswer,
+        isCorrect,
+      },
+    ]);
   };
 
   const handleNext = () => {
@@ -68,7 +108,15 @@ export default function QuizFlashcardScreen() {
       setChecked(false);
     } else {
       setTimeout(() => {
-        Alert.alert("🎉 Hoàn thành!", "Bạn đã học hết tất cả từ!");
+        router.push({
+          pathname: "/(tabs)/learn/collection/learn/result",
+          params: {
+            results: JSON.stringify(results),
+            correct: correctCount,
+            wrong: wrongCount,
+            total,
+          },
+        });
       }, 400);
     }
   };

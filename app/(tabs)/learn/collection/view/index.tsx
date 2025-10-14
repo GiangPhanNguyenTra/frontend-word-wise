@@ -150,7 +150,7 @@ export default function CollectionViewPage() {
               console.log("Selected to learn:", selected);
               setLearnModalVisible(false);
               router.push({
-                pathname: "/(tabs)/learn/collection/learn/flashcard",
+                pathname: "/(tabs)/learn/collection/learn/choose",
                 params: {
                   collectionName,
                   selected: JSON.stringify(selected),
