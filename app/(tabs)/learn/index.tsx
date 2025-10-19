@@ -31,7 +31,10 @@ export default function LearnPage() {
                             </TouchableOpacity>
                         </View>
 
-                        <TouchableOpacity className="w-full mt-4 bg-white rounded-full px-4 py-4">
+                        <TouchableOpacity 
+                            className="w-full mt-4 bg-white rounded-full px-4 py-4" 
+                            onPress={() => router.push("/(tabs)/learn/collection/learn/match")}
+                        >
                             <Text className="text-[#2563EB] text-center font-[Montserrat-Bold]">
                                 Take Random Quiz
                             </Text>

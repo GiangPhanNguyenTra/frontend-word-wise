@@ -23,7 +23,7 @@ export default function HomeScreen() {
       label: "Daily Vocabulary Review",
       bg: "#E9EFFD",
       color: "#2563EB",
-      route: "/(tabs)/home/review",
+      route: "/(tabs)/learn",
     },
     {
       id: 2,
@@ -31,7 +31,7 @@ export default function HomeScreen() {
       label: "Quick Flashcard Quiz",
       bg: "#FEF3E5",
       color: "#FFB34D",
-      route: "/(tabs)/home/review",
+      route: "/(tabs)/learn/collection/learn/flashcard",
     },
     {
       id: 3,
@@ -39,7 +39,7 @@ export default function HomeScreen() {
       label: "Pronunciation Practice",
       bg: "#E5FFFC",
       color: "#106057",
-      route: "/(tabs)/home/review",
+      route: "/(tabs)/speak",
     },
     {
       id: 4,
@@ -78,7 +78,9 @@ export default function HomeScreen() {
         </View>
         <View className="flex-row items-center gap-6">
           <MessageSquareText strokeWidth={1.5} />
-          <Settings strokeWidth={1.5} />
+          <TouchableOpacity onPress={() => router.push("/(tabs)/settings")}>
+            <Settings strokeWidth={1.5} />
+          </TouchableOpacity>
         </View>
       </View>
 
