@@ -10,6 +10,9 @@ export default function SpeakLayout() {
             <Stack.Screen name="tips/index" options={{  title: "Tips" }} />
             <Stack.Screen name="word/practice" options={{  title: "Words" }} />
             <Stack.Screen name="word/result" options={{  title: "Word Result" }} />
+            <Stack.Screen name="sentence/index" options={{  title: "Practice Sentences" }} />
+            <Stack.Screen name="sentence/practice" options={{ title: "Sentences" }} />
+            <Stack.Screen name="sentence/result" options={{  title: "Sentence Result" }} />
         </Stack>
     );
 }

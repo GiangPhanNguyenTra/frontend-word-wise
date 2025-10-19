@@ -17,7 +17,7 @@ export default function SpeakScreen() {
             label: "Practice Sentences",
             bg: "#FDF7E9",
             color: "#EBAD25",
-            route: "/",
+            route: "/(tabs)/speak/sentence",
         },
         { 
             id: 3,

@@ -69,18 +69,19 @@ export default function ResultScreen() {
                     <TouchableOpacity
                         onPress={() =>
                             router.replace({
-                                pathname: "/(tabs)/speak/word/practice",
-                                params: { reset: "true" },
+                            pathname: "/(tabs)/speak/sentence/practice",
+                            params: { count: total },
                             })
                         }
                         className="bg-[#2563EB] w-[200px] py-3 rounded-full mb-4 items-center justify-center flex-row gap-2"
                     >
-                        <RotateCw size="20" color="white"/>
+                        <RotateCw size="20" color="white" />
                         <Text className="text-white text-center font-[Montserrat-Bold]">Retry</Text>
                     </TouchableOpacity>
 
+
                     <TouchableOpacity
-                        onPress={() => router.push("/(tabs)/speak/word")}
+                        onPress={() => router.push("/(tabs)/speak/sentence")}
                         className="bg-white border border-[#2563EB] w-[200px] py-3 rounded-full"
                     >
                         <Text className="text-[#2563EB] text-center font-[Montserrat-Bold]">
