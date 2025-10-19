@@ -165,7 +165,7 @@ export default function HomeScreen() {
                 className="rounded-full p-2"
                 style={{ backgroundColor: item.color }}
               >
-                <Play size={18} color="white" />
+                <Play size={18} color="white" fill="white" />
               </View>
             </TouchableOpacity>
           ))}
