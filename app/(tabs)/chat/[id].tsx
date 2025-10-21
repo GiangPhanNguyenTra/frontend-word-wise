@@ -170,7 +170,7 @@ export default function ChatDetailScreen() {
             ref={inputRef}
             value={message}
             onChangeText={setMessage}
-            placeholder="Type your message..."
+            placeholder="Type your message or command"
             placeholderTextColor="#7B7B7B"
             multiline
             style={{

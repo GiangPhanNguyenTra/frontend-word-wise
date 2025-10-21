@@ -47,7 +47,7 @@ export default function HomeScreen() {
       label: "Chat & Learn with Friends",
       bg: "#E6FFE3",
       color: "#4DC93E",
-      route: "/(tabs)/home/review",
+      route: "/(tabs)/chat",
     },
     {
       id: 5,

@@ -61,7 +61,7 @@ export default function ChatScreen() {
           <Search color="#696674" size={20} />
           <TextInput
             className="flex-1 ml-2 text-base font-[Montserrat-Medium] text-[#333]"
-            placeholder="Search"
+            placeholder="Search by name"
             placeholderTextColor="#696674"
             value={search}
             onChangeText={setSearch}

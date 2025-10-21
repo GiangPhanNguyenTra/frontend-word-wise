@@ -4,7 +4,7 @@ import Heading from "@/components/Heading";
 import { router } from "expo-router";
 import { Eye, EyeOff, LogOut, PenLine, Save } from "lucide-react-native";
 import { useState } from "react";
-import { Modal, Pressable, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Modal, Pressable, ScrollView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 
 export default function Settingscreen() {
   const [showConfirm, setShowConfirm] = useState(false);
@@ -206,29 +206,31 @@ export default function Settingscreen() {
         visible={showConfirm}
         onRequestClose={() => setShowConfirm(false)}
       >
-        <View className="flex-1 bg-black/60 justify-center items-center">
-          <View className="bg-white w-4/5 rounded-2xl p-6 items-center">
-            <Text className="text-lg font-[Montserrat-SemiBold] mb-6 text-gray-800">
-              Are you sure you want to logout?
-            </Text>
+        <TouchableWithoutFeedback onPress={() => setShowConfirm(false)}>
+          <View className="flex-1 bg-black/60 justify-center items-center">
+            <View className="bg-white w-4/5 rounded-2xl p-6 items-center">
+              <Text className="text-lg font-[Montserrat-SemiBold] mb-6 text-gray-800">
+                Are you sure you want to logout?
+              </Text>
 
-            <View className="flex-row gap-4">
-              <TouchableOpacity
-                onPress={() => setShowConfirm(false)}
-                className="bg-gray-300 px-8 py-4 rounded-xl"
-              >
-                <Text className="text-base font-[Montserrat-SemiBold] text-gray-800">No</Text>
-              </TouchableOpacity>
+              <View className="flex-row gap-4">
+                <TouchableOpacity
+                  onPress={() => setShowConfirm(false)}
+                  className="bg-gray-300 px-8 py-4 rounded-xl"
+                >
+                  <Text className="text-base font-[Montserrat-SemiBold] text-gray-800">No</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={handleConfirmCancel}
-                className="bg-red-500 px-8 py-4 rounded-xl"
-              >
-                <Text className="text-base font-[Montserrat-SemiBold] text-white">Yes</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleConfirmCancel}
+                  className="bg-red-500 px-8 py-4 rounded-xl"
+                >
+                  <Text className="text-base font-[Montserrat-SemiBold] text-white">Yes</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </Modal>
     </View>
   );
