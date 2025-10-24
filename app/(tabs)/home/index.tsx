@@ -55,7 +55,7 @@ export default function HomeScreen() {
       label: "Progress Statistics",
       bg: "#FFE9E5",
       color: "#D15743",
-      route: "/(tabs)/home/review",
+      route: "/(tabs)/progress",
     },
   ];
 
@@ -78,7 +78,7 @@ export default function HomeScreen() {
         </View>
         <View className="flex-row items-center gap-6">
           <MessageSquareText strokeWidth={1.5} />
-          <TouchableOpacity onPress={() => router.push("/(tabs)/settings")}>
+          <TouchableOpacity onPress={() => router.push("/(tabs)/home/settings")}>
             <Settings strokeWidth={1.5} />
           </TouchableOpacity>
         </View>

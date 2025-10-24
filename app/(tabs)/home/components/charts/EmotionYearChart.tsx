@@ -4,7 +4,6 @@ import { LineChart } from "react-native-chart-kit";
 
 const screenWidth = Dimensions.get("window").width;
 
-// Y axis mapping
 const emotions = ["Angry", "Worried", "Neutral", "Happy", "Excited"];
 
 const EmotionYearChart = () => {
@@ -13,7 +12,6 @@ const EmotionYearChart = () => {
     value: number;
   } | null>(null);
 
-  // Trục X: tháng
   const labels = [
     "Jan",
     "Feb",
@@ -28,15 +26,10 @@ const EmotionYearChart = () => {
     "Nov",
     "Dec",
   ];
-  // Trục Y: số từ 1–5 (map sang emotion)
   const data = [2, 3, 4, 5, 3, 2, 1, 4, 5, 3, 2, 4];
 
   return (
     <View className="bg-white rounded-2xl p-4 shadow mt-6">
-      <Text className="font-[Montserrat-Bold] text-lg text-black mb-3">
-        Yearly Emotion Stats
-      </Text>
-
       <LineChart
         data={{
           labels,
@@ -52,21 +45,21 @@ const EmotionYearChart = () => {
           backgroundGradientFrom: "#FFFFFF",
           backgroundGradientTo: "#FFFFFF",
           decimalPlaces: 0,
-          color: () => "#7F56D9",
+          color: () => "#2563EB",
           strokeWidth: 1.5,
           labelColor: () => "#9E9E9E",
           propsForLabels: {
             fontFamily: "Montserrat-Regular",
             fontSize: 10,
           },
-          fillShadowGradientFrom: "#7F56D9",
+          fillShadowGradientFrom: "#2563EB",
           fillShadowGradientTo: "#FFFFFF",
           fillShadowGradientFromOpacity: 0.3,
           fillShadowGradientToOpacity: 0,
           propsForDots: {
             r: "5",
             strokeWidth: "2",
-            stroke: "#7F56D9",
+            stroke: "#2563EB",
             fill: "#FFFFFF",
           },
           propsForBackgroundLines: {
@@ -85,7 +78,7 @@ const EmotionYearChart = () => {
                   labels.indexOf(selected.month) *
                     ((screenWidth - 40) / labels.length) -
                   20,
-                backgroundColor: "#7F56D9",
+                backgroundColor: "#2563EB",
                 paddingVertical: 4,
                 paddingHorizontal: 8,
                 borderRadius: 8,

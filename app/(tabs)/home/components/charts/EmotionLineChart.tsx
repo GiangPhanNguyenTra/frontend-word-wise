@@ -4,7 +4,6 @@ import { LineChart } from "react-native-chart-kit";
 
 const screenWidth = Dimensions.get("window").width;
 
-// trục Y là cảm xúc
 const emotions = ["Angry", "Worried", "Neutral", "Happy", "Excited"];
 
 const EmotionLineChart = () => {
@@ -13,16 +12,11 @@ const EmotionLineChart = () => {
     value: number;
   } | null>(null);
 
-  // trục X là ngày trong tuần
   const labels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const data = [2, 3, 2, 5, 3, 4, 1]; // giá trị 1–5 map sang emotions
+  const data = [2, 3, 2, 5, 3, 4, 1];
 
   return (
     <View className="bg-white rounded-2xl p-4 shadow mt-6">
-      <Text className="font-[Montserrat-Bold] text-lg text-black mb-3">
-        Weekly Emotion Stats
-      </Text>
-
       <LineChart
         data={{
           labels,
@@ -38,22 +32,22 @@ const EmotionLineChart = () => {
           backgroundGradientFrom: "#FFFFFF",
           backgroundGradientTo: "#FFFFFF",
           decimalPlaces: 0,
-          color: () => "#7F56D9", // line tím
+          color: () => "#2563EB",
           strokeWidth: 1.5,
           labelColor: () => "#9E9E9E",
           propsForLabels: {
             fontFamily: "Montserrat-Regular",
             fontSize: 10,
           },
-          fillShadowGradientFrom: "#7F56D9", // trên tím
-          fillShadowGradientTo: "#FFFFFF", // dưới trắng
+          fillShadowGradientFrom: "#2563EB",
+          fillShadowGradientTo: "#FFFFFF",
           fillShadowGradientFromOpacity: 0.3,
           fillShadowGradientToOpacity: 0,
           propsForDots: {
             r: "5",
             strokeWidth: "2",
-            stroke: "#7F56D9",
-            fill: "#FFFFFF", // dot trắng
+            stroke: "#2563EB",
+            fill: "#FFFFFF",
           },
           propsForBackgroundLines: {
             stroke: "#EDEDED",
@@ -73,7 +67,7 @@ const EmotionLineChart = () => {
                   labels.indexOf(selected.day) *
                     ((screenWidth - 40) / labels.length) -
                   20,
-                backgroundColor: "#7F56D9",
+                backgroundColor: "#2563EB",
                 paddingVertical: 4,
                 paddingHorizontal: 8,
                 borderRadius: 8,
