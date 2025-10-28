@@ -1,9 +1,11 @@
-// collections/components/WordCard.tsx
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PenLine, Trash2 } from "lucide-react";
-interface WordCardProps {
+import { EditWordDialog } from "./EditWordDialog";
+import { DeleteWordDialog } from "./DeleteWordDialog";
+
+interface Word {
   word: string;
   type: string;
   meaning: string;
@@ -13,16 +15,23 @@ interface WordCardProps {
   exampleVi: string;
 }
 
-export function WordCard({
-  word,
-  type,
-  meaning,
-  definitionEn,
-  definitionVi,
-  exampleEn,
-  exampleVi,
-}: WordCardProps) {
-  // Badge style cho type
+interface WordCardProps {
+  wordData: Word;
+  onEdit: (updatedWord: Word) => void;
+  onDelete: () => void;
+}
+
+export function WordCard({ wordData, onEdit, onDelete }: WordCardProps) {
+  const {
+    word,
+    type,
+    meaning,
+    definitionEn,
+    definitionVi,
+    exampleEn,
+    exampleVi,
+  } = wordData;
+
   const typeStyles: Record<string, string> = {
     noun: "bg-[#E9EFFD] text-[#2563EB]",
     verb: "bg-[#FEE2E2] text-[#C41C1C]",
@@ -56,9 +65,21 @@ export function WordCard({
         <p className="italic text-black text-[16px]">“{exampleEn}”</p>
         <p className="italic text-[#939393] text-[16px]">“{exampleVi}”</p>
 
-        <div className="flex justify-end gap-2">
-          <PenLine color="#939393" size={20} />
-          <Trash2 color="#C30000" size={20} />
+        <div className="flex justify-end gap-4 pt-2">
+          <EditWordDialog wordData={wordData} onSave={onEdit}>
+            <PenLine
+              color="#939393"
+              size={20}
+              className="cursor-pointer hover:text-blue-600 transition-colors"
+            />
+          </EditWordDialog>
+          <DeleteWordDialog onConfirm={onDelete}>
+            <Trash2
+              color="#C30000"
+              size={20}
+              className="cursor-pointer hover:text-red-800 transition-colors"
+            />
+          </DeleteWordDialog>
         </div>
       </CardContent>
     </Card>

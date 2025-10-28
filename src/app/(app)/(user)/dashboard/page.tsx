@@ -144,13 +144,6 @@ export default function DashboardPage() {
               <h2 className="text-xl lg:text-2xl font-bold">
                 My Vocabulary Collections
               </h2>
-              <Button
-                variant="outline"
-                className="hidden sm:flex !text-primary !border-primary shadow-[0_2px_4px_rgba(0,0,0,0.2)]"
-              >
-                <Plus className="h-4 w-4 mr-2 text-primary" />
-                New Collection
-              </Button>
             </div>
 
             <Link

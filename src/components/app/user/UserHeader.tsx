@@ -22,14 +22,12 @@ import {
   ChevronDown,
   Home,
   MessageCircle,
-  PlusCircle,
   TrendingUp,
 } from "lucide-react";
 
 const navLinks = [
   { href: "/dashboard", label: "Home", icon: Home },
   { href: "/collections", label: "Collections", icon: BookOpen },
-  { href: "/add-word", label: "Add Word", icon: PlusCircle },
   { href: "/chatbot", label: "Chatbot", icon: Bot },
   { href: "/community", label: "Community", icon: MessageCircle },
   { href: "/trending", label: "Trending", icon: TrendingUp },

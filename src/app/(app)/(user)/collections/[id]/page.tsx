@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -10,40 +10,61 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { wordCollections } from "../data/word-data";
+import { wordCollections as initialWordCollections } from "../data/word-data";
 import { WordCard } from "../components/WordCard";
-import { useRouter } from "next/navigation";
-
-import {
-  PlusCircle,
-  CircleArrowLeft,
-  Search,
-  ChevronDown,
-  ArrowRight,
-} from "lucide-react";
+import { PlusCircle, CircleArrowLeft, Search, ChevronDown } from "lucide-react";
 import ContinueLearningButton from "../components/ContinueLearningButton";
+
+interface Word {
+  word: string;
+  type: string;
+  meaning: string;
+  definitionEn: string;
+  definitionVi: string;
+  exampleEn: string;
+  exampleVi: string;
+}
 
 export default function CollectionDetailPage() {
   const params = useParams();
   const id = params.id as string;
   const router = useRouter();
 
-  const collection = wordCollections.find((c) => c.id === Number(id));
-
+  const [collections, setCollections] = useState(initialWordCollections);
   const [search, setSearch] = useState("");
+
+  const collectionIndex = collections.findIndex((c) => c.id === Number(id));
+  const collection = collections[collectionIndex];
+
+  const handleEditWord = (updatedWord: Word) => {
+    const newCollections = [...collections];
+    const words = newCollections[collectionIndex].words;
+    const wordIndex = words.findIndex((w) => w.word === updatedWord.word);
+    if (wordIndex !== -1) {
+      words[wordIndex] = updatedWord;
+      setCollections(newCollections);
+    }
+  };
+
+  const handleDeleteWord = (wordToDelete: string) => {
+    const newCollections = [...collections];
+    const originalWords = newCollections[collectionIndex].words;
+    newCollections[collectionIndex].words = originalWords.filter(
+      (w) => w.word !== wordToDelete
+    );
+    setCollections(newCollections);
+  };
 
   if (!collection) {
     return <div className="p-6">Collection not found</div>;
   }
 
-  // Lọc từ theo search
   const filteredWords = collection.words.filter((w) =>
     w.word.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <div className="py-4 lg:p-6 space-y-6">
-      {/* Collection name */}
       <div className="w-full flex flex-row items-center justify-between">
         <Button
           variant="outline"
@@ -66,7 +87,6 @@ export default function CollectionDetailPage() {
         </Button>
       </div>
 
-      {/* Collection information */}
       <div className="flex justify-center">
         <div className="w-full sm:w-1/2 flex flex-row flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs sm:text-sm text-[#939393] text-center">
           <p>{collection.words.length} words</p>
@@ -75,11 +95,8 @@ export default function CollectionDetailPage() {
         </div>
       </div>
 
-      {/* Toolbar row */}
       <div className="flex items-center justify-between gap-4">
-        {/* Search + Filter */}
         <div className="flex items-center gap-3 flex-1">
-          {/* Search input */}
           <div className="relative w-full max-w-lg bg-white">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#ABABAB]" />
             <Input
@@ -89,8 +106,6 @@ export default function CollectionDetailPage() {
               className="pl-9"
             />
           </div>
-
-          {/* Dropdown filter */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="flex items-center gap-2">
@@ -105,15 +120,17 @@ export default function CollectionDetailPage() {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-
-        {/* Continue Learning button */}
         <ContinueLearningButton id={id} />
       </div>
 
-      {/* Word list */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {filteredWords.map((w, idx) => (
-          <WordCard key={idx} {...w} />
+          <WordCard
+            key={`${w.word}-${idx}`}
+            wordData={w}
+            onEdit={handleEditWord}
+            onDelete={() => handleDeleteWord(w.word)}
+          />
         ))}
       </div>
     </div>
