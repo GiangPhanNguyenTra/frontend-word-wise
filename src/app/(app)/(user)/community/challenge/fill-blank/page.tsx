@@ -1,49 +1,84 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowLeft, Clock, Star, Award, Zap } from "lucide-react";
+import { ArrowLeft, Clock, Star } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+
+const initialQuestions = [
+  {
+    sentence: "He said ___ when he met me.",
+    options: ["hello", "goodbye", "please", "thanks"],
+    answer: "hello",
+    difficulty: "Medium",
+  },
+  {
+    sentence: "The sky is usually ___ on a sunny day.",
+    options: ["green", "blue", "red", "yellow"],
+    answer: "blue",
+    difficulty: "Easy",
+  },
+  {
+    sentence: "An apple is a type of ___.",
+    options: ["vegetable", "fruit", "animal", "mineral"],
+    answer: "fruit",
+    difficulty: "Easy",
+  },
+  {
+    sentence: "To be successful, you must be ___ and never give up.",
+    options: ["lazy", "persistent", "hesitant", "careless"],
+    answer: "persistent",
+    difficulty: "Hard",
+  },
+];
 
 export default function FillBlankPage() {
+  const router = useRouter();
+  const [questions, setQuestions] = useState(initialQuestions);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(120);
   const [selected, setSelected] = useState<string | null>(null);
   const [blankWord, setBlankWord] = useState("");
-  const correctAnswer = "hello";
-  const options = ["hello", "goodbye", "please", "thanks"];
+
+  const currentQuestion = questions[currentQuestionIndex];
+  const correctAnswer = currentQuestion.answer;
+  const sentenceParts = currentQuestion.sentence.split("___");
 
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          alert(`Time's up! Your final score: ${score}`);
+          router.push("/community/leaderboard?game=fill-the-blank");
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, [score]);
+  }, [router]);
 
   const handleSelect = (answer: string) => {
-    if (selected) return; // disable after first click
+    if (selected) return;
     setSelected(answer);
-    const timeTaken = 120 - timeLeft;
-    const speedBonus = Math.max(0, 15 - timeTaken) * 2;
 
     if (answer === correctAnswer) {
       setBlankWord(answer);
-      setScore((prev) => prev + 10 + speedBonus);
-      setTimeout(() => {
-        alert(`✅ Correct! +10 points +${speedBonus} speed bonus`);
-      }, 400);
+      setScore((prev) => prev + 10);
     } else {
       setScore((prev) => prev - 5);
-      setTimeout(() => {
-        alert(`❌ Incorrect. The right answer was "${correctAnswer}"`);
-      }, 400);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setSelected(null);
+      setBlankWord("");
+    } else {
+      router.push("/community/leaderboard?game=fill-the-blank");
     }
   };
 
@@ -52,7 +87,6 @@ export default function FillBlankPage() {
 
   return (
     <div className="bg-gray-100 min-h-screen">
-      {/* Header */}
       <header className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
           <div className="flex items-center space-x-2">
@@ -83,13 +117,14 @@ export default function FillBlankPage() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        {/* Question area full width */}
-        <div className="bg-white rounded-xl shadow-md p-6">
+        <div className="bg-white rounded-xl shadow-md p-6 max-w-3xl mx-auto">
           <div className="mb-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold">Question 3 of 10</h2>
+              <h2 className="text-lg font-semibold">
+                Question {currentQuestionIndex + 1} of {questions.length}
+              </h2>
               <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                Medium
+                {currentQuestion.difficulty}
               </span>
             </div>
 
@@ -97,35 +132,38 @@ export default function FillBlankPage() {
               <p className="text-xl mb-4">
                 Complete the sentence with the most appropriate word:
               </p>
-              <p className="text-2xl font-medium text-center">
-                &quot;He said{" "}
+              <p className="text-2xl font-medium text-center leading-relaxed">
+                {sentenceParts[0]}
                 <span
-                  className={`border-b-2 border-dashed px-2 ${
+                  className={`border-b-2 border-dashed mx-2 px-2 pb-1 ${
                     blankWord
-                      ? "text-green-600 font-semibold"
+                      ? "text-green-600 font-semibold border-green-600"
                       : "border-indigo-500"
                   }`}
                 >
-                  {blankWord || " "}
-                </span>{" "}
-                when he met me.&quot;
+                  {blankWord || "        "}
+                </span>
+                {sentenceParts[1]}
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              {options.map((opt, index) => {
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+              {currentQuestion.options.map((opt, index) => {
                 const isCorrect = opt === correctAnswer;
                 const isSelected = selected === opt;
                 let style =
-                  "bg-white border-2 border-gray-200 rounded-lg p-4 text-left hover:border-indigo-300 transition-all";
+                  "bg-white border-2 border-gray-200 rounded-lg p-4 text-left hover:border-indigo-400 transition-all font-medium disabled:cursor-not-allowed";
+
                 if (selected) {
-                  if (isSelected && isCorrect)
-                    style += " bg-green-100 border-green-500";
-                  else if (isSelected && !isCorrect)
-                    style += " bg-red-100 border-red-500";
-                  else if (!isSelected && isCorrect)
+                  if (isSelected && isCorrect) {
+                    style += " bg-green-100 border-green-500 text-green-800";
+                  } else if (isSelected && !isCorrect) {
+                    style += " bg-red-100 border-red-500 text-red-800";
+                  } else if (!isSelected && isCorrect) {
                     style += " bg-green-50 border-green-400";
-                  else style += " opacity-60";
+                  } else {
+                    style += " opacity-60";
+                  }
                 }
                 return (
                   <button
@@ -134,24 +172,24 @@ export default function FillBlankPage() {
                     onClick={() => handleSelect(opt)}
                     className={style}
                   >
-                    <span className="font-semibold mr-1">
+                    <span className="font-semibold mr-2 text-indigo-600">
                       {String.fromCharCode(65 + index)}.
-                    </span>{" "}
+                    </span>
                     {opt}
                   </button>
                 );
               })}
             </div>
 
-            <div className="flex justify-between">
+            <div className="flex justify-end">
               <Button
-                variant="secondary"
-                className="bg-gray-200 text-gray-700 hover:bg-gray-300"
+                onClick={handleNext}
+                disabled={!selected}
+                className="bg-indigo-600 text-white hover:bg-indigo-700 disabled:bg-gray-300 w-full sm:w-auto"
               >
-                Previous
-              </Button>
-              <Button className="bg-indigo-600 text-white hover:bg-indigo-700">
-                Next Question
+                {currentQuestionIndex < questions.length - 1
+                  ? "Next Question"
+                  : "Finish"}
               </Button>
             </div>
           </div>
