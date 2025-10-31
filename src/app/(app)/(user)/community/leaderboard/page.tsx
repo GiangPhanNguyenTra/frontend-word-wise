@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Award, RefreshCw, Share, Home, User } from "lucide-react";
 import Chart from "chart.js/auto";
+import { useRouter } from "next/navigation";
 
 export default function LeaderboardPage() {
+  const [activeTab, setActiveTab] = useState("Fill the Blank");
   const confettiContainer = useRef<HTMLDivElement>(null);
   const chartRef = useRef<HTMLCanvasElement>(null);
-
-  // 🎉 Confetti animation
+  const router = useRouter();
   useEffect(() => {
     const createConfetti = () => {
       if (!confettiContainer.current) return;
@@ -41,7 +42,6 @@ export default function LeaderboardPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // 📊 Chart.js setup
   useEffect(() => {
     if (!chartRef.current) return;
     const ctx = chartRef.current.getContext("2d");
@@ -77,7 +77,6 @@ export default function LeaderboardPage() {
   return (
     <div className="min-h-screen text-slate-800 bg-gradient-to-br from-[#F5F7FA] to-[#E2E8F0]">
       <div className="container mx-auto lg:px-4 py-8 max-w-6xl">
-        {/* Header */}
         <header className="text-center mb-8">
           <h1 className="text-4xl font-bold text-[#2563EB] mb-2">
             WordWizard Leaderboard
@@ -87,22 +86,18 @@ export default function LeaderboardPage() {
           </p>
         </header>
 
-        {/* Tabs */}
         <div className="flex justify-center mb-8">
           <div className="flex space-x-2 bg-white shadow-sm rounded-full p-1">
             {["Fill the Blank", "Definition Match", "Word Shooter"].map(
-              (tab, i) => (
+              (tab) => (
                 <button
                   key={tab}
-                  className={`px-6 py-2 rounded-full font-medium transition-all
-          text-[12px] sm:text-base
-          ${
-            i === 0
-              ? "bg-[#2563EB] text-white"
-              : "text-slate-700 hover:bg-slate-100"
-          }
-          px-4 sm:px-6 py-1.5 sm:py-2
-        `}
+                  onClick={() => setActiveTab(tab)}
+                  className={`cursor-pointer px-4 sm:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-all text-[12px] sm:text-base ${
+                    activeTab === tab
+                      ? "bg-[#2563EB] text-white"
+                      : "text-slate-700 hover:bg-slate-100"
+                  }`}
                 >
                   {tab}
                 </button>
@@ -111,7 +106,6 @@ export default function LeaderboardPage() {
           </div>
         </div>
 
-        {/* Winner Section */}
         <div className="relative bg-white rounded-2xl shadow-md p-6 mb-8 overflow-hidden">
           <div
             ref={confettiContainer}
@@ -136,7 +130,6 @@ export default function LeaderboardPage() {
           </div>
         </div>
 
-        {/* Podium */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
           {[
             {
@@ -201,7 +194,6 @@ export default function LeaderboardPage() {
           ))}
         </div>
 
-        {/* Table */}
         <div className="w-full bg-white rounded-2xl shadow-sm p-6 mb-8">
           <h2 className="text-2xl font-bold text-[#2563EB] mb-6">
             Full Leaderboard
@@ -273,15 +265,14 @@ export default function LeaderboardPage() {
           </div>
         </div>
 
-        {/* Buttons */}
         <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <button className="px-8 py-3 bg-[#2563EB] hover:bg-[#1E4FCC] text-white rounded-full font-semibold transition-all flex items-center justify-center">
+          <button className="cursor-pointer px-8 py-3 bg-[#2563EB] hover:bg-[#1E4FCC] text-white rounded-full font-semibold transition-all flex items-center justify-center">
             <RefreshCw className="mr-2 w-5 h-5" /> Play Again
           </button>
-          <button className="px-8 py-3 bg-[#EBAD25] hover:bg-[#D99B1F] text-white rounded-full font-semibold transition-all flex items-center justify-center">
-            <Share className="mr-2 w-5 h-5" /> Share Results
-          </button>
-          <button className="px-8 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-full font-semibold transition-all flex items-center justify-center">
+          <button
+            onClick={() => router.push("/community/challenge")}
+            className="cursor-pointer px-8 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-full font-semibold transition-all flex items-center justify-center"
+          >
             <Home className="mr-2 w-5 h-5" /> Return to Lobby
           </button>
         </div>
