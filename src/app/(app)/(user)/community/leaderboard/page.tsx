@@ -18,6 +18,8 @@ export default function LeaderboardPage() {
       setActiveTab("Definition Match");
     } else if (game === "fill-the-blank") {
       setActiveTab("Fill the Blank");
+    } else if (game === "word-shooter") {
+      setActiveTab("Word Shooter");
     }
   }, [searchParams]);
 

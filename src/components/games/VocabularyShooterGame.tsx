@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Heart, Clock } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 type Word = {
   en: string;
@@ -34,19 +35,20 @@ type Particle = {
 };
 
 const GAME_WIDTH = 800;
-const GAME_HEIGHT = 500; // Chiều cao đã được giảm
+const GAME_HEIGHT = 500;
 const PLAYER_WIDTH = 60;
 const WORD_SPEED = 1;
 const BULLET_SPEED = 8;
 const WORD_SPAWN_RATE = 1200;
-const GAME_DURATION = 120; // 2 minutes
-const TARGET_SPAWN_CHANCE = 0.3;
+const GAME_DURATION = 120;
+const TARGET_SPAWN_CHANCE = 0.4;
 
 export const VocabularyShooterGame = ({
   wordsToReview,
 }: {
   wordsToReview: Word[];
 }) => {
+  const router = useRouter();
   const [gameState, setGameState] = useState<"idle" | "playing" | "gameOver">(
     "idle"
   );
@@ -103,10 +105,15 @@ export const VocabularyShooterGame = ({
       return;
     }
 
-    let nextIndex = (currentWordIndex + 1) % wordsToReview.length;
-    while (newCompleted.includes(nextIndex)) {
-      nextIndex = (nextIndex + 1) % wordsToReview.length;
+    let nextIndex = 0;
+    for (let i = 1; i < wordsToReview.length; i++) {
+      const potentialIndex = (currentWordIndex + i) % wordsToReview.length;
+      if (!newCompleted.includes(potentialIndex)) {
+        nextIndex = potentialIndex;
+        break;
+      }
     }
+
     setCurrentWordIndex(nextIndex);
     setFallingWords([]);
     setBullets([]);
@@ -322,7 +329,7 @@ export const VocabularyShooterGame = ({
     <div className="flex flex-col items-center gap-4 p-4 border rounded-lg shadow-xl bg-white">
       <div
         ref={gameAreaRef}
-        className={`relative bg-blue-900/90 w-[800px] h-[450px] overflow-hidden rounded-md border-4 border-slate-700 ${
+        className={`relative bg-blue-900/90 w-[800px] h-[500px] overflow-hidden rounded-md border-4 border-slate-700 ${
           gameState === "playing" ? "cursor-none" : "cursor-pointer"
         } ${shakeScreen ? "animate-shake-red" : ""}`}
         style={{ width: GAME_WIDTH, height: GAME_HEIGHT }}
@@ -434,9 +441,20 @@ export const VocabularyShooterGame = ({
                 </ul>
               </div>
             )}
-            <Button onClick={startGame} size="lg">
-              Play Again
-            </Button>
+            <div className="flex items-center gap-4 mt-6">
+              <Button onClick={startGame} size="lg">
+                Play Again
+              </Button>
+              <Button
+                onClick={() =>
+                  router.push("/community/leaderboard?game=word-shooter")
+                }
+                size="lg"
+                variant="secondary"
+              >
+                View Leaderboard
+              </Button>
+            </div>
           </div>
         )}
       </div>
@@ -461,52 +479,28 @@ export const VocabularyShooterGame = ({
           </div>
         )}
       </div>
-      <style jsx global>{`
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         @keyframes heart {
-          0% {
-            transform: translate(0, 0) scale(1);
-            opacity: 1;
-          }
-          100% {
-            transform: translate(calc(-40px + 80px * var(--rand-x)), -80px)
-              scale(1.5);
-            opacity: 0;
-          }
+          0% { transform: translate(0, 0) scale(1); opacity: 1; }
+          100% { transform: translate(calc(-40px + 80px * var(--rand-x)), -80px) scale(1.5); opacity: 0; }
         }
-        .animate-heart {
-          animation: heart 1.2s ease-out forwards;
-        }
+        .animate-heart { animation: heart 1.2s ease-out forwards; }
         @keyframes explosion {
-          0% {
-            transform: scale(0.5);
-            opacity: 1;
-          }
-          50% {
-            transform: scale(2);
-            opacity: 1;
-          }
-          100% {
-            transform: scale(3);
-            opacity: 0;
-          }
+          0% { transform: scale(0.5); opacity: 1; }
+          50% { transform: scale(2); opacity: 1; }
+          100% { transform: scale(3); opacity: 0; }
         }
-        .animate-explosion {
-          animation: explosion 0.8s ease-out forwards;
-        }
+        .animate-explosion { animation: explosion 0.8s ease-out forwards; }
         @keyframes score {
-          0% {
-            transform: translateY(0);
-            opacity: 1;
-          }
-          100% {
-            transform: translateY(-60px);
-            opacity: 0;
-          }
+          0% { transform: translateY(0); opacity: 1; }
+          100% { transform: translateY(-60px); opacity: 0; }
         }
-        .animate-score {
-          animation: score 1.2s ease-out forwards;
-        }
-      `}</style>
+        .animate-score { animation: score 1.2s ease-out forwards; }
+      `,
+        }}
+      />
     </div>
   );
 };
