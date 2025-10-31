@@ -48,7 +48,11 @@ export default function LoginScreen() {
         {/* Nút back */}
         <View className="px-4">
           <TouchableOpacity
-            onPress={() => router.back()}
+            onPress={() => {
+              router.replace({
+                pathname: "/(auth)/welcome",
+              });
+            }}
             className="w-12 h-12 bg-white rounded-[10px] items-center justify-center"
           >
             <ChevronLeft size={30} color="#000000" />

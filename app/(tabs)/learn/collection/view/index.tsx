@@ -5,9 +5,24 @@ import LearnSelectionModal from "@/components/LearnSelectionModal";
 import ProgressCard from "@/components/ProgressCard";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as Speech from "expo-speech";
-import { EllipsisVertical, LibraryBig, Play, Plus, Search, Volume2 } from "lucide-react-native";
+import {
+  EllipsisVertical,
+  LibraryBig,
+  Play,
+  Plus,
+  Search,
+  Volume2,
+} from "lucide-react-native";
 import { useState } from "react";
-import { Modal, ScrollView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
+import {
+  Modal,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 
 export default function CollectionViewPage() {
   const router = useRouter();
@@ -132,11 +147,14 @@ export default function CollectionViewPage() {
                 Learned
               </Text>
             </View>
-            <ProgressCard color="#2563EB" percent={percent} compact/>
+            <ProgressCard color="#2563EB" percent={percent} compact />
           </View>
 
           {/* Learn Button */}
-          <TouchableOpacity onPress={() => setLearnModalVisible(true)} className="bg-[#EBAD25] py-4 rounded-[16px] items-center flex-row justify-center mb-5 mt-2">
+          <TouchableOpacity
+            onPress={() => setLearnModalVisible(true)}
+            className="bg-[#EBAD25] py-4 rounded-[16px] items-center flex-row justify-center mb-5 mt-2"
+          >
             <Text className="text-white font-[Montserrat-Bold] text-lg mr-2">
               Learn
             </Text>
@@ -194,9 +212,15 @@ export default function CollectionViewPage() {
             })}
           </View>
         </View>
-
         {/* Flashcards Button */}
-        <TouchableOpacity className="bg-[#2563EB] py-4 rounded-[16px] items-center flex-row justify-center mb-5 mt-5">
+        <TouchableOpacity
+          onPress={() => {
+            router.replace({
+              pathname: "/(tabs)/learn/collection/learn/flashcard",
+            });
+          }}
+          className="bg-[#2563EB] py-4 rounded-[16px] items-center flex-row justify-center mb-5 mt-5"
+        >
           <LibraryBig size={18} color="white" />
           <Text className="text-white font-[Montserrat-Bold] text-lg ml-2">
             Flashcards
@@ -266,13 +290,17 @@ export default function CollectionViewPage() {
                       className="py-3"
                       onPress={() => handleEdit(item)}
                     >
-                      <Text className="text-center font-[Montserrat-Bold]">Edit</Text>
+                      <Text className="text-center font-[Montserrat-Bold]">
+                        Edit
+                      </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       className="py-3"
                       onPress={() => handleDelete(item.word)}
                     >
-                      <Text className="text-[#C30000] text-center font-[Montserrat-Bold]">Delete</Text>
+                      <Text className="text-[#C30000] text-center font-[Montserrat-Bold]">
+                        Delete
+                      </Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -282,7 +310,9 @@ export default function CollectionViewPage() {
         ))}
 
         {filteredWords.length === 0 && (
-          <Text className="text-center text-[#696674] mt-4 font-[Montserrat-Medium]">No words found</Text>
+          <Text className="text-center text-[#696674] mt-4 font-[Montserrat-Medium]">
+            No words found
+          </Text>
         )}
       </ScrollView>
 
@@ -317,14 +347,18 @@ export default function CollectionViewPage() {
                   className="flex-1 h-12 justify-center items-center rounded-full border border-[#ccc] mr-2"
                   onPress={() => setConfirmVisible({ show: false, word: null })}
                 >
-                  <Text className="font-[Montserrat-Bold] text-[#333]">Cancel</Text>
+                  <Text className="font-[Montserrat-Bold] text-[#333]">
+                    Cancel
+                  </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   className="flex-1 h-12 justify-center items-center rounded-full bg-[#DC2626] ml-2"
                   onPress={confirmDelete}
                 >
-                  <Text className="font-[Montserrat-Bold] text-white">Delete</Text>
+                  <Text className="font-[Montserrat-Bold] text-white">
+                    Delete
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -358,7 +392,9 @@ export default function CollectionViewPage() {
                     className="flex-1 h-12 justify-center items-center rounded-full border border-[#ccc] mr-2"
                     onPress={() => setEditVisible(false)}
                   >
-                    <Text className="font-[Montserrat-Bold] text-[#333]">Cancel</Text>
+                    <Text className="font-[Montserrat-Bold] text-[#333]">
+                      Cancel
+                    </Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -368,7 +404,9 @@ export default function CollectionViewPage() {
                       setEditVisible(false);
                     }}
                   >
-                    <Text className="font-[Montserrat-Bold] text-white">Save</Text>
+                    <Text className="font-[Montserrat-Bold] text-white">
+                      Save
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </View>
