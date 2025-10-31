@@ -2,9 +2,8 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Heart } from "lucide-react";
+import { Sparkles, Heart, Clock } from "lucide-react";
 
-// --- Types and Interfaces ---
 type Word = {
   en: string;
   vi: string;
@@ -30,17 +29,18 @@ type Particle = {
   id: number;
   x: number;
   y: number;
-  type: "heart" | "explosion" | "score" | "life";
+  type: "heart" | "explosion" | "score";
   randX?: number;
 };
 
-// --- Game Constants ---
 const GAME_WIDTH = 800;
-const GAME_HEIGHT = 600;
+const GAME_HEIGHT = 500; // Chiều cao đã được giảm
 const PLAYER_WIDTH = 60;
 const WORD_SPEED = 1;
 const BULLET_SPEED = 8;
 const WORD_SPAWN_RATE = 1200;
+const GAME_DURATION = 120; // 2 minutes
+const TARGET_SPAWN_CHANCE = 0.1;
 
 export const VocabularyShooterGame = ({
   wordsToReview,
@@ -51,8 +51,10 @@ export const VocabularyShooterGame = ({
     "idle"
   );
   const [score, setScore] = useState(0);
-  const [lives, setLives] = useState(3);
+  const [timeLeft, setTimeLeft] = useState(GAME_DURATION);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [completedIndices, setCompletedIndices] = useState<number[]>([]);
+  const [timeTaken, setTimeTaken] = useState(0);
   const [playerX, setPlayerX] = useState(GAME_WIDTH / 2 - PLAYER_WIDTH / 2);
   const [fallingWords, setFallingWords] = useState<FallingWord[]>([]);
   const [bullets, setBullets] = useState<Bullet[]>([]);
@@ -67,9 +69,19 @@ export const VocabularyShooterGame = ({
 
   const currentTargetWord = wordsToReview[currentWordIndex];
 
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${String(minutes).padStart(2, "0")}:${String(
+      remainingSeconds
+    ).padStart(2, "0")}`;
+  };
+
   const startGame = () => {
     setScore(0);
-    setLives(3);
+    setTimeLeft(GAME_DURATION);
+    setTimeTaken(0);
+    setCompletedIndices([]);
     setCurrentWordIndex(0);
     setFallingWords([]);
     setBullets([]);
@@ -82,19 +94,25 @@ export const VocabularyShooterGame = ({
   };
 
   const advanceToNextWord = useCallback(() => {
-    setCurrentWordIndex((prevIndex) => {
-      if (prevIndex < wordsToReview.length - 1) {
-        return prevIndex + 1;
-      } else {
-        setGameState("gameOver");
-        return prevIndex;
-      }
-    });
+    const newCompleted = [...completedIndices, currentWordIndex];
+    setCompletedIndices(newCompleted);
+
+    if (newCompleted.length === wordsToReview.length) {
+      setTimeTaken(GAME_DURATION - timeLeft);
+      setGameState("gameOver");
+      return;
+    }
+
+    let nextIndex = (currentWordIndex + 1) % wordsToReview.length;
+    while (newCompleted.includes(nextIndex)) {
+      nextIndex = (nextIndex + 1) % wordsToReview.length;
+    }
+    setCurrentWordIndex(nextIndex);
     setFallingWords([]);
     setBullets([]);
     setParticles([]);
     setShakeScreen(false);
-  }, [wordsToReview.length]);
+  }, [completedIndices, currentWordIndex, wordsToReview.length, timeLeft]);
 
   const gameLoop = useCallback(() => {
     setBullets((prev) =>
@@ -103,15 +121,7 @@ export const VocabularyShooterGame = ({
 
     setFallingWords((prev) => {
       const updatedWords = prev.map((w) => ({ ...w, y: w.y + WORD_SPEED }));
-
-      const remainingWords = updatedWords.filter((word) => {
-        if (word.y > GAME_HEIGHT) {
-          return false;
-        }
-        return true;
-      });
-
-      return remainingWords;
+      return updatedWords.filter((word) => word.y <= GAME_HEIGHT);
     });
 
     if (
@@ -122,11 +132,10 @@ export const VocabularyShooterGame = ({
       const targetWord = wordsToReview[currentWordIndex];
 
       setFallingWords((prevWords) => {
-        // Equal probability for target and distractor words
-        const isSpawningTarget = Math.random() < 0.3;
-
+        const isSpawningTarget = Math.random() < TARGET_SPAWN_CHANCE;
         let wordToSpawn: Word;
-        if (isSpawningTarget) {
+
+        if (isSpawningTarget || wordsToReview.length < 3) {
           wordToSpawn = targetWord;
         } else {
           let distractorIndex = Math.floor(
@@ -150,21 +159,14 @@ export const VocabularyShooterGame = ({
     }
 
     setBullets((prevBullets) => {
-      if (isTransitioning) {
-        return prevBullets;
-      }
-
+      if (isTransitioning) return prevBullets;
       const remainingBullets = [...prevBullets];
 
       setFallingWords((prevWords) => {
         const remainingWords = [...prevWords];
-
         for (let i = remainingBullets.length - 1; i >= 0; i--) {
           const bullet = remainingBullets[i];
-
           if (bullet.hit) continue;
-
-          let bulletHit = false;
 
           for (let j = remainingWords.length - 1; j >= 0; j--) {
             const word = remainingWords[j];
@@ -176,8 +178,6 @@ export const VocabularyShooterGame = ({
               bullet.y < word.y + 30 &&
               bullet.y + 10 > word.y
             ) {
-              bulletHit = true;
-
               remainingBullets[i] = {
                 ...bullet,
                 hit: true,
@@ -186,8 +186,8 @@ export const VocabularyShooterGame = ({
 
               if (word.isTarget) {
                 setScore((s) => s + 10);
-
-                const newParticles = [
+                setParticles((prev) => [
+                  ...prev,
                   ...Array.from({ length: 6 }, (_, index) => ({
                     id: Date.now() + Math.random() + index,
                     x: word.x + wordWidth / 2,
@@ -196,32 +196,15 @@ export const VocabularyShooterGame = ({
                     randX: Math.random(),
                   })),
                   {
-                    id: Date.now() + Math.random() + 10,
-                    x: word.x + wordWidth / 2,
-                    y: word.y - 10,
-                    type: "heart" as const,
-                  },
-                  {
                     id: Date.now() + Math.random() + 11,
                     x: word.x + wordWidth / 2,
                     y: word.y - 10,
                     type: "score" as const,
                   },
-                ];
-                setParticles((prev) => [...prev, ...newParticles]);
-
-                if (!isTransitioning) {
-                  setIsTransitioning(true);
-                  setTimeout(() => {
-                    setIsTransitioning(false);
-                    advanceToNextWord();
-                  }, 1200);
-                }
+                ]);
               } else {
-                setLives((l) => Math.max(0, l - 1));
                 setShakeScreen(true);
                 setTimeout(() => setShakeScreen(false), 400);
-
                 const correctWord = wordsToReview[currentWordIndex];
                 if (correctWord) {
                   setWrongWords((prev) => {
@@ -231,30 +214,23 @@ export const VocabularyShooterGame = ({
                     return prev;
                   });
                 }
-
-                const newParticles = [
+                setParticles((prev) => [
+                  ...prev,
                   {
                     id: Date.now() + Math.random(),
                     x: word.x + wordWidth / 2,
                     y: word.y,
                     type: "explosion" as const,
                   },
-                  {
-                    id: Date.now() + Math.random() + 1,
-                    x: word.x + wordWidth / 2,
-                    y: word.y - 10,
-                    type: "life" as const,
-                  },
-                ];
-                setParticles((prev) => [...prev, ...newParticles]);
+                ]);
+              }
 
-                if (!isTransitioning) {
-                  setIsTransitioning(true);
-                  setTimeout(() => {
-                    setIsTransitioning(false);
-                    advanceToNextWord();
-                  }, 1200);
-                }
+              if (!isTransitioning) {
+                setIsTransitioning(true);
+                setTimeout(() => {
+                  setIsTransitioning(false);
+                  advanceToNextWord();
+                }, 1200);
               }
 
               remainingWords.splice(j, 1);
@@ -272,22 +248,26 @@ export const VocabularyShooterGame = ({
     });
 
     setParticles((prev) => prev.filter((p) => Date.now() - p.id < 1200));
-
-    setLives((prevLives) => {
-      if (prevLives <= 0 && gameState === "playing") {
-        setGameState("gameOver");
-      }
-      return prevLives;
-    });
-
     gameLoopRef.current = requestAnimationFrame(gameLoop);
-  }, [
-    wordsToReview,
-    currentWordIndex,
-    advanceToNextWord,
-    gameState,
-    isTransitioning,
-  ]);
+  }, [wordsToReview, currentWordIndex, advanceToNextWord, isTransitioning]);
+
+  useEffect(() => {
+    if (gameState !== "playing") return;
+
+    const timer = setInterval(() => {
+      setTimeLeft((prevTime) => {
+        if (prevTime <= 1) {
+          clearInterval(timer);
+          setTimeTaken(GAME_DURATION);
+          setGameState("gameOver");
+          return 0;
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [gameState]);
 
   useEffect(() => {
     const gameArea = gameAreaRef.current;
@@ -340,11 +320,9 @@ export const VocabularyShooterGame = ({
 
   return (
     <div className="flex flex-col items-center gap-4 p-4 border rounded-lg shadow-xl bg-white">
-      <h2 className="text-2xl font-bold">Minigame: Vocabulary Shooter</h2>
-
       <div
         ref={gameAreaRef}
-        className={`relative bg-blue-900/90 w-[800px] h-[600px] overflow-hidden rounded-md border-4 border-slate-700 ${
+        className={`relative bg-blue-900/90 w-[800px] h-[450px] overflow-hidden rounded-md border-4 border-slate-700 ${
           gameState === "playing" ? "cursor-none" : "cursor-pointer"
         } ${shakeScreen ? "animate-shake-red" : ""}`}
         style={{ width: GAME_WIDTH, height: GAME_HEIGHT }}
@@ -352,7 +330,6 @@ export const VocabularyShooterGame = ({
         {gameState === "playing" && (
           <>
             <div
-              className="text-white text-4xl"
               style={{
                 position: "absolute",
                 left: playerX,
@@ -367,7 +344,6 @@ export const VocabularyShooterGame = ({
                 style={{ width: PLAYER_WIDTH, height: "auto" }}
               />
             </div>
-
             {bullets.map((bullet) => (
               <div
                 key={bullet.id}
@@ -382,7 +358,6 @@ export const VocabularyShooterGame = ({
                 }}
               />
             ))}
-
             {fallingWords.map((word) => (
               <div
                 key={word.id}
@@ -392,61 +367,61 @@ export const VocabularyShooterGame = ({
                 {word.text}
               </div>
             ))}
-
             {particles.map((particle) => (
               <div
                 key={particle.id}
                 className={`absolute pointer-events-none ${
                   particle.type === "heart"
-                    ? "animate-heart text-red-500 text-3xl"
+                    ? "animate-heart text-red-500"
                     : particle.type === "explosion"
-                    ? "animate-explosion text-orange-500 text-5xl"
-                    : particle.type === "score"
-                    ? "animate-score font-bold text-xl text-green-600"
-                    : "animate-life text-red-500 font-bold text-xl"
+                    ? "animate-explosion text-orange-500"
+                    : "animate-score font-bold text-green-600"
                 }`}
                 style={
                   {
                     left: particle.x,
                     top: particle.y,
-                    textAlign: "center",
                     zIndex: 20,
                     ...(particle.type === "heart"
-                      ? {
-                          "--rand-x": particle.randX,
-                        }
+                      ? { "--rand-x": particle.randX }
                       : {}),
                   } as React.CSSProperties
                 }
               >
                 {particle.type === "heart" && <Heart size={30} fill="red" />}
-                {particle.type === "explosion" && "💥"}
-                {particle.type === "score" && "+10"}
-                {particle.type === "life" && "-1 ❤️"}
+                {particle.type === "explosion" && (
+                  <span className="text-5xl">💥</span>
+                )}
+                {particle.type === "score" && (
+                  <span className="text-xl">+10</span>
+                )}
               </div>
             ))}
           </>
         )}
-
         {gameState === "idle" && (
-          <div className="w-full h-full flex flex-col justify-center items-center text-white">
-            <h3 className="text-4xl font-bold mb-4">Ready to Practice?</h3>
-            <p className="mb-2">Di chuyển chuột để điều khiển.</p>
+          <div className="w-full h-full flex flex-col justify-center items-center text-white p-4 text-center">
+            <h3 className="text-4xl font-bold mb-4">Vocabulary Shooter</h3>
+            <p className="mb-2">
+              Bắn từ tiếng Anh tương ứng với nghĩa tiếng Việt được cho.
+            </p>
             <p className="mb-8">
-              Click để bắn từ tiếng Anh đúng với nghĩa được cho.
+              Bạn có {formatTime(GAME_DURATION)} để hoàn thành!
             </p>
             <Button onClick={startGame} size="lg">
               Start Game
             </Button>
           </div>
         )}
-
         {gameState === "gameOver" && (
           <div className="w-full h-full flex flex-col justify-center items-center text-white bg-black/50 p-4 overflow-auto">
             <h3 className="text-5xl font-bold mb-4">
-              {lives > 0 ? "You Win!" : "Game Over"}
+              {completedIndices.length === wordsToReview.length
+                ? "Congratulations!"
+                : "Time's Up!"}
             </h3>
-            <p className="text-2xl mb-4">Final Score: {score}</p>
+            <p className="text-2xl mb-2">Final Score: {score}</p>
+            <p className="text-xl mb-4">Time Taken: {formatTime(timeTaken)}</p>
             {wrongWords.length > 0 && (
               <div className="mb-4 text-left max-h-40 overflow-auto">
                 <h4 className="text-xl font-semibold mb-2">Từ sai:</h4>
@@ -459,28 +434,22 @@ export const VocabularyShooterGame = ({
                 </ul>
               </div>
             )}
-            {wrongWords.length === 0 && (
-              <p className="text-lg mb-4">Không có từ nào sai!</p>
-            )}
             <Button onClick={startGame} size="lg">
               Play Again
             </Button>
           </div>
         )}
       </div>
-
       <div
         className="w-full bg-slate-100 p-4 rounded-md flex justify-between items-center"
         style={{ width: GAME_WIDTH }}
       >
-        <div className="flex items-center gap-4 text-lg">
+        <div className="flex items-center gap-6 text-lg">
           <div className="flex items-center gap-2 font-bold">
-            <Sparkles className="text-yellow-500" />
-            Score: {score}
+            <Sparkles className="text-yellow-500" /> Score: {score}
           </div>
           <div className="flex items-center gap-2 font-bold">
-            <Heart className="text-red-500" />
-            Lives: {lives}
+            <Clock className="text-blue-500" /> Time: {formatTime(timeLeft)}
           </div>
         </div>
         {gameState === "playing" && currentTargetWord && (
@@ -492,7 +461,6 @@ export const VocabularyShooterGame = ({
           </div>
         )}
       </div>
-
       <style jsx global>{`
         @keyframes heart {
           0% {
@@ -508,7 +476,6 @@ export const VocabularyShooterGame = ({
         .animate-heart {
           animation: heart 1.2s ease-out forwards;
         }
-
         @keyframes explosion {
           0% {
             transform: scale(0.5);
@@ -526,7 +493,6 @@ export const VocabularyShooterGame = ({
         .animate-explosion {
           animation: explosion 0.8s ease-out forwards;
         }
-
         @keyframes score {
           0% {
             transform: translateY(0);
@@ -539,20 +505,6 @@ export const VocabularyShooterGame = ({
         }
         .animate-score {
           animation: score 1.2s ease-out forwards;
-        }
-
-        @keyframes life {
-          0% {
-            transform: translateY(0);
-            opacity: 1;
-          }
-          100% {
-            transform: translateY(-60px);
-            opacity: 0;
-          }
-        }
-        .animate-life {
-          animation: life 1.2s ease-out forwards;
         }
       `}</style>
     </div>
