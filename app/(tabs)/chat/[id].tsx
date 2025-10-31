@@ -1,5 +1,4 @@
 "use client";
-
 import {
   useFocusEffect,
   useLocalSearchParams,
@@ -10,7 +9,6 @@ import { ChevronLeft, Send } from "lucide-react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Image,
-  Keyboard,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -20,12 +18,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
 export default function ChatDetailScreen() {
   const navigation = useNavigation();
   const router = useRouter();
   const { name, status, avatar } = useLocalSearchParams();
-
   useFocusEffect(
     useCallback(() => {
       navigation.getParent()?.setOptions({ tabBarStyle: { display: "none" } });
@@ -33,29 +29,25 @@ export default function ChatDetailScreen() {
         navigation.getParent()?.setOptions({ tabBarStyle: undefined });
     }, [navigation])
   );
-
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([
     { id: 1, text: "Hey there! How are you doing?", sender: "other" },
     { id: 2, text: "I’m great! Just practicing my English 😊", sender: "me" },
     { id: 3, text: "That’s awesome! Keep it up!", sender: "other" },
   ]);
-
   const scrollRef = useRef<ScrollView | null>(null);
   const inputRef = useRef<TextInput | null>(null);
-
+  const [isSending, setIsSending] = useState(false);
   const handleSend = () => {
-    if (!message.trim()) return;
-
+    if (!message.trim() || isSending) return;
+    setIsSending(true);
     const newMessage = {
       id: Date.now(),
       text: message,
       sender: "me",
     };
-
     setMessages((prev) => [...prev, newMessage]);
     setMessage("");
-
     setTimeout(() => {
       const reply = {
         id: Date.now() + 1,
@@ -63,16 +55,16 @@ export default function ChatDetailScreen() {
         sender: "other",
       };
       setMessages((prev) => [...prev, reply]);
+      setIsSending(false);
     }, 1500);
   };
-
   useEffect(() => {
+    if (isSending) return;
     const timeout = setTimeout(() => {
       scrollRef.current?.scrollToEnd({ animated: true });
-    }, 200);
+    }, 100);
     return () => clearTimeout(timeout);
-  }, [messages]);
-
+  }, [messages, isSending]);
   return (
     <SafeAreaView className="flex-1 bg-white">
       <KeyboardAvoidingView
@@ -80,18 +72,17 @@ export default function ChatDetailScreen() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
       >
-        {/* Header */}
         <View className="flex-row items-center px-4 py-3 mt-8 border-b border-gray-200 bg-white">
           <View className="flex-1 flex-row ml-8">
             <Image
               source={{
-                uri: typeof avatar === "string" && avatar.trim() !== "" 
-                  ? avatar 
-                  : "https://i.pravatar.cc/100?u=default",
+                uri:
+                  typeof avatar === "string" && avatar.trim() !== ""
+                    ? avatar
+                    : "https://i.pravatar.cc/100?u=default",
               }}
               className="w-10 h-10 rounded-full mr-3"
             />
-
             <View className="flex-col">
               <Text className="font-[Montserrat-Bold] text-[16px] text-[#111]">
                 {name}
@@ -112,8 +103,6 @@ export default function ChatDetailScreen() {
             <ChevronLeft size={24} color="#000" />
           </TouchableOpacity>
         </View>
-
-        {/* Chat area */}
         <ScrollView
           ref={scrollRef}
           showsVerticalScrollIndicator={false}
@@ -123,9 +112,11 @@ export default function ChatDetailScreen() {
             paddingBottom: 20,
           }}
           keyboardShouldPersistTaps="handled"
-          onContentSizeChange={() =>
-            scrollRef.current?.scrollToEnd({ animated: true })
-          }
+          onContentSizeChange={() => {
+            if (!isSending) {
+              scrollRef.current?.scrollToEnd({ animated: true });
+            }
+          }}
         >
           {messages.map((msg) => (
             <View
@@ -137,14 +128,14 @@ export default function ChatDetailScreen() {
               {msg.sender === "other" && (
                 <Image
                   source={{
-                    uri: typeof avatar === "string" && avatar.trim() !== "" 
-                      ? avatar 
-                      : "https://i.pravatar.cc/100?u=default",
+                    uri:
+                      typeof avatar === "string" && avatar.trim() !== ""
+                        ? avatar
+                        : "https://i.pravatar.cc/100?u=default",
                   }}
                   className="w-8 h-8 rounded-full mr-2 mt-auto"
                 />
               )}
-
               <View
                 className={`max-w-[75%] px-4 py-3 rounded-2xl ${
                   msg.sender === "me"
@@ -163,14 +154,12 @@ export default function ChatDetailScreen() {
             </View>
           ))}
         </ScrollView>
-
-        {/* Input area */}
         <View className="bg-white px-4 py-2 pb-10 flex-row items-end border-t border-gray-200">
           <TextInput
             ref={inputRef}
             value={message}
             onChangeText={setMessage}
-            placeholder="Type your message or command"
+            placeholder="Type your message"
             placeholderTextColor="#7B7B7B"
             multiline
             style={{
@@ -192,15 +181,14 @@ export default function ChatDetailScreen() {
             returnKeyType="send"
             onSubmitEditing={handleSend}
           />
-
           <TouchableOpacity
-            disabled={!message.trim()}
+            disabled={!message.trim() || isSending}
             onPress={() => {
               handleSend();
-              Keyboard.dismiss();
+              inputRef.current?.blur();
             }}
             className="ml-2"
-            style={{ opacity: message.trim() ? 1 : 0.4 }}
+            style={{ opacity: message.trim() && !isSending ? 1 : 0.4 }}
           >
             <View className="w-10 h-10 rounded-full bg-[#2563EB] items-center justify-center">
               <Send size={20} color="white" />
