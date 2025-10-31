@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Clock, Star, Award, List, Book } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface Word {
   word: string;
@@ -34,6 +35,7 @@ export default function DefinitionMatchPage() {
   ];
 
   // state
+  const router = useRouter();
   const [availableWords, setAvailableWords] = useState<Word[]>(initialWords);
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(90);
@@ -101,17 +103,12 @@ export default function DefinitionMatchPage() {
 
     // check completion
     setTimeout(() => {
-      const remaining =
-        availableWords.length - (word === definitionWord ? 1 : 0);
-      if (remaining <= 0) {
-        alert(
-          `Congratulations! You completed all matches with ${
-            score + (word === definitionWord ? 20 : -5)
-          } points!`
-        );
-        // Note: timer will be cleared by useEffect cleanup when component unmounts or page change
+      const isLastWord =
+        availableWords.length - (word === definitionWord ? 1 : 0) <= 0;
+      if (isLastWord) {
+        router.push("/community/leaderboard?game=definition-match");
       }
-    }, 300);
+    }, 500);
   };
 
   const minutes = String(Math.floor(timeLeft / 60)).padStart(2, "0");

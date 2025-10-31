@@ -4,12 +4,23 @@ import { useEffect, useRef, useState } from "react";
 import { Award, RefreshCw, Share, Home, User } from "lucide-react";
 import Chart from "chart.js/auto";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 export default function LeaderboardPage() {
   const [activeTab, setActiveTab] = useState("Fill the Blank");
   const confettiContainer = useRef<HTMLDivElement>(null);
   const chartRef = useRef<HTMLCanvasElement>(null);
+  const searchParams = useSearchParams();
   const router = useRouter();
+  useEffect(() => {
+    const game = searchParams.get("game");
+    if (game === "definition-match") {
+      setActiveTab("Definition Match");
+    } else if (game === "fill-the-blank") {
+      setActiveTab("Fill the Blank");
+    }
+  }, [searchParams]);
+
   useEffect(() => {
     const createConfetti = () => {
       if (!confettiContainer.current) return;

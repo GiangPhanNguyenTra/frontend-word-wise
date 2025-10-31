@@ -40,7 +40,7 @@ const WORD_SPEED = 1;
 const BULLET_SPEED = 8;
 const WORD_SPAWN_RATE = 1200;
 const GAME_DURATION = 120; // 2 minutes
-const TARGET_SPAWN_CHANCE = 0.1;
+const TARGET_SPAWN_CHANCE = 0.3;
 
 export const VocabularyShooterGame = ({
   wordsToReview,
