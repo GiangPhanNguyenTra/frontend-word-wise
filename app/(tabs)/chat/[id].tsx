@@ -11,7 +11,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 
 interface Message {
@@ -30,12 +30,12 @@ export default function ChatDetailScreen() {
   const [text, setText] = useState("");
   const flatListRef = useRef<FlatList>(null);
 
-  // 🔹 Auto scroll khi thêm tin nhắn mới
+  // Auto scroll khi thêm tin nhắn mới
   useEffect(() => {
     flatListRef.current?.scrollToEnd({ animated: true });
   }, [messages]);
 
-  // 🔹 Auto scroll khi bàn phím mở
+  // Auto scroll khi bàn phím mở
   useEffect(() => {
     const showSub = Keyboard.addListener("keyboardDidShow", () => {
       setTimeout(() => {
@@ -55,14 +55,13 @@ export default function ChatDetailScreen() {
     };
   }, []);
 
-  // 🔹 Gửi tin nhắn
+  // Gửi tin nhắn
   const handleSend = () => {
     if (!text.trim()) return;
     const newMessage: Message = { id: Date.now(), text, sender: "me" };
     setMessages((prev) => [...prev, newMessage]);
     setText("");
 
-    // Giả lập phản hồi bot
     setTimeout(() => {
       setMessages((prev) => [
         ...prev,
@@ -151,7 +150,7 @@ export default function ChatDetailScreen() {
             onChangeText={setText}
             placeholder="Nhập tin nhắn..."
             multiline
-            className="flex-1 bg-gray-100 rounded-full px-4 py-3 text-base"
+            className="flex-1 bg-gray-100 rounded-3xl px-4 py-3 text-base"
             style={{ maxHeight: 120 }}
             onFocus={() =>
               setTimeout(
