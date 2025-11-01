@@ -148,7 +148,7 @@ export default function ChatDetailScreen() {
           <TextInput
             value={text}
             onChangeText={setText}
-            placeholder="Nhập tin nhắn..."
+            placeholder="Type your message"
             multiline
             className="flex-1 bg-gray-100 rounded-3xl px-4 py-3 text-base"
             style={{ maxHeight: 120 }}

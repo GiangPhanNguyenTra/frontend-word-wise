@@ -8,6 +8,7 @@ import React, { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 export default function ResultScreen() {
+  const { collectionName } = useLocalSearchParams();
   const { correct, wrong, total, results } = useLocalSearchParams();
   const router = useRouter();
   const resultList = results ? JSON.parse(results as string) : [];
@@ -33,7 +34,8 @@ export default function ResultScreen() {
 
   return (
     <View className="flex-1 bg-[#F6F6F6]">
-      <Heading title="Learn Results" />
+      <Heading
+        title="Learn Results" showBack={false} />
       <ScrollView>
         {/* Header */}
         <View className="flex shadow-lg mx-6 mb-6 gap-2 p-6 items-center justify-center bg-[#E9EFFD] rounded-[20px]">
@@ -167,7 +169,10 @@ export default function ResultScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => router.push("/(tabs)/learn/collection/view")}
+            onPress={() => router.push({
+              pathname: "/(tabs)/learn/collection/view",
+              params: { collectionName }
+            })}
             className="bg-white border border-[#2563EB] w-[200px] py-3 rounded-full"
           >
             <Text className="text-[#2563EB] text-center font-[Montserrat-Bold]">

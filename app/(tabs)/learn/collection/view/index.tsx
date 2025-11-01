@@ -104,7 +104,7 @@ export default function CollectionViewPage() {
     <View className="flex-1 bg-[#F6F6F6]">
       <View className="flex-row items-center justify-between">
         <View className="flex-1">
-          <Heading title={collectionName} />
+          <Heading title={collectionName} onBack={() => router.replace("/(tabs)/learn/collection")}/>
         </View>
         <TouchableOpacity
           onPress={handleEditCollection}
@@ -152,6 +152,7 @@ export default function CollectionViewPage() {
               router.push({
                 pathname: "/(tabs)/learn/collection/learn/choose",
                 params: {
+                  from: "collection",
                   collectionName,
                   selected: JSON.stringify(selected),
                 },
@@ -196,7 +197,10 @@ export default function CollectionViewPage() {
         </View>
 
         {/* Flashcards Button */}
-        <TouchableOpacity className="bg-[#2563EB] py-4 rounded-[16px] items-center flex-row justify-center mb-5 mt-5">
+        <TouchableOpacity 
+          className="bg-[#2563EB] py-4 rounded-[16px] items-center flex-row justify-center mb-5 mt-5"
+          onPress={() => router.push("/(tabs)/learn/collection/learn/flashcard")}
+        >
           <LibraryBig size={18} color="white" />
           <Text className="text-white font-[Montserrat-Bold] text-lg ml-2">
             Flashcards
@@ -288,7 +292,15 @@ export default function CollectionViewPage() {
 
       <TouchableOpacity
         className="absolute bg-[#2563EB] bottom-6 right-6 w-16 h-16 shadow-lg p-4 items-center rounded-full overflow-hidden"
-        onPress={() => router.push("/(tabs)/learn/collection/add")}
+        onPress={() =>
+          router.push({
+            pathname: "/(tabs)/learn/collection/add",
+            params: {
+              mode: "addWord",
+              collectionName,
+            },
+          })
+        }
       >
         <Plus width={24} height={24} color="white" />
       </TouchableOpacity>

@@ -57,7 +57,7 @@ export default function PracticeWordScreen() {
 
   return (
     <View className="flex-1 bg-[#F6F6F6]">
-      <Heading title="Practice Words" />
+      <Heading title="Practice Words" onBack={() => router.replace('/(tabs)/speak')}/>
 
       <ScrollView>
         <View className="mt-4 px-6 items-center justify-center">

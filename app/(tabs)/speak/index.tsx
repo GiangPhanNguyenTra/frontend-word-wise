@@ -30,7 +30,7 @@ export default function SpeakScreen() {
 
     return(
         <View className="flex-1 bg-[#F6F6F6]">
-            <Heading title="Speak" />
+            <Heading title="Speak" onBack={() => router.replace('/(tabs)/home')}/>
             <ScrollView>
                 <View className="mt-4 px-6 items-center justify-center">
                     <Text className="font-[Montserrat-Bold] text-xl mb-2">

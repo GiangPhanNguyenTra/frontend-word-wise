@@ -9,7 +9,7 @@ import {
   Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  View,
+  View
 } from "react-native";
 
 type WordItem = {
@@ -22,10 +22,13 @@ type WordItem = {
 };
 
 export default function PreviewPage() {
-  const { collectionName, words } = useLocalSearchParams<{
+  const { collectionName, words, mode } = useLocalSearchParams<{
     collectionName: string;
     words: string;
+    mode?: string;
   }>();
+
+  const isAddWordMode = mode === "addWord";
 
   const [menuVisible, setMenuVisible] = useState<number | null>(null);
   const [confirmVisible, setConfirmVisible] = useState<{
@@ -44,8 +47,8 @@ export default function PreviewPage() {
           type: "noun",
           phonetic: "/ˈwɜːd/",
           meaning: "N/A",
-          definition: "involving or causing a complete or dramatic change",
-          example: "This new drug is revolutionary in its approach to treating cancer.",
+          definition: "Auto-generated meaning",
+          example: "Example usage will be generated later.",
         }))
       : [];
   }
@@ -72,9 +75,26 @@ export default function PreviewPage() {
     setConfirmVisible({ show: false, word: null });
   };
 
+  const handleSave = () => {
+    if (isAddWordMode) {
+      router.push({
+        pathname: "/(tabs)/learn/collection/view",
+        params: { collectionName },
+      });
+    } else {
+      router.push("/(tabs)/learn/collection");
+    }
+  };
+
   return (
     <View className="flex-1 bg-[#F6F6F6]">
-      <Heading title={collectionName.toUpperCase()} />
+      <Heading
+        title={
+          isAddWordMode
+            ? `${collectionName}`
+            : collectionName.toUpperCase()
+        }
+      />
 
       <ScrollView className="p-4" contentContainerStyle={{ paddingBottom: 40 }}>
         {wordList.map((item, index) => (
@@ -145,10 +165,10 @@ export default function PreviewPage() {
 
         <TouchableOpacity
           className="bg-[#2563EB] w-full h-16 justify-center items-center rounded-full mt-4"
-          onPress={() => router.push("/(tabs)/learn/collection")}
+          onPress={handleSave}
         >
           <Text className="text-white font-[Montserrat-Bold] text-lg">
-            Save
+            {isAddWordMode ? "Add to Collection" : "Save"}
           </Text>
         </TouchableOpacity>
       </ScrollView>

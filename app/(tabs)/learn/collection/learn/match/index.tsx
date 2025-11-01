@@ -1,7 +1,7 @@
 "use client";
 
 import Heading from "@/components/Heading";
-import { router, useFocusEffect, useNavigation } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Animated, Text, TouchableOpacity, Vibration, View } from "react-native";
 
@@ -21,13 +21,23 @@ const mockData: MatchItem[] = [
 
 export default function MatchWordScreen() {
     const navigation = useNavigation();
-
+    const { from } = useLocalSearchParams();
     useFocusEffect(
         useCallback(() => {
         navigation.getParent()?.setOptions({ tabBarStyle: { display: "none" } });
         return () => navigation.getParent()?.setOptions({ tabBarStyle: undefined });
         }, [navigation])
     );
+
+    const handleBack = () => {
+        if (from === "learn") {
+        router.replace("/(tabs)/learn");
+        } else if (from === "collection") {
+        router.replace("/(tabs)/learn/collection");
+        } else {
+        router.replace("/(tabs)/home");
+        }
+    };
 
     const total = mockData.length;
     const [learnedCount, setLearnedCount] = useState(0);
@@ -199,7 +209,7 @@ export default function MatchWordScreen() {
                         <TouchableOpacity
                             onPress={() => {
                             setShowComplete(false);
-                            router.push("/(tabs)/learn/collection/view");
+                            handleBack();
                             }}
                             className="bg-[#2563EB] px-6 py-3 rounded-full"
                         >

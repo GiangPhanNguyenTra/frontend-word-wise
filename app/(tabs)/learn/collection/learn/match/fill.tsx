@@ -1,7 +1,7 @@
 "use client";
 
 import Heading from "@/components/Heading";
-import { router, useFocusEffect, useNavigation } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams, useNavigation } from "expo-router";
 import * as Speech from "expo-speech";
 import React, { useCallback, useRef, useState } from "react";
 import { Animated, Text, TextInput, TouchableOpacity, Vibration, View } from "react-native";
@@ -81,6 +81,17 @@ export default function TypingWordScreen() {
       }
     } else {
       setFeedback(null);
+    }
+  };
+
+  const { from } = useLocalSearchParams();
+  const handleBack = () => {
+    if (from === "learn") {
+      router.replace("/(tabs)/learn");
+    } else if (from === "collection") {
+      router.replace("/(tabs)/learn/collection");
+    } else {
+      router.replace("/(tabs)/home");
     }
   };
 
@@ -205,7 +216,7 @@ export default function TypingWordScreen() {
             <TouchableOpacity
               onPress={() => {
                 setShowComplete(false);
-                router.push("/(tabs)/learn/collection/view");
+                handleBack();
               }}
               className="bg-[#2563EB] px-6 py-3 rounded-full"
             >

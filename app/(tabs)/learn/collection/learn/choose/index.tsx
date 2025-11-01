@@ -57,7 +57,7 @@ export default function QuizFlashcardScreen() {
   const [correctCount, setCorrectCount] = useState(0);
   const [wrongCount, setWrongCount] = useState(0);
   const [results, setResults] = useState<any[]>([]);
-  const { reset } = useLocalSearchParams();
+  const { reset, collectionName } = useLocalSearchParams();
 
   useEffect(() => {
     if (reset === "true") {
@@ -115,6 +115,7 @@ export default function QuizFlashcardScreen() {
             correct: correctCount,
             wrong: wrongCount,
             total,
+            collectionName
           },
         });
       }, 400);

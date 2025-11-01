@@ -1,11 +1,11 @@
 "use client";
 
 import Heading from "@/components/Heading";
-import { useFocusEffect, useNavigation } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams, useNavigation } from "expo-router";
 import * as Speech from "expo-speech";
 import { CheckCheck, Volume2, X } from "lucide-react-native";
-import React, { useCallback, useRef, useState } from "react";
-import { Animated, Easing, Pressable, Text, TouchableOpacity, View } from "react-native";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Animated, BackHandler, Easing, Pressable, Text, TouchableOpacity, View } from "react-native";
 
 type Word = {
   id: number;
@@ -104,6 +104,20 @@ export default function LearnFlashcardScreen() {
 
   const displayIndex = currentIndex < total ? currentIndex + 1 : total;
   const progressPercent = Math.max(0, Math.min((learnedCount / total) * 100, 100));
+
+  const { from } = useLocalSearchParams();
+  useEffect(() => {
+    const handleBack = () => {
+      if (from === "collection") {
+        router.replace("/(tabs)/learn/collection");
+        return true; // chặn pop mặc định
+      }
+      return false;
+    };
+
+    const sub = BackHandler.addEventListener("hardwareBackPress", handleBack);
+    return () => sub.remove();
+  }, [from]);
 
   return (
     <View className="flex-1 bg-[#F6F6F6] px-4">
