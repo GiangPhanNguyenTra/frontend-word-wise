@@ -21,7 +21,7 @@ const mockData: MatchItem[] = [
 
 export default function MatchWordScreen() {
     const navigation = useNavigation();
-    const { from } = useLocalSearchParams();
+    const { from, collectionName } = useLocalSearchParams();
     useFocusEffect(
         useCallback(() => {
         navigation.getParent()?.setOptions({ tabBarStyle: { display: "none" } });
@@ -33,7 +33,10 @@ export default function MatchWordScreen() {
         if (from === "learn") {
         router.replace("/(tabs)/learn");
         } else if (from === "collection") {
-        router.replace("/(tabs)/learn/collection");
+        router.replace({
+            pathname: "/(tabs)/learn/collection/view",
+            params: { collectionName },
+        });
         } else {
         router.replace("/(tabs)/home");
         }

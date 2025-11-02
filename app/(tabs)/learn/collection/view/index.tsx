@@ -149,8 +149,14 @@ export default function CollectionViewPage() {
             onConfirm={(selected) => {
               console.log("Selected to learn:", selected);
               setLearnModalVisible(false);
+              const quizRoutes = [
+                "/(tabs)/learn/collection/learn/choose",
+                "/(tabs)/learn/collection/learn/match",
+                "/(tabs)/learn/collection/learn/match/fill",
+              ] as const;
+              const randomRoute = quizRoutes[Math.floor(Math.random() * quizRoutes.length)];
               router.push({
-                pathname: "/(tabs)/learn/collection/learn/choose",
+                pathname: randomRoute,
                 params: {
                   from: "collection",
                   collectionName,

@@ -84,12 +84,15 @@ export default function TypingWordScreen() {
     }
   };
 
-  const { from } = useLocalSearchParams();
+  const { from, collectionName } = useLocalSearchParams();
   const handleBack = () => {
     if (from === "learn") {
       router.replace("/(tabs)/learn");
     } else if (from === "collection") {
-      router.replace("/(tabs)/learn/collection");
+      router.replace({
+        pathname: "/(tabs)/learn/collection/view",
+        params: { collectionName },
+      });
     } else {
       router.replace("/(tabs)/home");
     }

@@ -109,10 +109,11 @@ export default function LearnFlashcardScreen() {
   useEffect(() => {
     const handleBack = () => {
       if (from === "collection") {
-        router.replace("/(tabs)/learn/collection");
-        return true; // chặn pop mặc định
-      }
-      return false;
+        router.replace("/(tabs)/learn/collection/view");
+      } else {
+        router.replace("/(tabs)/home");
+      }    
+      return true;
     };
 
     const sub = BackHandler.addEventListener("hardwareBackPress", handleBack);

@@ -32,12 +32,20 @@ export default function LearnPage() {
 
             <TouchableOpacity
               className="w-full mt-4 bg-white rounded-full px-4 py-4"
-              onPress={() =>
+              onPress={() => {
+                const quizRoutes = [
+                  "/(tabs)/learn/collection/learn/choose",
+                  "/(tabs)/learn/collection/learn/match",
+                  "/(tabs)/learn/collection/learn/match/fill",
+                ] as const;
+
+                const randomRoute = quizRoutes[Math.floor(Math.random() * quizRoutes.length)];
+
                 router.push({
-                  pathname: "/(tabs)/learn/collection/learn/match",
+                  pathname: randomRoute,
                   params: { from: "learn" },
-                })
-              }
+                });
+              }}
             >
               <Text className="text-[#2563EB] text-center font-[Montserrat-Bold]">
                 Take Random Quiz
