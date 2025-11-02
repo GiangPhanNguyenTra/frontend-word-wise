@@ -27,7 +27,7 @@ export default function PreviewPage() {
     words: string;
     mode?: string;
   }>();
-
+  const from = useLocalSearchParams<{ from?: string }>().from;
   const isAddWordMode = mode === "addWord";
 
   const [menuVisible, setMenuVisible] = useState<number | null>(null);
@@ -76,15 +76,19 @@ export default function PreviewPage() {
   };
 
   const handleSave = () => {
-    if (isAddWordMode) {
-      router.push({
-        pathname: "/(tabs)/learn/collection/view",
-        params: { collectionName },
-      });
-    } else {
-      router.push("/(tabs)/learn/collection");
-    }
-  };
+  if (isAddWordMode) {
+    router.push({
+      pathname: "/(tabs)/learn/collection/view",
+      params: { 
+        collectionName,
+        from, // 👈 truyền lại from
+      },
+    });
+  } else {
+    router.push("/(tabs)/learn/collection");
+  }
+};
+
 
   return (
     <View className="flex-1 bg-[#F6F6F6]">

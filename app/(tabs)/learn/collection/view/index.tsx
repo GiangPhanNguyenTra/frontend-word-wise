@@ -11,7 +11,7 @@ import { Modal, ScrollView, Text, TextInput, TouchableOpacity, TouchableWithoutF
 
 export default function CollectionViewPage() {
   const router = useRouter();
-  const { collectionName } = useLocalSearchParams<{ collectionName: string }>();
+  const { collectionName, from } = useLocalSearchParams<{ collectionName: string, from?: string }>();
   const [search, setSearch] = useState("");
   const [learnModalVisible, setLearnModalVisible] = useState(false);
 
@@ -100,11 +100,21 @@ export default function CollectionViewPage() {
   const learned = lessons.filter((l) => l.words > 0).length;
   const percent = Math.round((learned / totalLessons) * 100);
 
+  const handleBack = () => {
+    if (from === "learn") {
+      router.replace("/(tabs)/learn");
+    } else if (from === "list") {
+      router.replace({
+        pathname: "/(tabs)/learn/collection",
+      });
+    }
+  };
+
   return (
     <View className="flex-1 bg-[#F6F6F6]">
       <View className="flex-row items-center justify-between">
         <View className="flex-1">
-          <Heading title={collectionName} onBack={() => router.replace("/(tabs)/learn/collection")}/>
+          <Heading title={collectionName} onBack={handleBack}/>
         </View>
         <TouchableOpacity
           onPress={handleEditCollection}
@@ -304,6 +314,7 @@ export default function CollectionViewPage() {
             params: {
               mode: "addWord",
               collectionName,
+              from,
             },
           })
         }

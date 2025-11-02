@@ -67,7 +67,7 @@ export default function CollectionListPage() {
               onPress={() =>
                 router.push({
                   pathname: "/(tabs)/learn/collection/view",
-                  params: { id: item.id, collectionName: item.name },
+                  params: { id: item.id, collectionName: item.name, from : "list" },
                 })
               }
               style={{

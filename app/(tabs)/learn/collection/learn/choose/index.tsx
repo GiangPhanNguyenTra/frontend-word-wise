@@ -57,7 +57,7 @@ export default function QuizFlashcardScreen() {
   const [correctCount, setCorrectCount] = useState(0);
   const [wrongCount, setWrongCount] = useState(0);
   const [results, setResults] = useState<any[]>([]);
-  const { reset, collectionName } = useLocalSearchParams();
+  const { reset, collectionName, from } = useLocalSearchParams();
 
   useEffect(() => {
     if (reset === "true") {
@@ -111,6 +111,7 @@ export default function QuizFlashcardScreen() {
         router.push({
           pathname: "/(tabs)/learn/collection/learn/result",
           params: {
+            from,
             results: JSON.stringify(results),
             correct: correctCount,
             wrong: wrongCount,

@@ -88,7 +88,7 @@ export default function LearnPage() {
                 className="w-[250px] bg-white rounded-[16px] p-6 justify-between"
                 onPress={() => router.push({
                     pathname: "/(tabs)/learn/collection/view",
-                    params: {collectionName: item.name}
+                    params: {collectionName: item.name, from: "learn"},
                 })}
               >
                 <View>

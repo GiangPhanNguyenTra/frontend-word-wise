@@ -4,9 +4,10 @@ import { useState } from "react";
 import { Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function AddCollectionPage() {
-  const { mode, collectionName } = useLocalSearchParams<{
+  const { mode, collectionName, from } = useLocalSearchParams<{
     mode?: string;
     collectionName?: string;
+    from?: string;
   }>();
 
   const isAddWordMode = mode === "addWord";
@@ -30,6 +31,7 @@ export default function AddCollectionPage() {
           collectionName,
           words: wordList,
           mode: "addWord",
+          from,
         },
       });
     } else {
@@ -39,6 +41,7 @@ export default function AddCollectionPage() {
           collectionName: name,
           words: wordList,
           mode: "create",
+          from,
         },
       });
     }
