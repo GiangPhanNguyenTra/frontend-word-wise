@@ -12,7 +12,7 @@ export default function PracticeSentencePage() {
 
     return(
         <View className="flex-1 bg-[#F6F6F6]">
-            <Heading title="Practice Sentences" />
+            <Heading title="Practice Sentences" onBack={() => router.replace('/(tabs)/speak')} />
 
             <ScrollView>
                 <View className="mt-4 px-6 items-center justify-center">

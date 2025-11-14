@@ -77,7 +77,9 @@ export default function HomeScreen() {
           </Text>
         </View>
         <View className="flex-row items-center gap-6">
-          <MessageSquareText strokeWidth={1.5} />
+          <TouchableOpacity onPress={() => router.push("/(tabs)/chat")}>
+            <MessageSquareText strokeWidth={1.5} />
+          </TouchableOpacity>
           <TouchableOpacity onPress={() => router.push("/(tabs)/home/settings")}>
             <Settings strokeWidth={1.5} />
           </TouchableOpacity>

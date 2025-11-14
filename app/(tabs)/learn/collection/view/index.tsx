@@ -26,7 +26,10 @@ import {
 
 export default function CollectionViewPage() {
   const router = useRouter();
-  const { collectionName } = useLocalSearchParams<{ collectionName: string }>();
+  const { collectionName, from } = useLocalSearchParams<{
+    collectionName: string;
+    from?: string;
+  }>();
   const [search, setSearch] = useState("");
   const [learnModalVisible, setLearnModalVisible] = useState(false);
 
@@ -115,11 +118,21 @@ export default function CollectionViewPage() {
   const learned = lessons.filter((l) => l.words > 0).length;
   const percent = Math.round((learned / totalLessons) * 100);
 
+  const handleBack = () => {
+    if (from === "learn") {
+      router.replace("/(tabs)/learn");
+    } else if (from === "list") {
+      router.replace({
+        pathname: "/(tabs)/learn/collection",
+      });
+    }
+  };
+
   return (
     <View className="flex-1 bg-[#F6F6F6]">
       <View className="flex-row items-center justify-between">
         <View className="flex-1">
-          <Heading title={collectionName} />
+          <Heading title={collectionName} onBack={handleBack} />
         </View>
         <TouchableOpacity
           onPress={handleEditCollection}
@@ -167,9 +180,17 @@ export default function CollectionViewPage() {
             onConfirm={(selected) => {
               console.log("Selected to learn:", selected);
               setLearnModalVisible(false);
+              const quizRoutes = [
+                "/(tabs)/learn/collection/learn/choose",
+                "/(tabs)/learn/collection/learn/match",
+                "/(tabs)/learn/collection/learn/match/fill",
+              ] as const;
+              const randomRoute =
+                quizRoutes[Math.floor(Math.random() * quizRoutes.length)];
               router.push({
-                pathname: "/(tabs)/learn/collection/learn/choose",
+                pathname: randomRoute,
                 params: {
+                  from: "collection",
                   collectionName,
                   selected: JSON.stringify(selected),
                 },
@@ -214,12 +235,10 @@ export default function CollectionViewPage() {
         </View>
         {/* Flashcards Button */}
         <TouchableOpacity
-          onPress={() => {
-            router.replace({
-              pathname: "/(tabs)/learn/collection/learn/flashcard",
-            });
-          }}
           className="bg-[#2563EB] py-4 rounded-[16px] items-center flex-row justify-center mb-5 mt-5"
+          onPress={() =>
+            router.push("/(tabs)/learn/collection/learn/flashcard")
+          }
         >
           <LibraryBig size={18} color="white" />
           <Text className="text-white font-[Montserrat-Bold] text-lg ml-2">
@@ -318,7 +337,16 @@ export default function CollectionViewPage() {
 
       <TouchableOpacity
         className="absolute bg-[#2563EB] bottom-6 right-6 w-16 h-16 shadow-lg p-4 items-center rounded-full overflow-hidden"
-        onPress={() => router.push("/(tabs)/learn/collection/add")}
+        onPress={() =>
+          router.push({
+            pathname: "/(tabs)/learn/collection/add",
+            params: {
+              mode: "addWord",
+              collectionName,
+              from,
+            },
+          })
+        }
       >
         <Plus width={24} height={24} color="white" />
       </TouchableOpacity>

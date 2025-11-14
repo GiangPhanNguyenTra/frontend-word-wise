@@ -45,7 +45,7 @@ export default function ResultScreen() {
 
     return (
         <View className="flex-1 bg-[#F6F6F6]">
-            <Heading title="Practice Results" />
+            <Heading title="Practice Results" showBack={false}/>
             <ScrollView>
                 <View className="flex shadow-lg mx-6 mb-6 gap-2 p-6 items-center justify-center bg-[#E9EFFD] rounded-[20px]">
                     <Text className=" text-lg text-[#2563EB] font-[Montserrat-ExtraBold]">Accuracy</Text>

@@ -7,9 +7,11 @@ import { Text, TouchableOpacity, View } from "react-native";
 
 type HeadingProps = {
   title: string;
+  showBack?: boolean; // Có hiển thị nút back không
+  onBack?: () => void; // Custom hành vi back
 };
 
-const Heading: React.FC<HeadingProps> = ({ title }) => {
+const Heading: React.FC<HeadingProps> = ({ title, showBack = true, onBack }) => {
   const router = useRouter();
 
   const [fontsLoaded] = useFonts({
@@ -38,18 +40,18 @@ const Heading: React.FC<HeadingProps> = ({ title }) => {
       className="w-full flex-row items-center justify-between py-4 px-4 mt-8"
     >
       <View className="flex-row items-center">
-        <View className="px-4">
-          <TouchableOpacity
-            onPress={() => router.back()}
-            className="w-12 h-12 bg-white rounded-full items-center justify-center"
-          >
-            <ChevronLeft size={30} color="#000000" />
-          </TouchableOpacity>
-        </View>
-
-        <Text className="font-[Montserrat-Bold] text-xl">
-          {title}
-        </Text>
+        {showBack && (
+          <View className="px-2">
+            <TouchableOpacity
+              onPress={onBack || (() => router.back())}
+              className="w-12 h-12 bg-white rounded-full items-center justify-center"
+              activeOpacity={0.8}
+            >
+              <ChevronLeft size={28} color="#000000" />
+            </TouchableOpacity>
+          </View>
+        )}
+        <Text className="font-[Montserrat-Bold] text-xl ml-2">{title}</Text>
       </View>
     </View>
   );

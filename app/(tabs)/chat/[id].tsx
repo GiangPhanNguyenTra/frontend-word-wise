@@ -1,77 +1,103 @@
-"use client";
-import {
-  useFocusEffect,
-  useLocalSearchParams,
-  useNavigation,
-  useRouter,
-} from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronLeft, Send } from "lucide-react-native";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
+  FlatList,
   Image,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
-  ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+
+interface Message {
+  id: number;
+  text: string;
+  sender: "me" | "other";
+}
+
 export default function ChatDetailScreen() {
-  const navigation = useNavigation();
   const router = useRouter();
   const { name, status, avatar } = useLocalSearchParams();
-  useFocusEffect(
-    useCallback(() => {
-      navigation.getParent()?.setOptions({ tabBarStyle: { display: "none" } });
-      return () =>
-        navigation.getParent()?.setOptions({ tabBarStyle: undefined });
-    }, [navigation])
-  );
-  const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([
-    { id: 1, text: "Hey there! How are you doing?", sender: "other" },
-    { id: 2, text: "I’m great! Just practicing my English 😊", sender: "me" },
-    { id: 3, text: "That’s awesome! Keep it up!", sender: "other" },
+  const [messages, setMessages] = useState<Message[]>([
+    { id: 1, text: "Hey! How are you?", sender: "other" },
+    { id: 2, text: "I'm good, thanks! How about you?", sender: "me" },
   ]);
-  const scrollRef = useRef<ScrollView | null>(null);
-  const inputRef = useRef<TextInput | null>(null);
-  const [isSending, setIsSending] = useState(false);
-  const handleSend = () => {
-    if (!message.trim() || isSending) return;
-    setIsSending(true);
-    const newMessage = {
-      id: Date.now(),
-      text: message,
-      sender: "me",
-    };
-    setMessages((prev) => [...prev, newMessage]);
-    setMessage("");
-    setTimeout(() => {
-      const reply = {
-        id: Date.now() + 1,
-        text: "Got it! 😊",
-        sender: "other",
-      };
-      setMessages((prev) => [...prev, reply]);
-      setIsSending(false);
-    }, 1500);
-  };
+  const [text, setText] = useState("");
+  const flatListRef = useRef<FlatList>(null);
+
+  // Auto scroll khi thêm tin nhắn mới
   useEffect(() => {
-    if (isSending) return;
-    const timeout = setTimeout(() => {
-      scrollRef.current?.scrollToEnd({ animated: true });
-    }, 100);
-    return () => clearTimeout(timeout);
-  }, [messages, isSending]);
+    flatListRef.current?.scrollToEnd({ animated: true });
+  }, [messages]);
+
+  // Auto scroll khi bàn phím mở
+  useEffect(() => {
+    const showSub = Keyboard.addListener("keyboardDidShow", () => {
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 150);
+    });
+
+    const hideSub = Keyboard.addListener("keyboardDidHide", () => {
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 100);
+    });
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
+
+  // Gửi tin nhắn
+  const handleSend = () => {
+    if (!text.trim()) return;
+    const newMessage: Message = { id: Date.now(), text, sender: "me" };
+    setMessages((prev) => [...prev, newMessage]);
+    setText("");
+
+    setTimeout(() => {
+      setMessages((prev) => [
+        ...prev,
+        { id: Date.now() + 1, text: "Got it! 😊", sender: "other" },
+      ]);
+    }, 800);
+  };
+
+  const renderMessage = ({ item }: { item: Message }) => (
+    <View
+      className={`flex-row mb-2 ${
+        item.sender === "me" ? "justify-end" : "justify-start"
+      }`}
+    >
+      <View
+        className={`px-4 py-3 rounded-2xl ${
+          item.sender === "me"
+            ? "bg-blue-500 rounded-tr-none"
+            : "bg-gray-200 rounded-tl-none"
+        }`}
+      >
+        <Text className={item.sender === "me" ? "text-white" : "text-black"}>
+          {item.text}
+        </Text>
+      </View>
+    </View>
+  );
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 110 : 0}
       >
+        {/* Header */}
         <View className="flex-row items-center px-4 py-3 mt-8 border-b border-gray-200 bg-white">
           <View className="flex-1 flex-row ml-8">
             <Image
@@ -83,6 +109,7 @@ export default function ChatDetailScreen() {
               }}
               className="w-10 h-10 rounded-full mr-3"
             />
+
             <View className="flex-col">
               <Text className="font-[Montserrat-Bold] text-[16px] text-[#111]">
                 {name}
@@ -103,96 +130,48 @@ export default function ChatDetailScreen() {
             <ChevronLeft size={24} color="#000" />
           </TouchableOpacity>
         </View>
-        <ScrollView
-          ref={scrollRef}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingHorizontal: 16,
-            paddingTop: 12,
-            paddingBottom: 20,
-          }}
-          keyboardShouldPersistTaps="handled"
-          onContentSizeChange={() => {
-            if (!isSending) {
-              scrollRef.current?.scrollToEnd({ animated: true });
-            }
-          }}
-        >
-          {messages.map((msg) => (
-            <View
-              key={msg.id}
-              className={`mb-3 flex-row ${
-                msg.sender === "me" ? "justify-end" : "justify-start"
-              }`}
-            >
-              {msg.sender === "other" && (
-                <Image
-                  source={{
-                    uri:
-                      typeof avatar === "string" && avatar.trim() !== ""
-                        ? avatar
-                        : "https://i.pravatar.cc/100?u=default",
-                  }}
-                  className="w-8 h-8 rounded-full mr-2 mt-auto"
-                />
-              )}
-              <View
-                className={`max-w-[75%] px-4 py-3 rounded-2xl ${
-                  msg.sender === "me"
-                    ? "bg-[#2563EB] rounded-tr-none"
-                    : "bg-[#F3F4F6] rounded-tl-none"
-                }`}
-              >
-                <Text
-                  className={`font-[Montserrat-Medium] ${
-                    msg.sender === "me" ? "text-white" : "text-[#111]"
-                  }`}
-                >
-                  {msg.text}
-                </Text>
-              </View>
-            </View>
-          ))}
-        </ScrollView>
-        <View className="bg-white px-4 py-2 pb-10 flex-row items-end border-t border-gray-200">
+
+        {/* Tin nhắn */}
+        <FlatList
+          ref={flatListRef}
+          data={messages}
+          renderItem={renderMessage}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={{ padding: 16 }}
+          onContentSizeChange={() =>
+            flatListRef.current?.scrollToEnd({ animated: true })
+          }
+        />
+
+        {/* Input */}
+        <View className="border-t border-gray-200 bg-white flex-row items-end px-3 py-3 pb-5">
           <TextInput
-            ref={inputRef}
-            value={message}
-            onChangeText={setMessage}
+            value={text}
+            onChangeText={setText}
             placeholder="Type your message"
-            placeholderTextColor="#7B7B7B"
             multiline
-            style={{
-              flex: 1,
-              backgroundColor: "#F6F6F6",
-              borderRadius: 30,
-              paddingHorizontal: 16,
-              paddingVertical: 10,
-              fontSize: 16,
-              maxHeight: 100,
-            }}
-            textAlignVertical="top"
+            className="flex-1 bg-gray-100 rounded-3xl px-4 py-3 text-base"
+            style={{ maxHeight: 120 }}
             onFocus={() =>
               setTimeout(
-                () => scrollRef.current?.scrollToEnd({ animated: true }),
-                100
+                () => flatListRef.current?.scrollToEnd({ animated: true }),
+                150
               )
             }
             returnKeyType="send"
             onSubmitEditing={handleSend}
           />
+
           <TouchableOpacity
-            disabled={!message.trim() || isSending}
             onPress={() => {
               handleSend();
-              inputRef.current?.blur();
+              Keyboard.dismiss();
             }}
-            className="ml-2"
-            style={{ opacity: message.trim() && !isSending ? 1 : 0.4 }}
+            className="ml-2 bg-blue-500 rounded-full p-3"
+            style={{ opacity: text.trim() ? 1 : 0.4 }}
+            disabled={!text.trim()}
           >
-            <View className="w-10 h-10 rounded-full bg-[#2563EB] items-center justify-center">
-              <Send size={20} color="white" />
-            </View>
+            <Send size={20} color="white" />
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>

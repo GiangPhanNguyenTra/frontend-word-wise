@@ -1,10 +1,17 @@
 import Heading from "@/components/Heading";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function AddCollectionPage() {
-  const [collectionName, setCollectionName] = useState("");
+  const { mode, collectionName, from } = useLocalSearchParams<{
+    mode?: string;
+    collectionName?: string;
+    from?: string;
+  }>();
+
+  const isAddWordMode = mode === "addWord";
+  const [name, setName] = useState(collectionName || "");
   const [wordList, setWordList] = useState("");
 
   const handleWordChange = (text: string) => {
@@ -16,40 +23,62 @@ export default function AddCollectionPage() {
     setWordList(text);
   };
 
-  const handlePreview = () => {
-    router.push({
-      pathname: "/(tabs)/learn/collection/preview",
-      params: {
-        collectionName,
-        words: wordList,
-      },
-    });
+  const handleContinue = () => {
+    if (isAddWordMode) {
+      router.push({
+        pathname: "/(tabs)/learn/collection/preview",
+        params: {
+          collectionName,
+          words: wordList,
+          mode: "addWord",
+          from,
+        },
+      });
+    } else {
+      router.push({
+        pathname: "/(tabs)/learn/collection/preview",
+        params: {
+          collectionName: name,
+          words: wordList,
+          mode: "create",
+          from,
+        },
+      });
+    }
   };
 
   return (
     <View className="flex-1 bg-[#F6F6F6]">
-      <Heading title="Create New Collection" />
+      <Heading
+        title={
+          isAddWordMode
+            ? `${collectionName}`
+            : "Create New Collection"
+        }
+      />
 
       <ScrollView className="p-4" contentContainerStyle={{ paddingBottom: 40 }}>
-        {/* Collection Name */}
-        <View className="mb-6">
-          <Text className="text-lg mb-1 font-[Montserrat-Bold]">
-            Collection Name
-          </Text>
-          <TextInput
-            placeholder="Enter collection name"
-            placeholderTextColor="#939393"
-            value={collectionName}
-            onChangeText={setCollectionName}
-            className="w-full h-16 bg-white border border-[#CCCCCC] rounded-[10px] px-4 font-[Montserrat-Regular]"
-          />
-        </View>
+        {!isAddWordMode && (
+          <View className="mb-6">
+            <Text className="text-lg mb-1 font-[Montserrat-Bold]">
+              Collection Name
+            </Text>
+            <TextInput
+              placeholder="Enter collection name"
+              placeholderTextColor="#939393"
+              value={name}
+              onChangeText={setName}
+              className="w-full h-16 bg-white border border-[#CCCCCC] rounded-[10px] px-4 font-[Montserrat-Regular]"
+            />
+          </View>
+        )}
 
-        {/* Word List */}
+        {/* Danh sách từ */}
         <Text className="text-lg mb-1 font-[Montserrat-Bold]">Word List</Text>
         <View className="mb-4 ml-4">
           <Text className="text-[#696674] font-[Montserrat-Regular] mb-1">
-            • Just type your words, the system will automatically generate meanings, contexts, and examples for you.
+            • Just type your words, the system will automatically generate
+            meanings, contexts, and examples for you.
           </Text>
           <Text className="text-[#696674] font-[Montserrat-Regular] mb-1">
             • Use line breaks to separate words.
@@ -71,11 +100,15 @@ export default function AddCollectionPage() {
         />
 
         <TouchableOpacity
-          disabled={!collectionName || !wordList}
+          disabled={
+            (!isAddWordMode && !name) || !wordList
+          }
           className={`w-full h-16 rounded-full items-center justify-center mt-8 ${
-            !collectionName || !wordList ? "opacity-40 bg-[#2563EB]" : "bg-[#2563EB]"
+            (!isAddWordMode && !name) || !wordList
+              ? "opacity-40 bg-[#2563EB]"
+              : "bg-[#2563EB]"
           }`}
-          onPress={handlePreview}
+          onPress={handleContinue}
         >
           <Text className="text-white font-[Montserrat-Bold]">Continue</Text>
         </TouchableOpacity>
