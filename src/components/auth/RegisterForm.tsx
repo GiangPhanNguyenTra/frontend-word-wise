@@ -16,18 +16,22 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form";
 import { RegisterSchema } from "@/lib/validators/auth";
 import { Eye, EyeOff } from "lucide-react";
 import { Separator } from "../ui/separator";
 import Image from "next/image";
+import { registerUser } from "@/services/authService";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type RegisterFormValues = z.infer<typeof RegisterSchema>;
 
 export function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(RegisterSchema),
@@ -40,8 +44,28 @@ export function RegisterForm() {
     },
   });
 
-  function onSubmit(values: RegisterFormValues) {
-    console.log(values);
+  async function onSubmit(values: RegisterFormValues) {
+    setIsLoading(true);
+    try {
+      const response = await registerUser(values);
+      toast.success("Registration Successful", {
+        description: response.message,
+      });
+      router.push("/login");
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Something went wrong.";
+
+      toast.error("Login Failed", {
+        description: message,
+      });
+
+      toast.error("Registration Failed", {
+        description: message,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -62,7 +86,11 @@ export function RegisterForm() {
               <FormItem>
                 <FormLabel>Full Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter full name" {...field} />
+                  <Input
+                    placeholder="Enter full name"
+                    {...field}
+                    disabled={isLoading}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -75,7 +103,11 @@ export function RegisterForm() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter your email" {...field} />
+                  <Input
+                    placeholder="Enter your email"
+                    {...field}
+                    disabled={isLoading}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -93,6 +125,7 @@ export function RegisterForm() {
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"
                       {...field}
+                      disabled={isLoading}
                     />
                   </FormControl>
                   <button
@@ -123,6 +156,7 @@ export function RegisterForm() {
                       type={showConfirmPassword ? "text" : "password"}
                       placeholder="Re-enter your password"
                       {...field}
+                      disabled={isLoading}
                     />
                   </FormControl>
                   <button
@@ -150,6 +184,7 @@ export function RegisterForm() {
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
+                    disabled={isLoading}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -179,8 +214,40 @@ export function RegisterForm() {
             className="w-full"
             variant={"default"}
             size="lg"
+            disabled={isLoading}
           >
-            Create account
+            {isLoading ? (
+              <div className="flex items-center">
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z"
+                  ></path>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M12 0C5.373 0 0 5.373 0 12h4c0-4.418 3.582-8 8-8v4z"
+                  ></path>
+                </svg>
+                Creating account...
+              </div>
+            ) : (
+              "Create account"
+            )}
           </Button>
         </form>
       </Form>
@@ -196,7 +263,12 @@ export function RegisterForm() {
         </div>
       </div>
 
-      <Button variant="outline" className="w-full" size="lg">
+      <Button
+        variant="outline"
+        className="w-full"
+        size="lg"
+        disabled={isLoading}
+      >
         <Image
           src="/google.svg"
           alt="Google"

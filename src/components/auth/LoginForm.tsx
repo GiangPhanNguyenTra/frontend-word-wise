@@ -21,11 +21,14 @@ import { LoginSchema } from "@/lib/validators/auth";
 import { Eye, EyeOff } from "lucide-react";
 import { Separator } from "../ui/separator";
 import Image from "next/image";
+import { loginUser } from "@/services/authService";
+import { toast } from "sonner";
 
 type LoginFormValues = z.infer<typeof LoginSchema>;
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const form = useForm<LoginFormValues>({
@@ -36,9 +39,24 @@ export function LoginForm() {
     },
   });
 
-  function onSubmit(values: LoginFormValues) {
-    console.log(values);
-    router.push("/trending");
+  async function onSubmit(values: LoginFormValues) {
+    setIsLoading(true);
+    try {
+      const response = await loginUser(values);
+      toast.success("Login Successful", {
+        description: response.message,
+      });
+      router.push("/trending");
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Something went wrong.";
+
+      toast.error("Login Failed", {
+        description: message,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -77,6 +95,7 @@ export function LoginForm() {
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"
                       {...field}
+                      disabled={isLoading}
                     />
                   </FormControl>
                   <button
@@ -108,8 +127,40 @@ export function LoginForm() {
             className="w-full"
             variant={"default"}
             size="lg"
+            disabled={isLoading}
           >
-            Login
+            {isLoading ? (
+              <div className="flex items-center">
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z"
+                  ></path>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M12 0C5.373 0 0 5.373 0 12h4c0-4.418 3.582-8 8-8v4z"
+                  ></path>
+                </svg>
+                Logging in...
+              </div>
+            ) : (
+              "Login"
+            )}
           </Button>
         </form>
       </Form>
@@ -125,7 +176,12 @@ export function LoginForm() {
         </div>
       </div>
 
-      <Button variant="outline" className="w-full" size="lg">
+      <Button
+        variant="outline"
+        className="w-full"
+        size="lg"
+        disabled={isLoading}
+      >
         <Image
           src="/google.svg"
           alt="Google"

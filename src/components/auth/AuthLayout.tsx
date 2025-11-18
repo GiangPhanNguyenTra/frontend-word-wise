@@ -7,7 +7,6 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
       {/* Left Side */}
       <div className="relative flex items-center justify-center bg-primary p-8 lg:p-12">
-        {/* Curved shape */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -right-1/2 top-1/2 h-[120%] w-[120%] -translate-y-1/2 transform rounded-full bg-blue-600/30" />
         </div>
