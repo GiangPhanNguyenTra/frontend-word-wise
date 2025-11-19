@@ -1,3 +1,4 @@
+import { AuthProvider } from "@/contexts/AuthContext";
 import "./globals.css";
 import { Montserrat } from "next/font/google";
 import { Toaster } from "sonner";
@@ -19,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={montserrat.variable}>
       <body>
-        {children}
+        <AuthProvider>{children}</AuthProvider>
         <Toaster position="top-right" richColors closeButton duration={5000} />
       </body>
     </html>

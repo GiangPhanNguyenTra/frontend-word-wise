@@ -23,6 +23,7 @@ import { Separator } from "../ui/separator";
 import Image from "next/image";
 import { loginUser } from "@/services/authService";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 type LoginFormValues = z.infer<typeof LoginSchema>;
 
@@ -30,6 +31,7 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { setUser } = useAuth();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(LoginSchema),
@@ -43,6 +45,9 @@ export function LoginForm() {
     setIsLoading(true);
     try {
       const response = await loginUser(values);
+
+      setUser(response.data);
+
       toast.success("Login Successful", {
         description: response.message,
       });
@@ -50,7 +55,6 @@ export function LoginForm() {
     } catch (error: unknown) {
       const message =
         error instanceof Error ? error.message : "Something went wrong.";
-
       toast.error("Login Failed", {
         description: message,
       });

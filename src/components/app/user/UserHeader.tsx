@@ -24,6 +24,7 @@ import {
   MessageCircle,
   TrendingUp,
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const navLinks = [
   { href: "/dashboard", label: "Home", icon: Home },
@@ -35,6 +36,18 @@ const navLinks = [
 
 export const UserHeader = () => {
   const pathname = usePathname();
+  const { user, logout } = useAuth();
+
+  const getInitials = (name: string) => {
+    return name
+      ? name
+          .split(" ")
+          .map((n) => n[0])
+          .join("")
+          .toUpperCase()
+          .substring(0, 2)
+      : "U";
+  };
 
   return (
     <header className="sticky top-0 py-2 z-50 w-full border-b border-[#BDBDBD] bg-white">
@@ -71,7 +84,7 @@ export const UserHeader = () => {
         {/* User Actions */}
         <div className="flex items-center gap-4">
           <Button variant="icon" size="icon" className="group">
-            <Bell className="h-4 w- text-black group-hover:w-6 group-hover:h-6" />
+            <Bell className="h-4 w-4 text-black group-hover:w-6 group-hover:h-6" />
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -81,12 +94,16 @@ export const UserHeader = () => {
               >
                 <Avatar className="h-8 w-8">
                   <AvatarImage
-                    src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
-                    alt="PhanGiang293"
+                    src={user?.avatar || ""}
+                    alt={user?.username || "User"}
                   />
-                  <AvatarFallback>PG</AvatarFallback>
+                  <AvatarFallback>
+                    {getInitials(user?.username || "")}
+                  </AvatarFallback>
                 </Avatar>
-                <span className="hidden lg:inline">PhanGiang293</span>
+                <span className="hidden lg:inline">
+                  {user?.username || "User"}
+                </span>
                 <ChevronDown className="h-4 w-4 hidden lg:inline" />
               </Button>
             </DropdownMenuTrigger>
@@ -100,7 +117,9 @@ export const UserHeader = () => {
                 <DropdownMenuItem>Reminder</DropdownMenuItem>
               </Link>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
+              <DropdownMenuItem onClick={logout} className="cursor-pointer">
+                Logout
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
