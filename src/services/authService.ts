@@ -30,6 +30,7 @@ export async function loginUser(values: z.infer<typeof LoginSchema>) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(values),
   });
 
@@ -55,6 +56,7 @@ export async function registerUser(values: z.infer<typeof RegisterSchema>) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify({
       fullName: values.fullName,
       email: values.email,
@@ -85,6 +87,7 @@ export async function requestForgotPasswordCode(email: string) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify({ email }),
   });
 
@@ -116,6 +119,7 @@ export async function resetPassword(values: {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(values),
   });
 

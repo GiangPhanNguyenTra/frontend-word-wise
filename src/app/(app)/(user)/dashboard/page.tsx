@@ -1,90 +1,42 @@
-import { StatCard } from "@/components/app/dashboard/StatCard";
+"use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { formatDistanceToNow, format } from "date-fns";
+import { toast } from "sonner";
 import {
   ArrowRight,
   Book,
   Calendar,
   Flame,
   PenLine,
-  Plus,
   Play,
   BookCopy,
   Gamepad2,
-  Timer,
   CheckSquare,
   ArrowBigDownDash,
+  Loader2,
 } from "lucide-react";
-import Link from "next/link";
 
-// Mock Data
-const stats = [
-  { title: "Total Words", value: "1,264", icon: Book },
-  { title: "Collections", value: "26", icon: BookCopy },
-  { title: "Today's Words", value: "29", icon: Calendar },
-  { title: "Learning Streak", value: "7 days", icon: Flame },
-];
+import { StatCard } from "@/components/app/dashboard/StatCard";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
 
-const collections = [
-  { name: "Technology", words: 128, lastStudied: "2d ago" },
-  { name: "Business English", words: 95, lastStudied: "1d ago" },
-  { name: "Travel Vocabulary", words: 210, lastStudied: "5d ago" },
-  { name: "Academic Writing", words: 150, lastStudied: "3h ago" },
-];
+import { getHomeStatistics } from "@/services/statisticService";
+import { getUserCollections } from "@/services/collectionService";
+import { getUserFriends } from "@/services/userService";
+import { getSharedNotifications } from "@/services/communityService";
+import { getTrendingArticles } from "@/services/trendingService";
 
-const trendingWords = [
-  {
-    word: "Revolutionary",
-    vietnamese: "cách mạng, đột phá",
-    definition: "involving or causing a complete or dramatic change",
-    example:
-      "This new drug is revolutionary in its approach to treating cancer.",
-  },
-  {
-    word: "Ubiquitous",
-    vietnamese: "phổ biến, ở đâu cũng có",
-    definition: "present, appearing, or found everywhere",
-    example: "Smartphones have become ubiquitous in modern society.",
-  },
-  {
-    word: "Ephemeral",
-    vietnamese: "phù du, chóng tàn",
-    definition: "lasting for a very short time",
-    example: "The beauty of the cherry blossoms is ephemeral.",
-  },
-];
-
-const sharedCollections = [
-  {
-    user: "Sarah Johnson",
-    avatar: "https://i.pravatar.cc/150?u=sarah",
-    collection: "Academic Writing",
-    words: 35,
-    time: "2 hours ago",
-  },
-  {
-    user: "Michael Chen",
-    avatar: "https://i.pravatar.cc/150?u=michael",
-    collection: "Tech Startups",
-    words: 28,
-    time: "5 hours ago",
-  },
-];
-
-const friends = [
-  {
-    user: "Alex Turner",
-    avatar: "https://i.pravatar.cc/150?u=alex",
-    status: "Learning Business English",
-  },
-  {
-    user: "Emma Wilson",
-    avatar: "https://i.pravatar.cc/150?u=emma",
-    status: "Advanced Vocabulary",
-  },
-];
+import {
+  HomeStatistics,
+  Collection,
+  Friend,
+  SharedNotification,
+} from "@/types/dashboard";
+import { Vocabulary } from "@/types/trending";
 
 const challenges = [
   {
@@ -104,15 +56,74 @@ const challenges = [
   },
 ];
 
-// Main Dashboard Page Component
 export default function DashboardPage() {
+  const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [stats, setStats] = useState<HomeStatistics | null>(null);
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [friends, setFriends] = useState<Friend[]>([]);
+  const [sharedNotifications, setSharedNotifications] = useState<
+    SharedNotification[]
+  >([]);
+  const [trendingWords, setTrendingWords] = useState<Vocabulary[]>([]);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      setIsLoading(true);
+      try {
+        const [
+          statsData,
+          collectionsData,
+          friendsData,
+          sharedData,
+          trendingData,
+        ] = await Promise.all([
+          getHomeStatistics(),
+          getUserCollections(),
+          getUserFriends(),
+          getSharedNotifications(),
+          getTrendingArticles(format(new Date(), "yyyy-MM-dd")),
+        ]);
+
+        setStats(statsData);
+        setCollections(collectionsData);
+        setFriends(friendsData);
+        setSharedNotifications(sharedData);
+
+        if (Array.isArray(trendingData) && trendingData.length > 0) {
+          const allWords = trendingData.flatMap(
+            (article) => article.list_words
+          );
+          setTrendingWords(allWords.slice(0, 3));
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to load dashboard data");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="container max-w-screen-2xl mx-auto py-8">
       <div className="flex flex-col gap-12">
-        {/* Welcome Banner */}
         <section className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl shadow-lg p-8 flex flex-col md:flex-row justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold">Welcome back, PhanGiang293!</h1>
+            <h1 className="text-3xl font-bold">
+              Welcome back, {user?.username || "User"}!
+            </h1>
             <p className="mt-2 text-blue-100">
               &quot;The limits of my language mean the limits of my world.&quot;
               - Ludwig Wittgenstein
@@ -127,17 +138,28 @@ export default function DashboardPage() {
         </section>
 
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat) => (
-            <StatCard
-              key={stat.title}
-              title={stat.title as any}
-              value={stat.value}
-              icon={stat.icon}
-            />
-          ))}
+          <StatCard
+            title="Total Words"
+            value={stats?.total_words.toString() || "0"}
+            icon={Book}
+          />
+          <StatCard
+            title="Collections"
+            value={stats?.total_collections.toString() || "0"}
+            icon={BookCopy}
+          />
+          <StatCard
+            title="Today's Words"
+            value={stats?.today_words.toString() || "0"}
+            icon={Calendar}
+          />
+          <StatCard
+            title="Learning Streak"
+            value={`${stats?.learning_streak || 0} days`}
+            icon={Flame}
+          />
         </section>
 
-        {/* My Vocabulary Collections */}
         <section>
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-20">
@@ -154,22 +176,27 @@ export default function DashboardPage() {
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {collections.map((col) => (
+            {collections.slice(0, 4).map((col) => (
               <Card
-                key={col.name}
-                className="shadow-lg hover:shadow-[0_8px_40px_rgba(0,0,0,0.2)] transition-shadow cursor-pointer"
+                key={col.id}
+                className="shadow-lg hover:shadow-[0_8px_40px_rgba(0,0,0,0.2)] transition-shadow cursor-pointer flex flex-col"
               >
-                <CardContent className="p-6">
+                <CardContent className="p-6 flex-grow flex flex-col justify-between">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="text-lg font-semibold">{col.name}</h3>
+                      <h3
+                        className="text-lg font-semibold line-clamp-1"
+                        title={col.name}
+                      >
+                        {col.name}
+                      </h3>
                       <p className="text-sm text-muted-foreground">
-                        {col.words} words
+                        {col.wordCount} words
                       </p>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 shrink-0">
                       <Button variant="icon" size="icon" className="group">
-                        <PenLine className="h-4 w- text-black group-hover:w-6 group-hover:h-6" />
+                        <PenLine className="h-4 w-4 text-black group-hover:w-6 group-hover:h-6" />
                       </Button>
                       <Button variant="icon" size="icon" className="group">
                         <Play className="h-4 w-4 text-primary group-hover:w-6 group-hover:h-6" />
@@ -185,7 +212,6 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {/* Today's Trending Vocabulary */}
         <section>
           <div className="flex justify-between items-center mb-4">
             <h2 className=" text-xl lg:text-2xl font-bold">
@@ -199,51 +225,58 @@ export default function DashboardPage() {
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {trendingWords.map((item) => (
-              <Card
-                key={item.word}
-                className="flex flex-col shadow-lg hover:shadow-[0_8px_40px_rgba(0,0,0,0.2)] transition-shadow"
-              >
-                <CardContent className="p-6 flex-grow">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-xl font-bold text-primary">
-                      {item.word}
-                    </h3>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="hover:bg-primary group"
-                    >
-                      <ArrowBigDownDash className="h-5 w-5 text-primary group-hover:text-white" />
-                    </Button>
-                  </div>
-                  <div className="space-y-3 text-sm">
-                    <p>
-                      <span className="font-semibold">Vietnamese meaning:</span>
-                      {item.vietnamese}
-                    </p>
-                    <p>
-                      <span className="font-semibold">Definition:</span>
-                      <span className="text-muted-foreground">
-                        {item.definition}
-                      </span>
-                    </p>
-                    <p>
-                      <span className="font-semibold">Example:</span>
-                      <i className="text-muted-foreground">
-                        &quot;{item.example}&quot;
-                      </i>
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+            {trendingWords.length > 0 ? (
+              trendingWords.map((item, idx) => (
+                <Card
+                  key={idx}
+                  className="flex flex-col shadow-lg hover:shadow-[0_8px_40px_rgba(0,0,0,0.2)] transition-shadow"
+                >
+                  <CardContent className="p-6 flex-grow">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-xl font-bold text-primary">
+                        {item.word}
+                      </h3>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="hover:bg-primary group"
+                      >
+                        <ArrowBigDownDash className="h-5 w-5 text-primary group-hover:text-white" />
+                      </Button>
+                    </div>
+                    <div className="space-y-3 text-sm">
+                      <p>
+                        <span className="font-semibold">Vietnamese: </span>
+                        {item.word_vn}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Definition: </span>
+                        <span className="text-muted-foreground">
+                          {item.definition_en}
+                        </span>
+                      </p>
+                      {item.examples && item.examples.length > 0 && (
+                        <p>
+                          <span className="font-semibold">Example: </span>
+                          <i className="text-muted-foreground">
+                            &quot;{item.examples[0].en}&quot;
+                          </i>
+                        </p>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <div className="col-span-full text-center text-muted-foreground">
+                No trending words available today.
+              </div>
+            )}
           </div>
         </section>
 
-        {/* Community Activities */}
         <section>
-          <h2 className=" text-xllg:text-2xl font-bold mb-4">
+          <h2 className=" text-xl lg:text-2xl font-bold mb-4">
             Community Activities
           </h2>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -252,27 +285,44 @@ export default function DashboardPage() {
                 <CardTitle>Shared Collections</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {sharedCollections.map((item) => (
-                  <div key={item.user} className="flex items-center gap-4">
-                    <Avatar>
-                      <AvatarImage src={item.avatar} />
-                      <AvatarFallback>{item.user.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="text-sm font-medium">
-                        {item.user} shared &quot;
-                        <Link href="#" className="text-primary hover:underline">
-                          {item.collection}
-                        </Link>
-                        &quot;
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {item.words} words • {item.time}
-                      </p>
+                {sharedNotifications.length > 0 ? (
+                  sharedNotifications.map((item) => (
+                    <div key={item.postId} className="flex items-center gap-4">
+                      <Avatar>
+                        <AvatarImage src={item.author.avatarUrl || ""} />
+                        <AvatarFallback>
+                          {item.author.username.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="text-sm font-medium">
+                          {item.author.username} shared &quot;
+                          <Link
+                            href="#"
+                            className="text-primary hover:underline"
+                          >
+                            {item.collectionInfo.name}
+                          </Link>
+                          &quot;
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {item.collectionInfo.wordCount} words •{" "}
+                          {formatDistanceToNow(new Date(item.createdAt), {
+                            addSuffix: true,
+                          })}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
-                <Button variant="link" className="p-0 h-auto">
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground text-center">
+                    No shared collections yet.
+                  </p>
+                )}
+                <Button
+                  variant="link"
+                  className="p-0 h-auto w-full text-center"
+                >
                   View all shared collections
                 </Button>
               </CardContent>
@@ -282,21 +332,33 @@ export default function DashboardPage() {
                 <CardTitle>My Friends</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {friends.map((friend) => (
-                  <div key={friend.user} className="flex items-center gap-4">
-                    <Avatar>
-                      <AvatarImage src={friend.avatar} />
-                      <AvatarFallback>{friend.user.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="text-sm font-medium">{friend.user}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {friend.status}
-                      </p>
+                {friends.length > 0 ? (
+                  friends.map((friend) => (
+                    <div
+                      key={friend.userId}
+                      className="flex items-center gap-4"
+                    >
+                      <Avatar>
+                        <AvatarImage src={friend.avatarUrl || ""} />
+                        <AvatarFallback>
+                          {friend.username.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="text-sm font-medium">{friend.username}</p>
+                        <p className="text-xs text-muted-foreground">Active</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
-                <Button variant="link" className="p-0 h-auto">
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground text-center">
+                    You haven&apos;t added any friends yet.
+                  </p>
+                )}
+                <Button
+                  variant="link"
+                  className="p-0 h-auto w-full text-center"
+                >
                   View my friends
                 </Button>
               </CardContent>
@@ -306,26 +368,16 @@ export default function DashboardPage() {
                 <CardTitle>Challenge Rooms</CardTitle>
               </CardHeader>
               <CardContent className="grid grid-cols-2 gap-4">
-                {challenges.map((challenge) => {
-                  // xác định route tương ứng theo tên
-                  const hrefMap: Record<string, string> = {
-                    "Definition Match": "/community/challenge/definition",
-                    "Fill in the Blank": "/community/challenge/fill-blank",
-                    "Word Shooter": "/community/challenge/word-shooter",
-                  };
-                  const href = hrefMap[challenge.name] || "#";
-
-                  return (
-                    <Link
-                      key={challenge.name}
-                      href={href}
-                      className={`p-4 rounded-lg flex flex-col items-center justify-center text-center gap-2 cursor-pointer hover:shadow-md transition-opacity ${challenge.color}`}
-                    >
-                      <challenge.icon className="h-6 w-6" />
-                      <p className="text-sm font-semibold">{challenge.name}</p>
-                    </Link>
-                  );
-                })}
+                {challenges.map((challenge) => (
+                  <Link
+                    key={challenge.name}
+                    href="#"
+                    className={`p-4 rounded-lg flex flex-col items-center justify-center text-center gap-2 cursor-pointer hover:shadow-md transition-opacity ${challenge.color}`}
+                  >
+                    <challenge.icon className="h-6 w-6" />
+                    <p className="text-sm font-semibold">{challenge.name}</p>
+                  </Link>
+                ))}
               </CardContent>
             </Card>
           </div>

@@ -34,7 +34,7 @@ export const ArticleCard = ({ article }: { article: ArticleProps }) => {
               </h3>
               <Badge
                 variant="secondary"
-                className=" !text-[var(--color-success)] !bg-[#00966D19] w-[200px] "
+                className=" !text-[var(--color-success)] !bg-[#00966D19] w-[120px] text-center"
               >
                 {article.category}
               </Badge>
