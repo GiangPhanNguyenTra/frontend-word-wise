@@ -94,7 +94,10 @@ export const UserHeader = () => {
               >
                 <Avatar className="h-8 w-8">
                   <AvatarImage
-                    src={user?.avatar || ""}
+                    src={
+                      user?.avatar ||
+                      "https://api.dicebear.com/6.x/bottts/png?seed=John"
+                    }
                     alt={user?.username || "User"}
                   />
                   <AvatarFallback>
