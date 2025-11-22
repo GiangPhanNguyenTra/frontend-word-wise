@@ -89,3 +89,41 @@ export async function deleteWord(
     throw new Error(errorData.message || "Failed to delete word");
   }
 }
+
+export async function updateCollection(
+  collectionId: number,
+  name: string
+): Promise<void> {
+  if (!BASE_URL) throw new Error("API URL is not defined");
+
+  const response = await fetch(`${BASE_URL}/collections/${collectionId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify({ name }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Failed to update collection");
+  }
+}
+
+export async function deleteCollection(collectionId: number): Promise<void> {
+  if (!BASE_URL) throw new Error("API URL is not defined");
+
+  const response = await fetch(`${BASE_URL}/collections/${collectionId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Failed to delete collection");
+  }
+}

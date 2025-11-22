@@ -4,6 +4,7 @@ import {
 } from "@/types/practice";
 
 const BASE_URL = process.env.NEXT_PUBLIC_CORE_SERVICE_API;
+
 export async function getPracticeSession(
   collectionName?: string
 ): Promise<PracticeSessionData> {

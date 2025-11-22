@@ -24,7 +24,11 @@ import {
   DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { getUserCollections } from "@/services/collectionService";
+import {
+  getUserCollections,
+  updateCollection,
+  deleteCollection,
+} from "@/services/collectionService";
 import { Collection } from "@/types/dashboard";
 import { CollectionCard } from "./components/CollectionCard";
 
@@ -43,21 +47,21 @@ export default function CollectionsPage() {
   const [words, setWords] = useState("");
 
   useEffect(() => {
-    const fetchCollections = async () => {
-      setIsLoading(true);
-      try {
-        const data = await getUserCollections();
-        setCollections(data);
-      } catch (error) {
-        console.error(error);
-        toast.error("Failed to load collections");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchCollections();
   }, []);
+
+  const fetchCollections = async () => {
+    setIsLoading(true);
+    try {
+      const data = await getUserCollections();
+      setCollections(data);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to load collections");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleSave = () => {
     if (!title || !words) {
@@ -66,6 +70,32 @@ export default function CollectionsPage() {
     }
     localStorage.setItem("newCollectionData", JSON.stringify({ title, words }));
     router.push(`/collections/new-review?title=${encodeURIComponent(title)}`);
+  };
+
+  const handleEditCollection = async (id: number, newName: string) => {
+    try {
+      await updateCollection(id, newName);
+      setCollections((prev) =>
+        prev.map((col) => (col.id === id ? { ...col, name: newName } : col))
+      );
+      toast.success("Collection updated successfully");
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Something went wrong.";
+      toast.error(message || "Failed to update collection");
+    }
+  };
+
+  const handleDeleteCollection = async (id: number) => {
+    try {
+      await deleteCollection(id);
+      setCollections((prev) => prev.filter((col) => col.id !== id));
+      toast.success("Collection deleted successfully");
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Something went wrong.";
+      toast.error(message || "Failed to delete collection");
+    }
   };
 
   const filteredAndSortedCollections = useMemo(() => {
@@ -233,12 +263,15 @@ export default function CollectionsPage() {
             <Link
               href={`/collections/${col.name}`}
               key={col.id}
-              className="block"
+              className="block h-full"
             >
               <CollectionCard
+                id={col.id}
                 title={col.name}
                 words={col.wordCount}
                 lastStudied={col.lastStudied}
+                onEdit={handleEditCollection}
+                onDelete={handleDeleteCollection}
               />
             </Link>
           ))
