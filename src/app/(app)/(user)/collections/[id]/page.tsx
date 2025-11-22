@@ -23,7 +23,11 @@ import {
 
 import { WordCard } from "../components/WordCard";
 import ContinueLearningButton from "../components/ContinueLearningButton";
-import { getCollectionDetail, updateWord } from "@/services/collectionService";
+import {
+  getCollectionDetail,
+  updateWord,
+  deleteWord,
+} from "@/services/collectionService";
 import { CollectionDetail, ApiWord } from "@/types/collection";
 
 interface UIWord {
@@ -121,13 +125,27 @@ export default function CollectionDetailPage() {
     }
   };
 
-  const handleDeleteWord = (wordIdToDelete: number) => {
+  const handleDeleteWord = async (wordIdToDelete: number) => {
     if (!collection) return;
-    const updatedWords = collection.words.filter(
-      (w) => w.wordId !== wordIdToDelete
-    );
-    setCollection({ ...collection, words: updatedWords });
-    toast.success("Word removed locally (API not integrated)");
+
+    try {
+      await deleteWord(collection.collectionId, wordIdToDelete);
+
+      const updatedWords = collection.words.filter(
+        (w) => w.wordId !== wordIdToDelete
+      );
+
+      setCollection({
+        ...collection,
+        words: updatedWords,
+        totalWords: collection.totalWords - 1,
+      });
+      toast.success("Word removed from collection successfully");
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Something went wrong.";
+      toast.error(message || "Failed to delete word");
+    }
   };
 
   const filteredWords: UIWord[] = useMemo(() => {

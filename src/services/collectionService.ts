@@ -66,3 +66,26 @@ export async function updateWord(
   const data = await response.json();
   return data.data;
 }
+
+export async function deleteWord(
+  collectionId: number,
+  wordId: number
+): Promise<void> {
+  if (!BASE_URL) throw new Error("API URL is not defined");
+
+  const response = await fetch(
+    `${BASE_URL}/collections/${collectionId}/words/${wordId}`,
+    {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    }
+  );
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Failed to delete word");
+  }
+}
