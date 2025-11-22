@@ -2,8 +2,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Word } from "../data/word-data";
 import { Volume2 } from "lucide-react";
+import { ApiWord } from "@/types/collection";
 
 const typeStyles: Record<string, string> = {
   noun: "bg-[#E9EFFD] text-[#2563EB]",
@@ -17,8 +17,8 @@ export function DefinitionChoice({
   allWords,
   onAnswer,
 }: {
-  word: Word;
-  allWords: Word[];
+  word: ApiWord;
+  allWords: ApiWord[];
   onAnswer?: (r: "correct" | "wrong") => void;
 }) {
   const [selected, setSelected] = useState<string | null>(null);
@@ -27,37 +27,45 @@ export function DefinitionChoice({
 
   useEffect(() => {
     const wrongs = allWords
-      .filter((w) => w.word !== word.word)
+      .filter((w) => w.wordId !== word.wordId)
       .sort(() => 0.5 - Math.random())
-      .slice(0, 2);
+      .slice(0, 2)
+      .map((w) => w.wordVn);
 
-    const opts = [...wrongs.map((w) => w.meaning), word.meaning].sort(
-      () => 0.5 - Math.random()
-    );
+    // Fallback if collection is too small
+    while (wrongs.length < 2 && allWords.length > 1) {
+      wrongs.push("...");
+    }
 
+    const opts = [...wrongs, word.wordVn].sort(() => 0.5 - Math.random());
     setOptions(opts);
     setSelected(null);
     setShow(false);
   }, [word, allWords]);
 
   return (
-    <div className="bg-white w-full h-[50vh] p-6 border rounded-xl shadow-md flex flex-col gap-4">
+    <div className="bg-white w-full h-[60vh] p-6 border rounded-xl shadow-md flex flex-col gap-4">
       <div className="flex justify-center gap-2 items-center">
         <span
           className={`px-3 py-1 rounded-full text-sm font-medium ${
-            typeStyles[word.type] || "bg-gray-200 text-gray-700"
+            typeStyles[word.partOfSpeech] || "bg-gray-200 text-gray-700"
           }`}
         >
-          {word.type}
+          {word.partOfSpeech}
         </span>
         <Volume2 color="#363538" size={18} />
       </div>
 
-      <p className="text-xl font-bold text-center">{word.word}</p>
+      <div className="flex-1 flex flex-col items-center justify-center gap-2">
+        <p className="text-xl font-bold text-center">{word.wordText}</p>
+        <p className="text-sm text-gray-500 italic text-center max-w-md">
+          {word.definitionEn}
+        </p>
+      </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 w-full">
         {options.map((opt, idx) => {
-          const isCorrect = opt === word.meaning;
+          const isCorrect = opt === word.wordVn;
           const isSelected = selected === opt;
 
           return (
@@ -65,7 +73,7 @@ export function DefinitionChoice({
               key={idx}
               variant="outline"
               className={cn(
-                "justify-start",
+                "justify-start h-auto py-3 text-left whitespace-normal w-full",
                 !show &&
                   isSelected &&
                   "border border-[#2563EB] text-black hover:bg-blue-50",
@@ -78,7 +86,11 @@ export function DefinitionChoice({
                   "bg-[#FEE2E2] text-[#C41C1C] border-[#C41C1C]"
               )}
               disabled={show}
-              onClick={() => !show && setSelected(opt)}
+              onClick={() => {
+                if (!show) {
+                  setSelected(opt);
+                }
+              }}
             >
               {opt}
             </Button>
@@ -86,13 +98,12 @@ export function DefinitionChoice({
         })}
       </div>
 
-      {/* Gộp nút Check lại thành 1 */}
       {!show && (
         <Button
-          className="bg-[#2563EB] hover:bg-blue-800"
+          className="bg-[#2563EB] hover:bg-blue-800 w-full mt-2"
           onClick={() => {
             setShow(true);
-            onAnswer?.(selected === word.meaning ? "correct" : "wrong");
+            onAnswer?.(selected === word.wordVn ? "correct" : "wrong");
           }}
           disabled={!selected}
         >
@@ -102,13 +113,13 @@ export function DefinitionChoice({
 
       {show && (
         <p
-          className={
-            selected === word.meaning ? "text-green-600" : "text-red-600"
-          }
+          className={`text-center font-medium ${
+            selected === word.wordVn ? "text-green-600" : "text-red-600"
+          }`}
         >
-          {selected === word.meaning
-            ? "✔ Chính xác!"
-            : `✘ Sai. Đáp án: ${word.meaning}`}
+          {selected === word.wordVn
+            ? "✔ Correct!"
+            : `✘ Incorrect. Answer: ${word.wordVn}`}
         </p>
       )}
     </div>

@@ -253,7 +253,7 @@ export default function CollectionDetailPage() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="flex items-center gap-2">
-                {filterType ? filterType : "Filter"}{" "}
+                {filterType ? filterType : "Filter"}
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>

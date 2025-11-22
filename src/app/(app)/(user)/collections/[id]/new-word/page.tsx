@@ -31,7 +31,7 @@ export default function Page() {
         {/* nút Back bên trái */}
         <Button
           className="border border-[#363538] text-[#363538] bg-white hover:bg-gray-100"
-          onClick={() => router.push(`/collections/${id}`)}
+          onClick={() => router.back()}
         >
           <CircleArrowLeft className="mr-1" />
           Back
