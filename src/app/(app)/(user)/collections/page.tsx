@@ -112,7 +112,7 @@ export default function CollectionsPage() {
           <DialogTrigger asChild>
             <Button
               variant="outline"
-              className="shrink-0 gap-2 border-[#2563EB] text-[#2563EB] hover:bg-blue-50"
+              className="shrink-0 gap-2 border-[#2563EB] text-[#2563EB] hover:bg-blue-50 hover:text-[#2563EB] flex items-center"
             >
               <PlusCircle className="h-4 w-4 text-[#2563EB]" /> Create
               Collection
@@ -160,10 +160,7 @@ export default function CollectionsPage() {
             </div>
 
             <DialogFooter>
-              <Button
-                onClick={handleSave}
-                className="bg-[#2563EB] text-white hover:bg-blue-600"
-              >
+              <Button type="button" onClick={handleSave}>
                 Save & Review
               </Button>
             </DialogFooter>
@@ -172,8 +169,8 @@ export default function CollectionsPage() {
       </div>
 
       <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-        <div className="relative w-full md:w-96">
-          <Search className="absolute left-2.5 top-[16px] h-4 w-4 text-muted-foreground" />
+        <div className="relative w-full max-w-lg bg-white">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#ABABAB]" />
           <Input
             placeholder="Search collections..."
             className="pl-9"
