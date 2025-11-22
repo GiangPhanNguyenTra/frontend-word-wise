@@ -4,15 +4,16 @@ import {
 } from "@/types/practice";
 
 const BASE_URL = process.env.NEXT_PUBLIC_CORE_SERVICE_API;
-
 export async function getPracticeSession(
-  collectionId?: string
+  collectionName?: string
 ): Promise<PracticeSessionData> {
   if (!BASE_URL) throw new Error("API URL is not defined");
 
-  const url = collectionId
-    ? `${BASE_URL}/practice/session?collectionId=${collectionId}`
-    : `${BASE_URL}/practice/session`;
+  const url = collectionName
+    ? `${BASE_URL}/practice/today?collectionName=${encodeURIComponent(
+        collectionName
+      )}`
+    : `${BASE_URL}/practice/today`;
 
   const response = await fetch(url, {
     method: "GET",
@@ -23,7 +24,8 @@ export async function getPracticeSession(
   });
 
   if (!response.ok) {
-    throw new Error("Failed to create practice session");
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Failed to create practice session");
   }
 
   const data = await response.json();

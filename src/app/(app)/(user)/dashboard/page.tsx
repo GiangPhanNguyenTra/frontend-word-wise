@@ -10,12 +10,12 @@ import {
   Calendar,
   Flame,
   PenLine,
-  Play,
   BookCopy,
   Gamepad2,
   CheckSquare,
   ArrowBigDownDash,
   Loader2,
+  Play,
 } from "lucide-react";
 
 import { StatCard } from "@/components/app/dashboard/StatCard";
@@ -23,6 +23,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
+import { ContinueLearningModal } from "@/components/app/dashboard/ContinueLearningModal";
 
 import { getHomeStatistics } from "@/services/statisticService";
 import { getUserCollections } from "@/services/collectionService";
@@ -129,14 +130,11 @@ export default function DashboardPage() {
               - Ludwig Wittgenstein
             </p>
           </div>
-          <Button
-            variant={"default"}
-            className="mt-4 md:mt-0 bg-secondary hover:!bg-yellow-400 text-white font-medium py-3 px-6"
-          >
-            Continue learning <Play className="ml-2 h-5 w-5" />
-          </Button>
+          {/* Replace hardcoded button with Modal Trigger (no ID = today) */}
+          <ContinueLearningModal />
         </section>
 
+        {/* ... (Rest of the UI remains the same) */}
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <StatCard
             title="Total Words"

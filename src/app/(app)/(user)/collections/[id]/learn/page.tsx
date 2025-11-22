@@ -1,6 +1,6 @@
 "use client";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Check, CircleArrowLeft, Loader2, RotateCcw } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
@@ -32,28 +32,26 @@ export default function LearnPage() {
   const id = params.id as string;
   const router = useRouter();
 
-  // Sử dụng useRef để tránh gọi API 2 lần trong dev mode (React Strict Mode)
   const initialized = useRef(false);
+  const selectedModes = useMemo(
+    () => searchParams.get("modes")?.split(",") || ["flashcards"],
+    [searchParams]
+  );
 
-  const selectedModes = searchParams.get("modes")?.split(",") || ["flashcards"];
-
-  // States
   const [viewState, setViewState] = useState<
     "loading" | "studying" | "finished" | "error"
   >("loading");
   const [queue, setQueue] = useState<WordWithMode[]>([]);
   const [collectionName, setCollectionName] = useState("");
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [allCollectionWords, setAllCollectionWords] = useState<ApiWord[]>([]); // Dùng cho trắc nghiệm
+  const [allCollectionWords, setAllCollectionWords] = useState<ApiWord[]>([]);
 
-  // Stats tracking
   const [totalWords, setTotalWords] = useState(0);
   const [completedCount, setCompletedCount] = useState(0);
   const [wordStats, setWordStats] = useState<Record<number, number>>({});
   const [resultSummary, setResultSummary] =
     useState<PracticeCompletionResponse | null>(null);
 
-  // Current question logic
   const [answered, setAnswered] = useState<"correct" | "wrong" | null>(null);
 
   useEffect(() => {
@@ -66,41 +64,60 @@ export default function LearnPage() {
         let currentCollectionName = "";
         let currentSessionId: string | null = null;
 
-        // 1. Thử lấy Scheduled Practice Session
+        const isTodayPractice = id === "today";
+
+        if (!isTodayPractice) {
+          try {
+            const collectionDetail = await getCollectionDetail(id);
+            currentCollectionName = collectionDetail.name;
+          } catch (e) {
+            console.error("Cannot fetch collection detail for name", e);
+            setViewState("error");
+            return;
+          }
+        }
+
         try {
-          const sessionData = await getPracticeSession(id);
+          const sessionData = await getPracticeSession(
+            isTodayPractice ? undefined : currentCollectionName
+          );
+
           if (sessionData.list_words && sessionData.list_words.length > 0) {
             wordsToLearn = sessionData.list_words;
             currentSessionId = sessionData.sessionId;
-            currentCollectionName = sessionData.collection.collectionName;
+            if (!isTodayPractice && sessionData.collection) {
+              currentCollectionName = sessionData.collection.collectionName;
+            } else if (isTodayPractice) {
+              currentCollectionName = "Today's Review";
+            }
           }
         } catch (err) {
-          // Nếu lỗi (ví dụ 404 do không có bài tập scheduled), bỏ qua và fallback sang custom
           console.log(
             "Scheduled session not found or error, falling back to custom mode."
           );
         }
 
-        // 2. Fallback: Nếu không có scheduled words, lấy tất cả từ trong collection (Custom Practice)
-        if (wordsToLearn.length === 0) {
+        if (wordsToLearn.length === 0 && !isTodayPractice) {
           const collectionData = await getCollectionDetail(id);
           wordsToLearn = collectionData.words;
           currentCollectionName = collectionData.name;
         }
 
         if (wordsToLearn.length === 0) {
-          toast.info("This collection has no words to learn.");
+          toast.info(
+            isTodayPractice
+              ? "You have no words to review today!"
+              : "This collection has no words to learn."
+          );
           setViewState("error");
           return;
         }
 
-        // Set Data
         setSessionId(currentSessionId);
         setCollectionName(currentCollectionName);
         setAllCollectionWords(wordsToLearn);
         setTotalWords(wordsToLearn.length);
 
-        // Init Queue & Stats
         const initialQueue = shuffleArray(wordsToLearn).map((w) => ({
           word: w,
           mode: selectedModes[Math.floor(Math.random() * selectedModes.length)],
@@ -131,7 +148,6 @@ export default function LearnPage() {
     if (answered) return;
     setAnswered(result);
 
-    // Tăng số lần học của từ này
     if (current) {
       setWordStats((prev) => ({
         ...prev,
@@ -144,11 +160,9 @@ export default function LearnPage() {
     if (!current) return;
 
     if (answered === "correct") {
-      // Đúng -> Xóa khỏi hàng đợi
       setCompletedCount((c) => c + 1);
       setQueue((prev) => prev.slice(1));
     } else {
-      // Sai hoặc Skip -> Đẩy xuống cuối hàng đợi với mode ngẫu nhiên khác
       const reQueuedWord = {
         ...current,
         mode: selectedModes[Math.floor(Math.random() * selectedModes.length)],
@@ -160,7 +174,6 @@ export default function LearnPage() {
     setAnswered(null);
   };
 
-  // Tự động check hoàn thành khi queue rỗng
   useEffect(() => {
     if (viewState === "studying" && queue.length === 0 && totalWords > 0) {
       finishSession();
@@ -169,12 +182,8 @@ export default function LearnPage() {
   }, [queue.length, viewState, totalWords]);
 
   const finishSession = async () => {
-    setViewState("loading"); // Show loading khi đang submit
+    setViewState("loading");
 
-    // Đảm bảo count ít nhất là 1 nếu từ đó đã xuất hiện trong session (dù skip)
-    // Nhưng logic ở trên đã setWordStats từ đầu là 0, và tăng khi handleAnswer.
-    // Nếu user skip liên tục mà không handleAnswer, count vẫn là 0.
-    // Tuỳ logic BE, ở đây ta gửi count thực tế.
     const resultsPayload = Object.entries(wordStats).map(([wordId, count]) => ({
       wordId: Number(wordId),
       learn_count: count,
@@ -190,17 +199,22 @@ export default function LearnPage() {
       } else {
         response = await completeCustomPracticeSession(resultsPayload);
       }
-
       setResultSummary(response);
       setViewState("finished");
     } catch (error) {
       console.error("Finish Error:", error);
       toast.error("Failed to submit results");
-      setViewState("finished"); // Vẫn hiện màn hình finish dù lỗi mạng để user không bị kẹt
+      setViewState("finished");
     }
   };
 
-  // --- RENDER UI ---
+  const handleExit = () => {
+    if (id === "today") {
+      router.push("/dashboard");
+    } else {
+      router.push(`/collections/${id}`);
+    }
+  };
 
   if (viewState === "loading") {
     return (
@@ -214,10 +228,12 @@ export default function LearnPage() {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center gap-4">
         <p className="text-muted-foreground">
-          Unable to load practice session.
+          {id === "today"
+            ? "No words scheduled for review today."
+            : "Unable to load practice session."}
         </p>
-        <Button onClick={() => router.push(`/collections/${id}`)}>
-          Back to Collection
+        <Button onClick={handleExit}>
+          {id === "today" ? "Back to Dashboard" : "Back to Collection"}
         </Button>
       </div>
     );
@@ -283,9 +299,9 @@ export default function LearnPage() {
           </Button>
           <Button
             className="bg-[#2563EB] hover:bg-blue-800"
-            onClick={() => router.push(`/collections/${id}`)}
+            onClick={handleExit}
           >
-            Return to Collection
+            {id === "today" ? "Return to Dashboard" : "Return to Collection"}
           </Button>
         </div>
       </div>

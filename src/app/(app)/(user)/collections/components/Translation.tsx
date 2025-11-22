@@ -36,7 +36,10 @@ export function Translation({
     }
   }, [forceDontKnow, show, onAnswer]);
 
-  const isCorrect = answer.trim().toLowerCase() === word.wordText.toLowerCase();
+  const safeAnswer = answer || "";
+  const safeWordText = word.wordText || "";
+  const isCorrect =
+    safeAnswer.trim().toLowerCase() === safeWordText.trim().toLowerCase();
 
   return (
     <div className="bg-white w-full h-[50vh] p-6 border rounded-xl shadow-md flex flex-col gap-4">
