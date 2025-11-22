@@ -1,7 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { format } from "date-fns";
+import { toast } from "sonner";
+import {
+  PlusCircle,
+  CircleArrowLeft,
+  Search,
+  ChevronDown,
+  Loader2,
+} from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -10,12 +20,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { wordCollections as initialWordCollections } from "../data/word-data";
-import { WordCard } from "../components/WordCard";
-import { PlusCircle, CircleArrowLeft, Search, ChevronDown } from "lucide-react";
-import ContinueLearningButton from "../components/ContinueLearningButton";
 
-interface Word {
+import { WordCard } from "../components/WordCard";
+import ContinueLearningButton from "../components/ContinueLearningButton";
+import { getCollectionDetail } from "@/services/collectionService";
+import { CollectionDetail } from "@/types/collection";
+
+interface UIWord {
+  id: number;
   word: string;
   type: string;
   meaning: string;
@@ -23,6 +35,13 @@ interface Word {
   definitionVi: string;
   exampleEn: string;
   exampleVi: string;
+  phoneticsUkText: string;
+  phoneticsUkAudio: string;
+  phoneticsUsText: string;
+  phoneticsUsAudio: string;
+  synonyms: string;
+  idiomsCollocations: { en: string; vi: string }[];
+  phrasalVerbs: { en: string; vi: string }[];
 }
 
 export default function CollectionDetailPage() {
@@ -30,38 +49,128 @@ export default function CollectionDetailPage() {
   const id = params.id as string;
   const router = useRouter();
 
-  const [collections, setCollections] = useState(initialWordCollections);
+  const [collection, setCollection] = useState<CollectionDetail | null>(null);
   const [search, setSearch] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [filterType, setFilterType] = useState<string | null>(null);
 
-  const collectionIndex = collections.findIndex((c) => c.id === Number(id));
-  const collection = collections[collectionIndex];
+  useEffect(() => {
+    const fetchDetail = async () => {
+      setIsLoading(true);
+      try {
+        const data = await getCollectionDetail(id);
+        setCollection(data);
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to load collection details");
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  const handleEditWord = (updatedWord: Word) => {
-    const newCollections = [...collections];
-    const words = newCollections[collectionIndex].words;
-    const wordIndex = words.findIndex((w) => w.word === updatedWord.word);
-    if (wordIndex !== -1) {
-      words[wordIndex] = updatedWord;
-      setCollections(newCollections);
+    if (id) {
+      fetchDetail();
     }
+  }, [id]);
+
+  const handleEditWord = (updatedUIWord: UIWord) => {
+    if (!collection) return;
+
+    const updatedWords = collection.words.map((w) => {
+      if (w.wordId === updatedUIWord.id) {
+        return {
+          ...w,
+          wordText: updatedUIWord.word,
+          wordVn: updatedUIWord.meaning,
+          partOfSpeech: updatedUIWord.type,
+          definitionEn: updatedUIWord.definitionEn,
+          definitionVi: updatedUIWord.definitionVi,
+          examples: [
+            { en: updatedUIWord.exampleEn, vi: updatedUIWord.exampleVi },
+            ...(w.examples.slice(1) || []),
+          ],
+          synonyms: updatedUIWord.synonyms,
+          phonetics: {
+            uk: {
+              text: updatedUIWord.phoneticsUkText,
+              audio: updatedUIWord.phoneticsUkAudio,
+            },
+            us: {
+              text: updatedUIWord.phoneticsUsText,
+              audio: updatedUIWord.phoneticsUsAudio,
+            },
+          },
+          idiomsCollocations: updatedUIWord.idiomsCollocations,
+          phrasalVerbs: updatedUIWord.phrasalVerbs,
+        };
+      }
+      return w;
+    });
+
+    setCollection({ ...collection, words: updatedWords });
+    toast.success("Word updated locally (API not integrated)");
   };
 
-  const handleDeleteWord = (wordToDelete: string) => {
-    const newCollections = [...collections];
-    const originalWords = newCollections[collectionIndex].words;
-    newCollections[collectionIndex].words = originalWords.filter(
-      (w) => w.word !== wordToDelete
+  const handleDeleteWord = (wordIdToDelete: number) => {
+    if (!collection) return;
+    const updatedWords = collection.words.filter(
+      (w) => w.wordId !== wordIdToDelete
     );
-    setCollections(newCollections);
+    setCollection({ ...collection, words: updatedWords });
+    toast.success("Word removed locally (API not integrated)");
   };
 
-  if (!collection) {
-    return <div className="p-6">Collection not found</div>;
+  const filteredWords: UIWord[] = useMemo(() => {
+    if (!collection) return [];
+
+    let result = collection.words;
+
+    if (search) {
+      result = result.filter((w) =>
+        w.wordText.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    if (filterType) {
+      result = result.filter(
+        (w) => w.partOfSpeech.toLowerCase() === filterType.toLowerCase()
+      );
+    }
+
+    return result.map((w) => ({
+      id: w.wordId,
+      word: w.wordText,
+      type: w.partOfSpeech,
+      meaning: w.wordVn,
+      definitionEn: w.definitionEn,
+      definitionVi: w.definitionVi,
+      exampleEn: w.examples && w.examples.length > 0 ? w.examples[0].en : "",
+      exampleVi: w.examples && w.examples.length > 0 ? w.examples[0].vi : "",
+      phoneticsUkText: w.phonetics.uk?.text || "",
+      phoneticsUkAudio: w.phonetics.uk?.audio || "",
+      phoneticsUsText: w.phonetics.us?.text || "",
+      phoneticsUsAudio: w.phonetics.us?.audio || "",
+      synonyms: w.synonyms || "",
+      idiomsCollocations: w.idiomsCollocations || [],
+      phrasalVerbs: w.phrasalVerbs || [],
+    }));
+  }, [collection, search, filterType]);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[80vh] w-full items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    );
   }
 
-  const filteredWords = collection.words.filter((w) =>
-    w.word.toLowerCase().includes(search.toLowerCase())
-  );
+  if (!collection) {
+    return (
+      <div className="p-6 text-center text-muted-foreground">
+        Collection not found
+      </div>
+    );
+  }
 
   return (
     <div className="py-4 lg:p-6 space-y-6">
@@ -75,7 +184,7 @@ export default function CollectionDetailPage() {
           Back
         </Button>
         <h1 className="text-2xl lg:text-3xl font-bold text-[#2563EB]">
-          {collection.title}
+          {collection.name}
         </h1>
         <Button
           variant="outline"
@@ -89,9 +198,16 @@ export default function CollectionDetailPage() {
 
       <div className="flex justify-center">
         <div className="w-full sm:w-1/2 flex flex-row flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs sm:text-sm text-[#939393] text-center">
-          <p>{collection.words.length} words</p>
-          <p className="before:content-['•'] before:mx-2">{`Last studied: ${collection.lastStudied}`}</p>
-          <p className="before:content-['•'] before:mx-2">{`Created: ${collection.createdAt}`}</p>
+          <p>{collection.totalWords} words</p>
+          <p className="before:content-['•'] before:mx-2">
+            Last studied:{" "}
+            {collection.lastStudiedAt
+              ? format(new Date(collection.lastStudiedAt), "MMM dd, yyyy")
+              : "Never"}
+          </p>
+          <p className="before:content-['•'] before:mx-2">
+            Created: {format(new Date(collection.createdAt), "MMM dd, yyyy")}
+          </p>
         </div>
       </div>
 
@@ -109,14 +225,26 @@ export default function CollectionDetailPage() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="flex items-center gap-2">
-                Filter <ChevronDown className="h-4 w-4" />
+                {filterType ? filterType : "Filter"}{" "}
+                <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem>Noun</DropdownMenuItem>
-              <DropdownMenuItem>Verb</DropdownMenuItem>
-              <DropdownMenuItem>Adjective</DropdownMenuItem>
-              <DropdownMenuItem>Adverb</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setFilterType(null)}>
+                All
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setFilterType("noun")}>
+                Noun
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setFilterType("verb")}>
+                Verb
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setFilterType("adjective")}>
+                Adjective
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setFilterType("adverb")}>
+                Adverb
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -126,10 +254,10 @@ export default function CollectionDetailPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {filteredWords.map((w, idx) => (
           <WordCard
-            key={`${w.word}-${idx}`}
+            key={`${w.id}-${idx}`}
             wordData={w}
             onEdit={handleEditWord}
-            onDelete={() => handleDeleteWord(w.word)}
+            onDelete={() => handleDeleteWord(w.id)}
           />
         ))}
       </div>

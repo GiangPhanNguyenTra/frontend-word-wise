@@ -2,17 +2,9 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { toast } from "sonner";
-import {
-  Plus,
-  Search,
-  PenLine,
-  Play,
-  Loader2,
-  LayoutGrid,
-  List,
-  PlusCircle,
-} from "lucide-react";
+import { Search, Loader2, LayoutGrid, List, PlusCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,9 +24,9 @@ import {
   DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Card, CardContent } from "@/components/ui/card";
 import { getUserCollections } from "@/services/collectionService";
 import { Collection } from "@/types/dashboard";
+import { CollectionCard } from "./components/CollectionCard";
 
 type SortOption = "name-asc" | "name-desc" | "count-asc" | "count-desc";
 
@@ -181,7 +173,7 @@ export default function CollectionsPage() {
 
       <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
         <div className="relative w-full md:w-96">
-          <Search className="absolute left-2.5 top-[10px] h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-2.5 top-[16px] h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search collections..."
             className="pl-9"
@@ -241,70 +233,22 @@ export default function CollectionsPage() {
       >
         {filteredAndSortedCollections.length > 0 ? (
           filteredAndSortedCollections.map((col) => (
-            <Card
+            <Link
+              href={`/collections/${col.name}`}
               key={col.id}
-              className="shadow-lg hover:shadow-[0_8px_40px_rgba(0,0,0,0.2)] transition-shadow cursor-pointer"
+              className="block"
             >
-              <CardContent
-                className={`p-6 ${
-                  viewMode === "list"
-                    ? "flex flex-row items-center justify-between gap-4"
-                    : ""
-                }`}
-              >
-                <div
-                  className={
-                    viewMode === "list"
-                      ? "flex items-center gap-6 flex-1"
-                      : "flex justify-between items-start"
-                  }
-                >
-                  <div className={viewMode === "list" ? "min-w-[200px]" : ""}>
-                    <h3 className="text-lg font-semibold">{col.name}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {col.wordCount} words
-                    </p>
-                  </div>
-                  {viewMode === "list" && (
-                    <p className="text-sm text-muted-foreground">
-                      Last studied: {col.lastStudied}
-                    </p>
-                  )}
-                  {viewMode === "grid" && (
-                    <div className="flex gap-2">
-                      <Button variant="icon" size="icon" className="group">
-                        <PenLine className="h-4 w-4 text-black group-hover:w-6 group-hover:h-6" />
-                      </Button>
-                      <Button variant="icon" size="icon" className="group">
-                        <Play className="h-4 w-4 text-primary group-hover:w-6 group-hover:h-6" />
-                      </Button>
-                    </div>
-                  )}
-                </div>
-
-                {viewMode === "grid" && (
-                  <p className="text-xs text-muted-foreground mt-4">
-                    Last studied: {col.lastStudied}
-                  </p>
-                )}
-
-                {viewMode === "list" && (
-                  <div className="flex gap-2">
-                    <Button variant="icon" size="icon" className="group">
-                      <PenLine className="h-4 w-4 text-black group-hover:w-6 group-hover:h-6" />
-                    </Button>
-                    <Button variant="icon" size="icon" className="group">
-                      <Play className="h-4 w-4 text-primary group-hover:w-6 group-hover:h-6" />
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+              <CollectionCard
+                title={col.name}
+                words={col.wordCount}
+                lastStudied={col.lastStudied}
+              />
+            </Link>
           ))
         ) : (
           <div className="col-span-full text-center py-20 bg-gray-50 rounded-xl border-dashed border-2">
             <div className="mx-auto w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-              <Plus className="h-6 w-6 text-muted-foreground" />
+              <PlusCircle className="h-6 w-6 text-muted-foreground" />
             </div>
             <h3 className="text-lg font-semibold">No collections found</h3>
             <p className="text-muted-foreground mb-4">
