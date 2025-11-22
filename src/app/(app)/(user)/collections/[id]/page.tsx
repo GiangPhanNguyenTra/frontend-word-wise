@@ -23,8 +23,8 @@ import {
 
 import { WordCard } from "../components/WordCard";
 import ContinueLearningButton from "../components/ContinueLearningButton";
-import { getCollectionDetail } from "@/services/collectionService";
-import { CollectionDetail } from "@/types/collection";
+import { getCollectionDetail, updateWord } from "@/services/collectionService";
+import { CollectionDetail, ApiWord } from "@/types/collection";
 
 interface UIWord {
   id: number;
@@ -73,42 +73,52 @@ export default function CollectionDetailPage() {
     }
   }, [id]);
 
-  const handleEditWord = (updatedUIWord: UIWord) => {
+  const handleEditWord = async (updatedUIWord: UIWord) => {
     if (!collection) return;
 
-    const updatedWords = collection.words.map((w) => {
-      if (w.wordId === updatedUIWord.id) {
-        return {
-          ...w,
-          wordText: updatedUIWord.word,
-          wordVn: updatedUIWord.meaning,
-          partOfSpeech: updatedUIWord.type,
-          definitionEn: updatedUIWord.definitionEn,
-          definitionVi: updatedUIWord.definitionVi,
-          examples: [
-            { en: updatedUIWord.exampleEn, vi: updatedUIWord.exampleVi },
-            ...(w.examples.slice(1) || []),
-          ],
-          synonyms: updatedUIWord.synonyms,
-          phonetics: {
-            uk: {
-              text: updatedUIWord.phoneticsUkText,
-              audio: updatedUIWord.phoneticsUkAudio,
-            },
-            us: {
-              text: updatedUIWord.phoneticsUsText,
-              audio: updatedUIWord.phoneticsUsAudio,
-            },
-          },
-          idiomsCollocations: updatedUIWord.idiomsCollocations,
-          phrasalVerbs: updatedUIWord.phrasalVerbs,
-        };
-      }
-      return w;
-    });
+    const updatePayload = {
+      word: updatedUIWord.word,
+      word_vn: updatedUIWord.meaning,
+      partOfSpeech: updatedUIWord.type,
+      definition_en: updatedUIWord.definitionEn,
+      definition_vi: updatedUIWord.definitionVi,
+      phonetics: {
+        uk: {
+          text: updatedUIWord.phoneticsUkText,
+          audio: updatedUIWord.phoneticsUkAudio,
+        },
+        us: {
+          text: updatedUIWord.phoneticsUsText,
+          audio: updatedUIWord.phoneticsUsAudio,
+        },
+      },
+      examples: [
+        {
+          en: updatedUIWord.exampleEn,
+          vi: updatedUIWord.exampleVi,
+        },
+      ],
+      synonyms: updatedUIWord.synonyms
+        ? updatedUIWord.synonyms.split(",").map((s) => s.trim())
+        : [],
+      idioms_collocations: updatedUIWord.idiomsCollocations,
+      phrasal_verbs: updatedUIWord.phrasalVerbs,
+    };
 
-    setCollection({ ...collection, words: updatedWords });
-    toast.success("Word updated locally (API not integrated)");
+    try {
+      const updatedApiWord = await updateWord(updatedUIWord.id, updatePayload);
+
+      const updatedWords = collection.words.map((w) =>
+        w.wordId === updatedApiWord.wordId ? updatedApiWord : w
+      );
+
+      setCollection({ ...collection, words: updatedWords });
+      toast.success("Word updated successfully");
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Something went wrong.";
+      toast.error(message || "Failed to update word");
+    }
   };
 
   const handleDeleteWord = (wordIdToDelete: number) => {
@@ -146,10 +156,10 @@ export default function CollectionDetailPage() {
       definitionVi: w.definitionVi,
       exampleEn: w.examples && w.examples.length > 0 ? w.examples[0].en : "",
       exampleVi: w.examples && w.examples.length > 0 ? w.examples[0].vi : "",
-      phoneticsUkText: w.phonetics.uk?.text || "",
-      phoneticsUkAudio: w.phonetics.uk?.audio || "",
-      phoneticsUsText: w.phonetics.us?.text || "",
-      phoneticsUsAudio: w.phonetics.us?.audio || "",
+      phoneticsUkText: w.phonetics?.uk?.text || "",
+      phoneticsUkAudio: w.phonetics?.uk?.audio || "",
+      phoneticsUsText: w.phonetics?.us?.text || "",
+      phoneticsUsAudio: w.phonetics?.us?.audio || "",
       synonyms: w.synonyms || "",
       idiomsCollocations: w.idiomsCollocations || [],
       phrasalVerbs: w.phrasalVerbs || [],

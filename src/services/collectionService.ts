@@ -1,4 +1,4 @@
-import { CollectionDetail } from "@/types/collection";
+import { ApiWord, CollectionDetail } from "@/types/collection";
 import { Collection } from "@/types/dashboard";
 
 const BASE_URL = process.env.NEXT_PUBLIC_CORE_SERVICE_API;
@@ -37,6 +37,30 @@ export async function getCollectionDetail(
 
   if (!response.ok) {
     throw new Error("Failed to fetch collection details");
+  }
+
+  const data = await response.json();
+  return data.data;
+}
+
+export async function updateWord(
+  wordId: number,
+  updateData: any
+): Promise<ApiWord> {
+  if (!BASE_URL) throw new Error("API URL is not defined");
+
+  const response = await fetch(`${BASE_URL}/words/${wordId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(updateData),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Failed to update word");
   }
 
   const data = await response.json();
