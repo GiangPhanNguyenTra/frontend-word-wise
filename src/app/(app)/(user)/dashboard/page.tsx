@@ -344,7 +344,7 @@ export default function DashboardPage() {
                       </Avatar>
                       <div>
                         <p className="text-sm font-medium">{friend.username}</p>
-                        <p className="text-xs text-muted-foreground">Active</p>
+                        {/* <p className="text-xs text-muted-foreground">Active</p> */}
                       </div>
                     </div>
                   ))
