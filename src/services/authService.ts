@@ -42,6 +42,11 @@ export async function loginUser(values: z.infer<typeof LoginSchema>) {
   }
 
   const data: ApiResponse<AuthResponseData> = await response.json();
+
+  if (data.success && data.data?.token) {
+    localStorage.setItem("accessToken", data.data.token);
+  }
+
   return data;
 }
 
