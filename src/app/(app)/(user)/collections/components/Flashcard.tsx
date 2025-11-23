@@ -51,7 +51,7 @@ export function Flashcard({ word }: { word: ApiWord }) {
           </div>
 
           <div className="flex-1 flex flex-col items-center justify-center gap-2">
-            <p className="text-2xl font-bold">{word.wordText}</p>
+            <p className="text-2xl font-bold text-black">{word.wordText}</p>
             <p className="text-base text-gray-500 italic text-center">
               Do you know the meaning of this word?
             </p>
