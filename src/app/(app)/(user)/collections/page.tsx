@@ -28,6 +28,7 @@ import {
   getUserCollections,
   updateCollection,
   deleteCollection,
+  enrichWordsBulk,
 } from "@/services/collectionService";
 import { Collection } from "@/types/dashboard";
 import { CollectionCard } from "./components/CollectionCard";
@@ -38,6 +39,7 @@ export default function CollectionsPage() {
   const router = useRouter();
   const [collections, setCollections] = useState<Collection[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isCreating, setIsCreating] = useState(false); // Loading state for dialog
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("name-asc");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -63,13 +65,52 @@ export default function CollectionsPage() {
     }
   };
 
-  const handleSave = () => {
-    if (!title || !words) {
+  const handleSave = async () => {
+    if (!title.trim() || !words.trim()) {
       toast.error("Please enter all fields.");
       return;
     }
-    localStorage.setItem("newCollectionData", JSON.stringify({ title, words }));
-    router.push(`/collections/new-review?title=${encodeURIComponent(title)}`);
+
+    const wordList = words
+      .split("\n")
+      .map((w) => w.trim())
+      .filter((w) => w.length > 0);
+
+    if (wordList.length === 0) {
+      toast.error("Please enter at least one word.");
+      return;
+    }
+
+    if (wordList.length > 50) {
+      toast.error("Maximum 50 words allowed.");
+      return;
+    }
+
+    setIsCreating(true);
+    try {
+      // Gọi API enrich bulk
+      const enrichedData = await enrichWordsBulk(wordList);
+
+      // Lưu kết quả vào localStorage để trang review đọc
+      localStorage.setItem(
+        "newCollectionData",
+        JSON.stringify({
+          title: title.trim(),
+          enrichedWords: enrichedData,
+        })
+      );
+
+      setOpen(false);
+      // Chuyển trang
+      router.push(
+        `/collections/new-review?title=${encodeURIComponent(title.trim())}`
+      );
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to enrich words. Please try again.");
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   const handleEditCollection = async (id: number, newName: string) => {
@@ -164,6 +205,7 @@ export default function CollectionsPage() {
                   placeholder="Enter collection name..."
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
+                  disabled={isCreating}
                 />
               </div>
 
@@ -185,13 +227,26 @@ export default function CollectionsPage() {
                   placeholder="Enter words..."
                   value={words}
                   onChange={(e) => setWords(e.target.value)}
+                  disabled={isCreating}
                 />
               </div>
             </div>
 
             <DialogFooter>
-              <Button type="button" onClick={handleSave}>
-                Save & Review
+              <Button
+                type="button"
+                onClick={handleSave}
+                disabled={isCreating}
+                className="bg-[#2563EB] hover:bg-blue-600 text-white"
+              >
+                {isCreating ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  "Save & Review"
+                )}
               </Button>
             </DialogFooter>
           </DialogContent>
