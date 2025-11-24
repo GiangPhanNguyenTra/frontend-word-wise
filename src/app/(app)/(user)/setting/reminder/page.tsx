@@ -1,21 +1,65 @@
+// app/setting/reminder/page.tsx
+
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { getUserSettings, updateUserSettings } from "@/services/settingService";
 
 export default function ReminderPage() {
-  const [frequency, setFrequency] = useState("Once a day");
-  const [words, setWords] = useState("5 words");
+  const [frequency, setFrequency] = useState(1);
+  const [words, setWords] = useState(5);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const frequencies = [
-    "Once a day",
-    "Twice a day",
-    "Three times a day",
-    "Four times a day",
-  ];
+  const frequencies = [1, 2, 3, 4];
+  const wordOptions = [5, 10, 15, 20];
 
-  const wordOptions = ["5 words", "10 words", "15 words", "20 words"];
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const settings = await getUserSettings();
+        if (settings) {
+          setFrequency(settings.study_sessions_per_day);
+          setWords(settings.words_per_session);
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to load settings");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSettings();
+  }, []);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      await updateUserSettings({
+        study_sessions_per_day: frequency,
+        words_per_session: words,
+      });
+      toast.success("Settings updated successfully");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update settings");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] w-full items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full mx-auto px-4 py-2">
@@ -25,7 +69,6 @@ export default function ReminderPage() {
             Study Reminder Settings (Extension)
           </h2>
 
-          {/* Frequency section */}
           <div className="mb-8">
             <p className="font-semibold text-gray-900 mb-3">
               How many times per day would you like to study?
@@ -42,13 +85,18 @@ export default function ReminderPage() {
                       : "bg-gray-200 text-gray-600 border-none hover:bg-gray-300"
                   }`}
                 >
-                  {option}
+                  {option === 1
+                    ? "Once a day"
+                    : option === 2
+                    ? "Twice a day"
+                    : option === 3
+                    ? "Three times a day"
+                    : "Four times a day"}
                 </Button>
               ))}
             </div>
           </div>
 
-          {/* Words per session section */}
           <div className="mb-8">
             <p className="font-semibold text-gray-900 mb-3">
               How many words or questions per session?
@@ -65,16 +113,23 @@ export default function ReminderPage() {
                       : "bg-gray-200 text-gray-600 border-none hover:bg-gray-300"
                   }`}
                 >
-                  {option}
+                  {option} words
                 </Button>
               ))}
             </div>
           </div>
 
-          {/* Save button */}
           <div className="flex justify-end">
-            <Button className="bg-[#2563EB] hover:bg-[#1E4FCC] text-white px-6">
-              Save
+            <Button
+              className="bg-[#2563EB] hover:bg-[#1E4FCC] text-white px-6"
+              onClick={handleSave}
+              disabled={isSaving}
+            >
+              {isSaving ? (
+                <Loader2 className="animate-spin w-4 h-4 mr-2" />
+              ) : (
+                "Save"
+              )}
             </Button>
           </div>
         </CardContent>
