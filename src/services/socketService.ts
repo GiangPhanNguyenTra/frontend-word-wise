@@ -8,6 +8,19 @@ const SOCKET_URL =
 
 let stompClient: any = null;
 
+const getGameUrl = (gameMode: string, code: string) => {
+  switch (gameMode) {
+    case "definition-match":
+      return `/community/challenge/definition?code=${code}`;
+    case "word-shooter":
+      return `/community/challenge/word-shooter?code=${code}`;
+    case "fill-the-blank":
+      return `/community/challenge/fill-blank?code=${code}`;
+    default:
+      return `/community/challenge?code=${code}`;
+  }
+};
+
 export const connectGlobalSocket = () => {
   if (typeof window === "undefined") return;
   const token = localStorage.getItem("accessToken");
@@ -24,13 +37,17 @@ export const connectGlobalSocket = () => {
     () => {
       stompClient.subscribe("/user/queue/notifications", (message: any) => {
         const payload = JSON.parse(message.body);
+
         if (payload.type === "GAME_INVITE") {
-          toast.message(`Game Invite from ${payload.hostName}`, {
-            description: `Invited to play in room ${payload.inviteCode}`,
+          toast.info(`Invitation from ${payload.hostName}`, {
+            description: `Invited you to play ${payload.gameMode}`,
+            duration: 10000,
             action: {
-              label: "Join",
-              onClick: () =>
-                (window.location.href = `/community/challenge/join?code=${payload.inviteCode}`),
+              label: "Join Now",
+              onClick: () => {
+                const url = getGameUrl(payload.gameMode, payload.inviteCode);
+                window.location.href = url;
+              },
             },
           });
         }

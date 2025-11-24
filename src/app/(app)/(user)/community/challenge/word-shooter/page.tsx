@@ -32,7 +32,7 @@ import { GameQuestionWordShooter, RoomParticipant } from "@/types/game";
 import { Friend } from "@/types/user";
 
 const SOCKET_URL =
-  process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "/ws") ||
+  process.env.NEXT_PUBLIC_CORE_SERVICE_API?.replace("/api/v1", "/ws") ||
   "http://localhost:8080/ws";
 
 export default function WordShooterPage() {
@@ -55,6 +55,7 @@ export default function WordShooterPage() {
 
   useEffect(() => {
     if (joinCode) {
+      setInputCode(joinCode);
       handleJoinRoom(joinCode);
     }
   }, [joinCode]);
@@ -89,10 +90,38 @@ export default function WordShooterPage() {
             setView("GAME");
           }
         } else if (payload.type === "SCOREBOARD_UPDATE") {
-          if (payload.scoreboard) setParticipants(payload.scoreboard);
+          if (payload.scoreboard) {
+            setParticipants((prev) => {
+              return payload.scoreboard.map((newItem: any) => {
+                const existing = prev.find((p) => p.userId === newItem.userId);
+                return {
+                  ...newItem,
+                  avatarUrl: newItem.avatarUrl || existing?.avatarUrl,
+                  username: newItem.username || existing?.username,
+                  displayName:
+                    (newItem as any).displayName ||
+                    (existing as any)?.displayName,
+                };
+              });
+            });
+          }
         } else if (payload.type === "GAME_OVER") {
           setView("RESULT");
-          if (payload.scoreboard) setParticipants(payload.scoreboard);
+          if (payload.scoreboard) {
+            setParticipants((prev) => {
+              return payload.scoreboard.map((newItem: any) => {
+                const existing = prev.find((p) => p.userId === newItem.userId);
+                return {
+                  ...newItem,
+                  avatarUrl: newItem.avatarUrl || existing?.avatarUrl,
+                  username: newItem.username || existing?.username,
+                  displayName:
+                    (newItem as any).displayName ||
+                    (existing as any)?.displayName,
+                };
+              });
+            });
+          }
         }
       });
     });
@@ -156,7 +185,7 @@ export default function WordShooterPage() {
 
   if (view === "MENU") {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 gap-4 p-4">
+      <div className="min-h-screen flex flex-col items-center bg-slate-50 gap-4 p-4 pt-20">
         <h1 className="text-3xl font-bold text-[#2563EB] mb-4">Word Shooter</h1>
         <div className="grid gap-4 w-full max-w-md">
           <Button size="lg" onClick={handlePlaySolo} className="bg-[#2563EB]">
@@ -193,7 +222,7 @@ export default function WordShooterPage() {
 
   if (view === "LOBBY") {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-4">
+      <div className="min-h-screen flex flex-col items-center bg-slate-50 p-4 pt-20">
         <Card className="w-full max-w-lg p-6 text-center space-y-6">
           <h2 className="text-2xl font-bold">Waiting Lobby</h2>
           <div className="bg-blue-50 p-4 rounded-lg flex justify-between items-center">
@@ -235,7 +264,7 @@ export default function WordShooterPage() {
                         <div className="flex items-center gap-2">
                           <img
                             src={f.avatarUrl || "/ava.svg"}
-                            className="w-8 h-8 rounded-full"
+                            className="w-8 h-8 rounded-full object-cover"
                           />
                           <span>{f.username}</span>
                         </div>
@@ -258,9 +287,9 @@ export default function WordShooterPage() {
               >
                 <img
                   src={p.avatarUrl || "/ava.svg"}
-                  className="w-8 h-8 rounded-full"
+                  className="w-8 h-8 rounded-full object-cover"
                 />
-                <span>{p.username}</span>
+                <span>{(p as any).displayName || p.username}</span>
               </div>
             ))}
           </div>
@@ -273,7 +302,9 @@ export default function WordShooterPage() {
               Start Game
             </Button>
           ) : (
-            <p className="text-slate-500 animate-pulse">Waiting for host...</p>
+            <p className="text-slate-500 animate-pulse">
+              Waiting for host to start...
+            </p>
           )}
         </Card>
       </div>
@@ -282,7 +313,7 @@ export default function WordShooterPage() {
 
   if (view === "RESULT") {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-4">
+      <div className="min-h-screen flex flex-col items-center bg-slate-50 p-4 pt-20">
         <Card className="w-full max-w-lg p-6 space-y-6">
           <h2 className="text-2xl font-bold text-center text-[#2563EB]">
             Game Over!
@@ -303,9 +334,9 @@ export default function WordShooterPage() {
                     <span className="font-bold text-lg w-6">#{i + 1}</span>
                     <img
                       src={p.avatarUrl || "/ava.svg"}
-                      className="w-8 h-8 rounded-full"
+                      className="w-8 h-8 rounded-full object-cover"
                     />
-                    <span>{p.username}</span>
+                    <span>{(p as any).displayName || p.username}</span>
                   </div>
                   <span className="font-bold text-[#2563EB]">
                     {p.score} pts
@@ -350,8 +381,48 @@ export default function WordShooterPage() {
           </div>
         </div>
       </header>
-      <main className="container mx-auto px-4 py-8 flex justify-center">
-        <VocabularyShooterGame wordsToReview={questions} roomId={roomId} />
+      <main className="container mx-auto px-4 py-8 flex justify-center gap-8">
+        <div className="flex-1 flex justify-center">
+          <VocabularyShooterGame wordsToReview={questions} roomId={roomId} />
+        </div>
+
+        {roomId && participants.length > 0 && (
+          <div className="w-64 hidden lg:block">
+            <div className="bg-white rounded-xl shadow-md p-4 sticky top-4">
+              <h3 className="font-bold text-gray-700 mb-3 flex items-center gap-2">
+                <Users className="w-4 h-4" /> Live Rankings
+              </h3>
+              <div className="space-y-2">
+                {participants
+                  .sort((a, b) => b.score - a.score)
+                  .map((p, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center justify-between p-2 bg-gray-50 rounded text-sm"
+                    >
+                      <div className="flex items-center gap-2 overflow-hidden">
+                        <span
+                          className={`font-bold w-4 ${
+                            i === 0 ? "text-yellow-500" : "text-gray-500"
+                          }`}
+                        >
+                          #{i + 1}
+                        </span>
+                        <img
+                          src={p.avatarUrl || "/ava.svg"}
+                          className="w-5 h-5 rounded-full object-cover"
+                        />
+                        <span className="truncate">{p.username}</span>
+                      </div>
+                      <span className="font-semibold text-[#2563EB]">
+                        {p.score}
+                      </span>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

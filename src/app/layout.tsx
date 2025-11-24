@@ -1,29 +1,17 @@
-"use client";
-
-import { AuthProvider } from "@/contexts/AuthContext";
 import "./globals.css";
 import { Montserrat } from "next/font/google";
-import { Toaster } from "sonner";
-import { useEffect } from "react";
-import {
-  connectGlobalSocket,
-  disconnectGlobalSocket,
-} from "@/services/socketService";
+import ClientRoot from "@/components/ClientRoot";
+import RootAppLayout from "@/components/RootAppLayout";
+
+export const metadata = {
+  title: "Word Wise",
+  description: "Ứng dụng học từ vựng Word Wise",
+};
 
 const montserrat = Montserrat({
   subsets: ["latin"],
   variable: "--font-montserrat",
 });
-
-function SocketInitializer() {
-  useEffect(() => {
-    connectGlobalSocket();
-    return () => {
-      disconnectGlobalSocket();
-    };
-  }, []);
-  return null;
-}
 
 export default function RootLayout({
   children,
@@ -33,11 +21,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={montserrat.variable}>
       <body>
-        <AuthProvider>
-          <SocketInitializer />
-          {children}
-        </AuthProvider>
-        <Toaster position="top-right" richColors closeButton duration={5000} />
+        <ClientRoot>
+          <RootAppLayout>{children}</RootAppLayout>
+        </ClientRoot>
       </body>
     </html>
   );
