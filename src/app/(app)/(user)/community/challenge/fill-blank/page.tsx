@@ -1,75 +1,153 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { ArrowLeft, Clock, Star } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { ArrowLeft, Clock, Star, Copy, Users, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
-const initialQuestions = [
-  {
-    sentence: "He said ___ when he met me.",
-    options: ["hello", "goodbye", "please", "thanks"],
-    answer: "hello",
-    difficulty: "Medium",
-  },
-  {
-    sentence: "The sky is usually ___ on a sunny day.",
-    options: ["green", "blue", "red", "yellow"],
-    answer: "blue",
-    difficulty: "Easy",
-  },
-  {
-    sentence: "An apple is a type of ___.",
-    options: ["vegetable", "fruit", "animal", "mineral"],
-    answer: "fruit",
-    difficulty: "Easy",
-  },
-  {
-    sentence: "To be successful, you must be ___ and never give up.",
-    options: ["lazy", "persistent", "hesitant", "careless"],
-    answer: "persistent",
-    difficulty: "Hard",
-  },
-];
+import {
+  createChallengeRoom,
+  joinChallengeRoom,
+  startRoomGame,
+  getGameQuestions,
+  inviteFriendToRoom,
+} from "@/services/gameService";
+import { getUserFriends } from "@/services/userService";
+import { GameQuestionFillBlank, RoomParticipant } from "@/types/game";
+import { Friend } from "@/types/user";
+
+const SOCKET_URL =
+  process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "/ws") ||
+  "http://localhost:8080/ws";
 
 export default function FillBlankPage() {
   const router = useRouter();
-  const [questions, setQuestions] = useState(initialQuestions);
+  const searchParams = useSearchParams();
+  const joinCode = searchParams.get("code");
+
+  const [view, setView] = useState<"MENU" | "LOBBY" | "GAME" | "RESULT">(
+    "MENU"
+  );
+
+  // Game State
+  const [questions, setQuestions] = useState<GameQuestionFillBlank[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(120);
+  const [timeLeft, setTimeLeft] = useState(90);
   const [selected, setSelected] = useState<string | null>(null);
   const [blankWord, setBlankWord] = useState("");
 
-  const currentQuestion = questions[currentQuestionIndex];
-  const correctAnswer = currentQuestion.answer;
-  const sentenceParts = currentQuestion.sentence.split("___");
+  // Lobby State
+  const [roomId, setRoomId] = useState<string | null>(null);
+  const [inviteCode, setInviteCode] = useState("");
+  const [inputCode, setInputCode] = useState(joinCode || "");
+  const [participants, setParticipants] = useState<RoomParticipant[]>([]);
+  const [isHost, setIsHost] = useState(false);
+  const [friends, setFriends] = useState<Friend[]>([]);
+  const stompClientRef = useRef<any>(null);
 
   useEffect(() => {
+    if (joinCode) {
+      handleJoinRoom(joinCode);
+    }
+  }, [joinCode]);
+
+  useEffect(() => {
+    const loadFriends = async () => {
+      try {
+        const data = await getUserFriends();
+        setFriends(data);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    loadFriends();
+  }, []);
+
+  useEffect(() => {
+    if (!roomId) return;
+    const token = localStorage.getItem("accessToken");
+    const socket = new SockJS(SOCKET_URL);
+    const client = Stomp.over(socket);
+    client.debug = () => {};
+
+    client.connect({ Authorization: `Bearer ${token}` }, () => {
+      client.subscribe(`/topic/challenge-room/${roomId}`, (message) => {
+        const payload = JSON.parse(message.body);
+        if (payload.type === "PLAYER_JOINED") {
+          if (payload.participants) setParticipants(payload.participants);
+        } else if (payload.type === "GAME_STARTED") {
+          if (payload.gameSession) {
+            setQuestions(payload.gameSession.questions);
+            setTimeLeft(payload.gameSession.time || 90);
+            setView("GAME");
+          }
+        } else if (payload.type === "SCOREBOARD_UPDATE") {
+          if (payload.scoreboard) setParticipants(payload.scoreboard);
+        } else if (payload.type === "GAME_OVER") {
+          setView("RESULT");
+          if (payload.scoreboard) setParticipants(payload.scoreboard);
+        }
+      });
+    });
+    stompClientRef.current = client;
+    return () => {
+      if (stompClientRef.current) stompClientRef.current.disconnect();
+    };
+  }, [roomId]);
+
+  useEffect(() => {
+    if (view !== "GAME") return;
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          router.push("/community/leaderboard?game=fill-the-blank");
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, [router]);
+  }, [view]);
+
+  const sendScoreUpdate = (newScore: number) => {
+    if (stompClientRef.current && roomId) {
+      stompClientRef.current.send(
+        `/app/challenge-room/${roomId}/score`,
+        {},
+        JSON.stringify({ score: newScore })
+      );
+    }
+  };
 
   const handleSelect = (answer: string) => {
     if (selected) return;
     setSelected(answer);
+    const currentQuestion = questions[currentQuestionIndex];
 
-    if (answer === correctAnswer) {
+    let newScore = score;
+    if (answer === currentQuestion.answer) {
       setBlankWord(answer);
-      setScore((prev) => prev + 10);
+      newScore += 10;
+      setScore(newScore);
     } else {
-      setScore((prev) => prev - 5);
+      newScore = Math.max(0, newScore - 5);
+      setScore(newScore);
     }
+    sendScoreUpdate(newScore);
   };
 
   const handleNext = () => {
@@ -78,12 +156,245 @@ export default function FillBlankPage() {
       setSelected(null);
       setBlankWord("");
     } else {
-      router.push("/community/leaderboard?game=fill-the-blank");
+      if (!roomId) {
+        router.push("/community/leaderboard?game=fill-the-blank");
+      }
     }
   };
 
-  const minutes = String(Math.floor(timeLeft / 60)).padStart(2, "0");
-  const seconds = String(timeLeft % 60).padStart(2, "0");
+  const handleCreateRoom = async () => {
+    try {
+      const room = await createChallengeRoom("fill-the-blank");
+      setRoomId(room.roomId);
+      setInviteCode(room.inviteCode);
+      setIsHost(true);
+      setView("LOBBY");
+    } catch (e) {
+      toast.error("Error creating room");
+    }
+  };
+
+  const handleJoinRoom = async (codeToJoin?: string) => {
+    const code = codeToJoin || inputCode;
+    if (!code) return;
+    try {
+      const room = await joinChallengeRoom(code);
+      setRoomId(room.roomId);
+      setInviteCode(room.inviteCode);
+      setIsHost(false);
+      setView("LOBBY");
+    } catch (e) {
+      toast.error("Error joining room");
+    }
+  };
+
+  const handleInvite = async (friendId: number) => {
+    if (!roomId) return;
+    try {
+      await inviteFriendToRoom(roomId, friendId);
+      toast.success("Invitation sent");
+    } catch (e) {
+      toast.error("Failed to invite");
+    }
+  };
+
+  const handleStartGame = async () => {
+    if (roomId) await startRoomGame(roomId);
+  };
+
+  const handlePlaySolo = async () => {
+    try {
+      const data = await getGameQuestions<GameQuestionFillBlank>(
+        "fill-the-blank"
+      );
+      setQuestions(data.questions);
+      setTimeLeft(data.time);
+      setView("GAME");
+    } catch (e) {
+      toast.error("Failed to load questions");
+    }
+  };
+
+  if (view === "MENU") {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 gap-4 p-4">
+        <h1 className="text-3xl font-bold text-[#2563EB] mb-4">
+          Fill The Blank
+        </h1>
+        <div className="grid gap-4 w-full max-w-md">
+          <Button size="lg" onClick={handlePlaySolo} className="bg-[#2563EB]">
+            Play Solo
+          </Button>
+          <div className="flex gap-2">
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={handleCreateRoom}
+              className="flex-1"
+            >
+              Create Room
+            </Button>
+            <div className="flex flex-1 gap-2">
+              <Input
+                placeholder="Code"
+                value={inputCode}
+                onChange={(e) => setInputCode(e.target.value)}
+              />
+              <Button onClick={() => handleJoinRoom()}>Join</Button>
+            </div>
+          </div>
+          <Link
+            href="/community/challenge"
+            className="text-center text-slate-500 mt-2"
+          >
+            Back to Lobby
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (view === "LOBBY") {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-4">
+        <Card className="w-full max-w-lg p-6 text-center space-y-6">
+          <h2 className="text-2xl font-bold">Waiting Lobby</h2>
+          <div className="bg-blue-50 p-4 rounded-lg flex justify-between items-center">
+            <span className="font-mono text-xl font-bold tracking-widest">
+              {inviteCode}
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                navigator.clipboard.writeText(inviteCode);
+                toast.success("Code copied");
+              }}
+            >
+              <Copy className="w-4 h-4" />
+            </Button>
+          </div>
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <h3 className="text-left font-semibold flex items-center gap-2">
+                <Users className="w-4 h-4" /> Participants
+              </h3>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <UserPlus className="w-4 h-4" /> Invite
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Invite Friends</DialogTitle>
+                  </DialogHeader>
+                  <div className="max-h-[300px] overflow-y-auto space-y-2">
+                    {friends.map((f) => (
+                      <div
+                        key={f.userId}
+                        className="flex justify-between items-center p-2 hover:bg-gray-50 rounded"
+                      >
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={f.avatarUrl || "/ava.svg"}
+                            className="w-8 h-8 rounded-full"
+                          />
+                          <span>{f.username}</span>
+                        </div>
+                        <Button
+                          size="sm"
+                          onClick={() => handleInvite(f.userId)}
+                        >
+                          Invite
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+            {participants.map((p, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-3 p-2 bg-gray-50 rounded"
+              >
+                <img
+                  src={p.avatarUrl || "/ava.svg"}
+                  className="w-8 h-8 rounded-full"
+                />
+                <span>{p.username}</span>
+              </div>
+            ))}
+          </div>
+          {isHost ? (
+            <Button
+              size="lg"
+              className="w-full bg-[#2563EB]"
+              onClick={handleStartGame}
+            >
+              Start Game
+            </Button>
+          ) : (
+            <p className="text-slate-500 animate-pulse">Waiting for host...</p>
+          )}
+        </Card>
+      </div>
+    );
+  }
+
+  if (view === "RESULT") {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-4">
+        <Card className="w-full max-w-lg p-6 space-y-6">
+          <h2 className="text-2xl font-bold text-center text-[#2563EB]">
+            Game Over!
+          </h2>
+          <div className="space-y-2">
+            {participants
+              .sort((a, b) => b.score - a.score)
+              .map((p, i) => (
+                <div
+                  key={i}
+                  className={`flex justify-between items-center p-3 rounded ${
+                    i === 0
+                      ? "bg-yellow-50 border border-yellow-200"
+                      : "bg-gray-50"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="font-bold text-lg w-6">#{i + 1}</span>
+                    <img
+                      src={p.avatarUrl || "/ava.svg"}
+                      className="w-8 h-8 rounded-full"
+                    />
+                    <span>{p.username}</span>
+                  </div>
+                  <span className="font-bold text-[#2563EB]">
+                    {p.score} pts
+                  </span>
+                </div>
+              ))}
+          </div>
+          <Button
+            className="w-full"
+            onClick={() =>
+              router.push("/community/leaderboard?game=fill-the-blank")
+            }
+          >
+            View Leaderboard
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!questions.length) return null;
+
+  const currentQuestion = questions[currentQuestionIndex];
+  const sentenceParts = currentQuestion.sentence.split("___");
+  const part1 = sentenceParts[0] || currentQuestion.sentence;
+  const part2 = sentenceParts[1] || "";
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -96,16 +407,16 @@ export default function FillBlankPage() {
             >
               <ArrowLeft className="h-5 w-5" />
             </Link>
-            <h1 className="text-xl font-bold">Challenge room:</h1>
-            <p className="text-xl font-bold text-[#2563EB]">
+            <h1 className="text-xl font-bold text-[#2563EB]">
               Fill in the Blank
-            </p>
+            </h1>
           </div>
           <div className="flex items-center space-x-4">
             <div className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full flex items-center">
               <Clock className="w-4 h-4 mr-1" />
               <span>
-                {minutes}:{seconds}
+                {String(Math.floor(timeLeft / 60)).padStart(2, "0")}:
+                {String(timeLeft % 60).padStart(2, "0")}
               </span>
             </div>
             <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full flex items-center">
@@ -123,17 +434,12 @@ export default function FillBlankPage() {
               <h2 className="text-lg font-semibold">
                 Question {currentQuestionIndex + 1} of {questions.length}
               </h2>
-              <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                {currentQuestion.difficulty}
-              </span>
             </div>
 
             <div className="bg-gray-50 rounded-lg p-6 mb-6">
-              <p className="text-xl mb-4">
-                Complete the sentence with the most appropriate word:
-              </p>
+              <p className="text-xl mb-4">Complete the sentence:</p>
               <p className="text-2xl font-medium text-center leading-relaxed">
-                {sentenceParts[0]}
+                {part1}
                 <span
                   className={`border-b-2 border-dashed mx-2 px-2 pb-1 ${
                     blankWord
@@ -143,27 +449,24 @@ export default function FillBlankPage() {
                 >
                   {blankWord || "        "}
                 </span>
-                {sentenceParts[1]}
+                {part2}
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
               {currentQuestion.options.map((opt, index) => {
-                const isCorrect = opt === correctAnswer;
+                const isCorrect = opt === currentQuestion.answer;
                 const isSelected = selected === opt;
                 let style =
                   "bg-white border-2 border-gray-200 rounded-lg p-4 text-left hover:border-indigo-400 transition-all font-medium disabled:cursor-not-allowed";
-
                 if (selected) {
-                  if (isSelected && isCorrect) {
+                  if (isSelected && isCorrect)
                     style += " bg-green-100 border-green-500 text-green-800";
-                  } else if (isSelected && !isCorrect) {
+                  else if (isSelected && !isCorrect)
                     style += " bg-red-100 border-red-500 text-red-800";
-                  } else if (!isSelected && isCorrect) {
+                  else if (!isSelected && isCorrect)
                     style += " bg-green-50 border-green-400";
-                  } else {
-                    style += " opacity-60";
-                  }
+                  else style += " opacity-60";
                 }
                 return (
                   <button
@@ -185,7 +488,7 @@ export default function FillBlankPage() {
               <Button
                 onClick={handleNext}
                 disabled={!selected}
-                className="bg-indigo-600 text-white hover:bg-indigo-700 disabled:bg-gray-300 w-full sm:w-auto"
+                className="bg-indigo-600 text-white w-full sm:w-auto"
               >
                 {currentQuestionIndex < questions.length - 1
                   ? "Next Question"

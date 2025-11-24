@@ -4,6 +4,8 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Heart, Clock } from "lucide-react";
 import { useRouter } from "next/navigation";
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
 
 type Word = {
   en: string;
@@ -40,13 +42,19 @@ const PLAYER_WIDTH = 60;
 const WORD_SPEED = 1;
 const BULLET_SPEED = 8;
 const WORD_SPAWN_RATE = 1200;
-const GAME_DURATION = 120;
+const GAME_DURATION = 90; // Giả sử default 90s từ API
 const TARGET_SPAWN_CHANCE = 0.4;
+
+const SOCKET_URL =
+  process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "/ws") ||
+  "http://localhost:8080/ws";
 
 export const VocabularyShooterGame = ({
   wordsToReview,
+  roomId,
 }: {
   wordsToReview: Word[];
+  roomId?: string | null;
 }) => {
   const router = useRouter();
   const [gameState, setGameState] = useState<"idle" | "playing" | "gameOver">(
@@ -68,6 +76,35 @@ export const VocabularyShooterGame = ({
   const gameLoopRef = useRef<number | null>(null);
   const lastWordSpawnTime = useRef(0);
   const lastShotTime = useRef(0);
+  const stompClientRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (!roomId) return;
+    const token = localStorage.getItem("accessToken");
+    const socket = new SockJS(SOCKET_URL);
+    const client = Stomp.over(socket);
+    client.debug = () => {};
+
+    client.connect({ Authorization: `Bearer ${token}` }, () => {
+      stompClientRef.current = client;
+    });
+
+    return () => {
+      if (stompClientRef.current && stompClientRef.current.connected) {
+        stompClientRef.current.disconnect();
+      }
+    };
+  }, [roomId]);
+
+  const sendScoreUpdate = (newScore: number) => {
+    if (stompClientRef.current && roomId && stompClientRef.current.connected) {
+      stompClientRef.current.send(
+        `/app/challenge-room/${roomId}/score`,
+        {},
+        JSON.stringify({ score: newScore })
+      );
+    }
+  };
 
   const currentTargetWord = wordsToReview[currentWordIndex];
 
@@ -102,6 +139,9 @@ export const VocabularyShooterGame = ({
     if (newCompleted.length === wordsToReview.length) {
       setTimeTaken(GAME_DURATION - timeLeft);
       setGameState("gameOver");
+      if (!roomId) {
+        // Solo mode game over -> redirect logic or wait user
+      }
       return;
     }
 
@@ -119,7 +159,13 @@ export const VocabularyShooterGame = ({
     setBullets([]);
     setParticles([]);
     setShakeScreen(false);
-  }, [completedIndices, currentWordIndex, wordsToReview.length, timeLeft]);
+  }, [
+    completedIndices,
+    currentWordIndex,
+    wordsToReview.length,
+    timeLeft,
+    roomId,
+  ]);
 
   const gameLoop = useCallback(() => {
     setBullets((prev) =>
@@ -136,33 +182,37 @@ export const VocabularyShooterGame = ({
       Date.now() - lastWordSpawnTime.current > WORD_SPAWN_RATE
     ) {
       lastWordSpawnTime.current = Date.now();
-      const targetWord = wordsToReview[currentWordIndex];
+      // Check if wordsToReview is empty to avoid crash
+      if (wordsToReview.length > 0) {
+        const targetWord = wordsToReview[currentWordIndex];
+        setFallingWords((prevWords) => {
+          const isSpawningTarget = Math.random() < TARGET_SPAWN_CHANCE;
+          let wordToSpawn: Word;
 
-      setFallingWords((prevWords) => {
-        const isSpawningTarget = Math.random() < TARGET_SPAWN_CHANCE;
-        let wordToSpawn: Word;
-
-        if (isSpawningTarget || wordsToReview.length < 3) {
-          wordToSpawn = targetWord;
-        } else {
-          let distractorIndex = Math.floor(
-            Math.random() * wordsToReview.length
-          );
-          while (distractorIndex === currentWordIndex) {
-            distractorIndex = Math.floor(Math.random() * wordsToReview.length);
+          if (isSpawningTarget || wordsToReview.length < 3) {
+            wordToSpawn = targetWord;
+          } else {
+            let distractorIndex = Math.floor(
+              Math.random() * wordsToReview.length
+            );
+            while (distractorIndex === currentWordIndex) {
+              distractorIndex = Math.floor(
+                Math.random() * wordsToReview.length
+              );
+            }
+            wordToSpawn = wordsToReview[distractorIndex];
           }
-          wordToSpawn = wordsToReview[distractorIndex];
-        }
 
-        const newWord: FallingWord = {
-          id: performance.now(),
-          text: wordToSpawn.en,
-          x: Math.random() * (GAME_WIDTH - 120),
-          y: -30,
-          isTarget: wordToSpawn.en === targetWord.en,
-        };
-        return [...prevWords, newWord];
-      });
+          const newWord: FallingWord = {
+            id: performance.now(),
+            text: wordToSpawn.en,
+            x: Math.random() * (GAME_WIDTH - 120),
+            y: -30,
+            isTarget: wordToSpawn.en === targetWord.en,
+          };
+          return [...prevWords, newWord];
+        });
+      }
     }
 
     setBullets((prevBullets) => {
@@ -192,7 +242,10 @@ export const VocabularyShooterGame = ({
               };
 
               if (word.isTarget) {
-                setScore((s) => s + 10);
+                const newScore = score + 10;
+                setScore(newScore);
+                sendScoreUpdate(newScore);
+
                 setParticles((prev) => [
                   ...prev,
                   ...Array.from({ length: 6 }, (_, index) => ({
@@ -210,6 +263,10 @@ export const VocabularyShooterGame = ({
                   },
                 ]);
               } else {
+                const newScore = Math.max(0, score - 5);
+                setScore(newScore);
+                sendScoreUpdate(newScore);
+
                 setShakeScreen(true);
                 setTimeout(() => setShakeScreen(false), 400);
                 const correctWord = wordsToReview[currentWordIndex];
@@ -256,7 +313,13 @@ export const VocabularyShooterGame = ({
 
     setParticles((prev) => prev.filter((p) => Date.now() - p.id < 1200));
     gameLoopRef.current = requestAnimationFrame(gameLoop);
-  }, [wordsToReview, currentWordIndex, advanceToNextWord, isTransitioning]);
+  }, [
+    wordsToReview,
+    currentWordIndex,
+    advanceToNextWord,
+    isTransitioning,
+    score,
+  ]);
 
   useEffect(() => {
     if (gameState !== "playing") return;
