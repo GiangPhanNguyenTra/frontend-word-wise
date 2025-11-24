@@ -27,7 +27,8 @@ import {
 } from "@/services/gameService";
 import { getUserFriends } from "@/services/userService";
 import { GameQuestionFillBlank, RoomParticipant } from "@/types/game";
-import { Friend } from "@/types/user";
+import { Friend } from "@/types/dashboard";
+import { useAuth } from "@/contexts/AuthContext";
 
 const SOCKET_URL =
   process.env.NEXT_PUBLIC_CORE_SERVICE_API?.replace("/api/v1", "/ws") ||
@@ -35,6 +36,7 @@ const SOCKET_URL =
 
 export default function FillBlankPage() {
   const router = useRouter();
+  const { user } = useAuth();
   const searchParams = useSearchParams();
   const joinCode = searchParams.get("code");
 
@@ -55,6 +57,7 @@ export default function FillBlankPage() {
   const [participants, setParticipants] = useState<RoomParticipant[]>([]);
   const [isHost, setIsHost] = useState(false);
   const [friends, setFriends] = useState<Friend[]>([]);
+  const [isInviteOpen, setIsInviteOpen] = useState(false);
   const stompClientRef = useRef<any>(null);
 
   useEffect(() => {
@@ -220,6 +223,7 @@ export default function FillBlankPage() {
     try {
       await inviteFriendToRoom(roomId, friendId);
       toast.success("Invitation sent");
+      setIsInviteOpen(false);
     } catch (e) {
       toast.error("Failed to invite");
     }
@@ -306,7 +310,7 @@ export default function FillBlankPage() {
               <h3 className="text-left font-semibold flex items-center gap-2">
                 <Users className="w-4 h-4" /> Participants
               </h3>
-              <Dialog>
+              <Dialog open={isInviteOpen} onOpenChange={setIsInviteOpen}>
                 <DialogTrigger asChild>
                   <Button variant="outline" size="sm" className="gap-2">
                     <UserPlus className="w-4 h-4" /> Invite
@@ -324,7 +328,7 @@ export default function FillBlankPage() {
                       >
                         <div className="flex items-center gap-2">
                           <img
-                            src={f.avatarUrl || "/ava.svg"}
+                            src={f.avatarUrl || user?.avatar}
                             className="w-8 h-8 rounded-full object-cover"
                           />
                           <span>{f.username}</span>
@@ -341,18 +345,26 @@ export default function FillBlankPage() {
                 </DialogContent>
               </Dialog>
             </div>
-            {participants.map((p, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-3 p-2 bg-gray-50 rounded"
-              >
-                <img
-                  src={p.avatarUrl || "/ava.svg"}
-                  className="w-8 h-8 rounded-full object-cover"
-                />
-                <span>{(p as any).displayName || p.username}</span>
-              </div>
-            ))}
+            {participants.map((p, i) => {
+              const friend = friends.find((f) => f.userId === p.userId);
+              const displayAvatar =
+                friend?.avatarUrl || p.avatarUrl || user?.avatar;
+              const displayName =
+                friend?.username || (p as any).displayName || p.username;
+
+              return (
+                <div
+                  key={i}
+                  className="flex items-center gap-3 p-2 bg-gray-50 rounded"
+                >
+                  <img
+                    src={displayAvatar}
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                  <span>{displayName}</span>
+                </div>
+              );
+            })}
           </div>
           {isHost ? (
             <Button
@@ -382,28 +394,36 @@ export default function FillBlankPage() {
           <div className="space-y-2">
             {participants
               .sort((a, b) => b.score - a.score)
-              .map((p, i) => (
-                <div
-                  key={i}
-                  className={`flex justify-between items-center p-3 rounded ${
-                    i === 0
-                      ? "bg-yellow-50 border border-yellow-200"
-                      : "bg-gray-50"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="font-bold text-lg w-6">#{i + 1}</span>
-                    <img
-                      src={p.avatarUrl || "/ava.svg"}
-                      className="w-8 h-8 rounded-full object-cover"
-                    />
-                    <span>{(p as any).displayName || p.username}</span>
+              .map((p, i) => {
+                const friend = friends.find((f) => f.userId === p.userId);
+                const displayAvatar =
+                  friend?.avatarUrl || p.avatarUrl || user?.avatar;
+                const displayName =
+                  friend?.username || (p as any).displayName || p.username;
+
+                return (
+                  <div
+                    key={i}
+                    className={`flex justify-between items-center p-3 rounded ${
+                      i === 0
+                        ? "bg-yellow-50 border border-yellow-200"
+                        : "bg-gray-50"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="font-bold text-lg w-6">#{i + 1}</span>
+                      <img
+                        src={displayAvatar}
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                      <span>{displayName}</span>
+                    </div>
+                    <span className="font-bold text-[#2563EB]">
+                      {p.score} pts
+                    </span>
                   </div>
-                  <span className="font-bold text-[#2563EB]">
-                    {p.score} pts
-                  </span>
-                </div>
-              ))}
+                );
+              })}
           </div>
           <Button
             className="w-full"
@@ -432,7 +452,7 @@ export default function FillBlankPage() {
           <div className="flex items-center space-x-2">
             <Link
               href="/community/challenge"
-              className="text-indigo-600 hover:text-indigo-800"
+              className="text-[#2563EB] hover:text-indigo-800"
             >
               <ArrowLeft className="h-5 w-5" />
             </Link>
@@ -504,7 +524,7 @@ export default function FillBlankPage() {
                     onClick={() => handleSelect(opt)}
                     className={style}
                   >
-                    <span className="font-semibold mr-2 text-indigo-600">
+                    <span className="font-semibold mr-2 text-[#2563EB]">
                       {String.fromCharCode(65 + index)}.
                     </span>
                     {opt}
@@ -517,7 +537,7 @@ export default function FillBlankPage() {
               <Button
                 onClick={handleNext}
                 disabled={!selected}
-                className="bg-indigo-600 text-white w-full sm:w-auto"
+                className="bg-[#2563EB] text-white w-full sm:w-auto"
               >
                 {currentQuestionIndex < questions.length - 1
                   ? "Next Question"
@@ -527,7 +547,6 @@ export default function FillBlankPage() {
           </div>
         </div>
 
-        {/* Realtime Leaderboard */}
         {roomId && participants.length > 0 && (
           <div className="w-64 hidden lg:block">
             <div className="bg-white rounded-xl shadow-md p-4 sticky top-4">
@@ -537,26 +556,38 @@ export default function FillBlankPage() {
               <div className="space-y-2">
                 {participants
                   .sort((a, b) => b.score - a.score)
-                  .map((p, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center justify-between p-2 bg-gray-50 rounded text-sm"
-                    >
-                      <div className="flex items-center gap-2 overflow-hidden">
-                        <span
-                          className={`font-bold w-4 ${
-                            i === 0 ? "text-yellow-500" : "text-gray-500"
-                          }`}
-                        >
-                          #{i + 1}
+                  .map((p, i) => {
+                    const friend = friends.find((f) => f.userId === p.userId);
+                    const displayAvatar =
+                      friend?.avatarUrl || p.avatarUrl || user?.avatar;
+                    const displayName =
+                      friend?.username || (p as any).displayName || p.username;
+
+                    return (
+                      <div
+                        key={i}
+                        className="flex items-center justify-between p-2 bg-gray-50 rounded text-sm"
+                      >
+                        <div className="flex items-center gap-2 overflow-hidden">
+                          <span
+                            className={`font-bold w-4 ${
+                              i === 0 ? "text-yellow-500" : "text-gray-500"
+                            }`}
+                          >
+                            #{i + 1}
+                          </span>
+                          <img
+                            src={displayAvatar}
+                            className="w-5 h-5 rounded-full object-cover"
+                          />
+                          <span className="truncate">{displayName}</span>
+                        </div>
+                        <span className="font-semibold text-[#2563EB]">
+                          {p.score}
                         </span>
-                        <span className="truncate">{p.username}</span>
                       </div>
-                      <span className="font-semibold text-[#2563EB]">
-                        {p.score}
-                      </span>
-                    </div>
-                  ))}
+                    );
+                  })}
               </div>
             </div>
           </div>
