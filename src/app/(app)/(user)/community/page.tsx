@@ -311,7 +311,7 @@ export default function CommunityPage() {
               <div className="inline-flex items-center gap-2 mt-2">
                 <button
                   onClick={() => handleToggleLike(post.postId)}
-                  className="flex items-center gap-1 transition-colors hover:opacity-80"
+                  className="flex items-center gap-1 transition-colors hover:opacity-80 cursor-pointer"
                 >
                   <Heart
                     className={`h-5 w-5 ${
@@ -346,7 +346,7 @@ export default function CommunityPage() {
                   className="w-10 h-10 rounded-full object-cover"
                 />
                 <div>
-                  <p className="font-bold text-[16px] text-black">
+                  <p className="font-medium text-sm text-black">
                     {friend.username}
                   </p>
                   {/* <p className="text-[14px] text-[#939393]">Online</p> */}

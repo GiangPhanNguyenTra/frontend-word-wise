@@ -20,6 +20,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   setUser: (user: User | null) => void;
+  updateUser: (updatedData: Partial<User>) => void;
   logout: () => void;
 }
 
@@ -50,15 +51,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateUser = (updatedData: Partial<User>) => {
+    if (user) {
+      const newUser = { ...user, ...updatedData };
+      setUser(newUser);
+      localStorage.setItem("user", JSON.stringify(newUser));
+    }
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
+    localStorage.removeItem("accessToken");
     document.cookie = "token=; Max-Age=0; path=/;";
     router.push("/login");
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser: handleSetUser, logout }}>
+    <AuthContext.Provider
+      value={{ user, setUser: handleSetUser, updateUser, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

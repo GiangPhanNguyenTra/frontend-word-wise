@@ -113,11 +113,20 @@ export const UserHeader = () => {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
+              <Link href="/setting/posts">
+                <DropdownMenuItem className="!cursor-pointer">
+                  My Posts
+                </DropdownMenuItem>
+              </Link>
               <Link href="/setting">
-                <DropdownMenuItem>Setting</DropdownMenuItem>
+                <DropdownMenuItem className="!cursor-pointer">
+                  Setting
+                </DropdownMenuItem>
               </Link>
               <Link href="/setting/reminder">
-                <DropdownMenuItem>Reminder</DropdownMenuItem>
+                <DropdownMenuItem className="!cursor-pointer">
+                  Reminder
+                </DropdownMenuItem>
               </Link>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={logout} className="cursor-pointer">

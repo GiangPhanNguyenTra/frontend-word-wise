@@ -18,3 +18,9 @@ export interface FriendRequest {
   requesterAvatarUrl: string | null;
   requestDate: string;
 }
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+  reNewPassword: string;
+}

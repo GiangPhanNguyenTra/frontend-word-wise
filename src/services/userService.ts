@@ -1,6 +1,10 @@
 import { Friend } from "@/types/dashboard";
 
-import { SearchUserResult, FriendRequest } from "@/types/user";
+import {
+  SearchUserResult,
+  FriendRequest,
+  ChangePasswordRequest,
+} from "@/types/user";
 
 const BASE_URL = process.env.NEXT_PUBLIC_CORE_SERVICE_API;
 
@@ -100,4 +104,43 @@ export async function unfriendUser(friendId: number) {
   });
   if (!response.ok) throw new Error("Failed to unfriend");
   return await response.json();
+}
+
+export async function updateUserInfo(data: {
+  username?: string;
+  avatar?: string;
+}) {
+  if (!BASE_URL) throw new Error("API URL is not defined");
+
+  const response = await fetch(`${BASE_URL}/user/update-info`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Failed to update user info");
+  }
+
+  return await response.json();
+}
+
+export async function changePassword(data: ChangePasswordRequest) {
+  if (!BASE_URL) throw new Error("API URL is not defined");
+
+  const response = await fetch(`${BASE_URL}/user/change-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || "Failed to change password");
+  }
+
+  return result;
 }
