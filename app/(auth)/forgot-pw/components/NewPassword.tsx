@@ -14,32 +14,33 @@ export default function NewPassword({ onValidChange }: Props) {
   const validatePassword = (pw: string) =>
     /^(?=.*[A-Z])(?=.*\d).{8,}$/.test(pw);
 
-  const isValid = validatePassword(password) && password === confirm;
-
   const handleChange = (field: "pw" | "confirm", value: string) => {
-    if (field === "pw") setPassword(value);
-    else setConfirm(value);
+    let newPassword = password;
+    let newConfirm = confirm;
 
-    const valid =
-      validatePassword(field === "pw" ? value : password) &&
-      (field === "confirm" ? value : confirm) ===
-        (field === "pw" ? value : password);
+    if (field === "pw") {
+      setPassword(value);
+      newPassword = value;
+    } else {
+      setConfirm(value);
+      newConfirm = value;
+    }
 
-    onValidChange?.(valid, field === "pw" ? value : password);
+    const valid = validatePassword(newPassword) && newConfirm === newPassword;
+    onValidChange?.(valid, newPassword);
   };
 
   return (
     <View>
-      {/* New Password */}
       <View className="mb-4">
         <Text className="text-base font-[Montserrat-Medium] text-[#ABABAB] mb-2">
-          Password
+          New Password
         </Text>
         <View className="w-full h-16 bg-[#F7F8F9] px-4 flex-row items-center border border-[#DADADA] rounded-[10px]">
           <TextInput
             value={password}
             onChangeText={(val) => handleChange("pw", val)}
-            placeholder="Enter your password"
+            placeholder="Enter new password"
             placeholderTextColor="#9CA3AF"
             secureTextEntry={!showPw}
             className="flex-1 h-14 font-[Montserrat-Regular]"
@@ -55,6 +56,27 @@ export default function NewPassword({ onValidChange }: Props) {
         {!validatePassword(password) && password.length > 0 && (
           <Text className="text-xs text-red-500 mt-1 font-[Montserrat-Regular]">
             • At least 8 characters, 1 uppercase letter, and 1 number.
+          </Text>
+        )}
+      </View>
+
+      <View className="mb-4">
+        <Text className="text-base font-[Montserrat-Medium] text-[#ABABAB] mb-2">
+          Confirm Password
+        </Text>
+        <View className="w-full h-16 bg-[#F7F8F9] px-4 flex-row items-center border border-[#DADADA] rounded-[10px]">
+          <TextInput
+            value={confirm}
+            onChangeText={(val) => handleChange("confirm", val)}
+            placeholder="Re-enter password"
+            placeholderTextColor="#9CA3AF"
+            secureTextEntry={!showPw}
+            className="flex-1 h-14 font-[Montserrat-Regular]"
+          />
+        </View>
+        {confirm !== password && confirm.length > 0 && (
+          <Text className="text-xs text-red-500 mt-1 font-[Montserrat-Regular]">
+            • Passwords do not match.
           </Text>
         )}
       </View>

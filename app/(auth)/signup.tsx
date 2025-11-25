@@ -1,9 +1,12 @@
+import { registerUser } from "@/services/authService";
 import { useFonts } from "expo-font";
 import { useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { ChevronLeft, Eye, EyeOff } from "lucide-react-native";
 import React, { useCallback, useState } from "react";
 import {
+  ActivityIndicator,
+  Alert,
   Pressable,
   Text,
   TextInput,
@@ -18,8 +21,8 @@ export default function RegisterScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  // tách state riêng cho 2 ô
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -44,20 +47,48 @@ export default function RegisterScreen() {
 
   if (!fontsLoaded) return null;
 
-  const handleRegister = () => {
-    router.replace("/(auth)/login");
+  const handleRegister = async () => {
+    if (!username || !email || !password || !confirmPassword) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert("Error", "Passwords do not match");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await registerUser({
+        fullName: username,
+        email,
+        password,
+        confirmPassword,
+      });
+      Alert.alert("Success", "Account created successfully", [
+        { text: "OK", onPress: () => router.replace("/(auth)/login") },
+      ]);
+    } catch (error: any) {
+      Alert.alert(
+        "Registration Failed",
+        error.message || "Something went wrong"
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <KeyboardAwareScrollView
       style={{ flex: 1, backgroundColor: "#FAF9FF" }}
       contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
-      extraScrollHeight={50} // thêm khoảng cách khi focus input
+      extraScrollHeight={50}
       keyboardShouldPersistTaps="handled"
       enableOnAndroid
+      onLayout={onLayoutRootView}
     >
       <View className="flex-1 bg-[#FAF9FF] pt-12">
-        {/* Nút Back */}
         <View className="mt-8 ml-4">
           <TouchableOpacity
             onPress={() => router.back()}
@@ -66,7 +97,6 @@ export default function RegisterScreen() {
             <ChevronLeft size={30} color="#000000" />
           </TouchableOpacity>
         </View>
-        {/* Title */}
         <View className="px-6 mt-24">
           <Text className="text-black text-3xl font-[Montserrat-Bold]">
             Welcome back! Glad
@@ -76,7 +106,6 @@ export default function RegisterScreen() {
           </Text>
         </View>
         <View className="px-6 mt-12">
-          {/* Username */}
           <View className="mb-4">
             <Text className="text-[#ABABAB] text-sm mb-1 font-[Montserrat-Regular]">
               Username
@@ -86,10 +115,9 @@ export default function RegisterScreen() {
               placeholderTextColor="#8391A1"
               value={username}
               onChangeText={setUsername}
-              className="w-full h-16 bg-[#F7F8F9] border border-[#DADADA] rounded-[10px] px-4 border border-[#DADADA] font-[Montserrat-Regular]"
+              className="w-full h-16 bg-[#F7F8F9] border border-[#DADADA] rounded-[10px] px-4 font-[Montserrat-Regular]"
             />
           </View>
-          {/* Email */}
           <View className="mb-4">
             <Text className="text-[#ABABAB] text-sm mb-1 font-[Montserrat-Regular]">
               Email Address
@@ -99,16 +127,16 @@ export default function RegisterScreen() {
               placeholderTextColor="#8391A1"
               value={email}
               onChangeText={setEmail}
+              autoCapitalize="none"
               keyboardType="email-address"
-              className="w-full h-16 bg-[#F7F8F9] border border-[#DADADA] rounded-[10px] px-4 border border-[#DADADA] font-[Montserrat-Regular]"
+              className="w-full h-16 bg-[#F7F8F9] border border-[#DADADA] rounded-[10px] px-4 font-[Montserrat-Regular]"
             />
           </View>
-          {/* Password */}
           <View className="mb-4">
             <Text className="text-[#ABABAB] text-sm mb-1 font-[Montserrat-Regular]">
               Password
             </Text>
-            <View className="w-full h-16 bg-[#F7F8F9] border border-[#DADADA] px-4 flex-row items-center border border-[#DADADA] rounded-[10px]">
+            <View className="w-full h-16 bg-[#F7F8F9] border border-[#DADADA] px-4 flex-row items-center rounded-[10px]">
               <TextInput
                 placeholder="Enter your password"
                 placeholderTextColor="#8391A1"
@@ -126,12 +154,11 @@ export default function RegisterScreen() {
               </Pressable>
             </View>
           </View>
-          {/* Confirm Password */}
           <View className="mb-6">
             <Text className="text-[#ABABAB] text-sm mb-1 font-[Montserrat-Regular]">
               Confirm Password
             </Text>
-            <View className="w-full h-16 bg-[#F7F8F9] border border-[#DADADA] px-4 flex-row items-center border border-[#DADADA] rounded-[10px]">
+            <View className="w-full h-16 bg-[#F7F8F9] border border-[#DADADA] px-4 flex-row items-center rounded-[10px]">
               <TextInput
                 placeholder="Confirm your password"
                 placeholderTextColor="#8391A1"
@@ -151,16 +178,19 @@ export default function RegisterScreen() {
               </Pressable>
             </View>
           </View>
-          {/* Register Button */}
           <TouchableOpacity
             onPress={handleRegister}
+            disabled={isLoading}
             className="w-full h-16 rounded-lg items-center justify-center mb-4 bg-[#2563EB]"
           >
-            <Text className="text-white font-[Montserrat-Bold] text-base">
-              Register
-            </Text>
+            {isLoading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text className="text-white font-[Montserrat-Bold] text-base">
+                Register
+              </Text>
+            )}
           </TouchableOpacity>
-          {/* Or Login */}
           <View className="flex-row justify-center">
             <Text className="text-black font-[Montserrat-Regular]">Or </Text>
             <TouchableOpacity onPress={() => router.replace("/(auth)/login")}>

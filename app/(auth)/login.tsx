@@ -1,10 +1,12 @@
-// app/(auth)/login.tsx
+import { loginUser } from "@/services/authService";
 import { useFonts } from "expo-font";
 import { useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { ChevronLeft, Eye, EyeOff } from "lucide-react-native";
 import React, { useCallback, useState } from "react";
 import {
+  ActivityIndicator,
+  Alert,
   Pressable,
   SafeAreaView,
   Text,
@@ -15,7 +17,11 @@ import {
 
 export default function LoginScreen() {
   const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const [fontsLoaded] = useFonts({
     "Montserrat-Regular": require("@/assets/fonts/Montserrat-Regular.ttf"),
     "Montserrat-Bold": require("@/assets/fonts/Montserrat-Bold.ttf"),
@@ -37,15 +43,26 @@ export default function LoginScreen() {
 
   if (!fontsLoaded) return null;
 
-  const handleSignIn = () => {
-    router.replace("/(tabs)/home");
+  const handleSignIn = async () => {
+    if (!email || !password) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await loginUser({ email, password });
+      router.replace("/(tabs)/home");
+    } catch (error: any) {
+      Alert.alert("Login Failed", error.message || "Something went wrong");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      {/* phần trên */}
+    <SafeAreaView className="flex-1 bg-white" onLayout={onLayoutRootView}>
       <View className="bg-[#92B1F5] rounded-b-[70%] pb-[20%] -mx-40 pl-40 pr-40 pt-20">
-        {/* Nút back */}
         <View className="px-4">
           <TouchableOpacity
             onPress={() => {
@@ -59,7 +76,6 @@ export default function LoginScreen() {
           </TouchableOpacity>
         </View>
         <View className="w-full">
-          {/* Title */}
           <View className="px-6 mt-24">
             <Text className="text-black text-3xl font-[Montserrat-Bold]">
               Welcome back! Glad
@@ -69,7 +85,6 @@ export default function LoginScreen() {
             </Text>
           </View>
 
-          {/* Email */}
           <View className="px-6 mt-20">
             <Text className="text-white mb-1 font-[Montserrat-Medium]">
               Email Address
@@ -77,10 +92,13 @@ export default function LoginScreen() {
             <TextInput
               placeholder="Enter your email"
               placeholderTextColor="#8391A1"
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
               className="w-full h-16 bg-[#F7F8F9] border border-[#DADADA] rounded-xl px-4 mb-4 font-[Montserrat-Regular]"
             />
 
-            {/* Password */}
             <Text className="text-white mb-1 font-[Montserrat-Medium]">
               Password
             </Text>
@@ -89,6 +107,8 @@ export default function LoginScreen() {
                 placeholder="Enter your password"
                 placeholderTextColor="#8391A1"
                 secureTextEntry={!showPassword}
+                value={password}
+                onChangeText={setPassword}
                 className="flex-1 font-[Montserrat-Regular]"
               />
               <Pressable onPress={() => setShowPassword(!showPassword)}>
@@ -113,19 +133,21 @@ export default function LoginScreen() {
         </View>
       </View>
 
-      {/* phần dưới */}
       <View className="flex-1 px-6 pt-10">
-        {/* Login Button */}
         <TouchableOpacity
           onPress={handleSignIn}
+          disabled={isLoading}
           className="bg-[#2563EB] h-16 rounded-xl items-center justify-center"
         >
-          <Text className="text-white font-[Montserrat-Bold] text-base">
-            Login
-          </Text>
+          {isLoading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text className="text-white font-[Montserrat-Bold] text-base">
+              Login
+            </Text>
+          )}
         </TouchableOpacity>
 
-        {/* Register */}
         <View className="flex-row justify-center mt-4">
           <Text className="text-black font-[Montserrat-Regular]">
             Don’t have an account?{" "}
