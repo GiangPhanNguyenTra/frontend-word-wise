@@ -1,9 +1,12 @@
+import { ApiWord } from "@/types/collection";
 import {
   PracticeSessionData,
   PracticeCompletionResponse,
 } from "@/types/practice";
 
 const BASE_URL = process.env.NEXT_PUBLIC_CORE_SERVICE_API;
+
+type RawApiWord = ApiWord & { word?: string };
 
 export async function getPracticeSession(
   collectionName?: string
@@ -30,7 +33,25 @@ export async function getPracticeSession(
   }
 
   const data = await response.json();
-  return data.data;
+  const sessionData = data.data;
+
+  if (
+    sessionData &&
+    sessionData.list_words &&
+    Array.isArray(sessionData.list_words)
+  ) {
+    sessionData.list_words = sessionData.list_words.map((item: RawApiWord) => {
+      if (item.word && !item.wordText) {
+        return {
+          ...item,
+          wordText: item.word,
+        };
+      }
+      return item;
+    });
+  }
+
+  return sessionData as PracticeSessionData;
 }
 
 export async function completePracticeSession(payload: {

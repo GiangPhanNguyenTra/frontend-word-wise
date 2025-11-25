@@ -63,7 +63,7 @@ export default function NewReviewPage() {
               phoneticsUkAudio: w.phonetics?.uk?.audio || "",
               phoneticsUsText: w.phonetics?.us?.text || "",
               phoneticsUsAudio: w.phonetics?.us?.audio || "",
-              synonyms: w.synonyms || "", // Đã là chuỗi từ logic service enrich
+              synonyms: w.synonyms || "", 
               idiomsCollocations: w.idiomsCollocations || [],
               phrasalVerbs: w.phrasalVerbs || [],
               source: w.sourceUrl,
@@ -97,8 +97,6 @@ export default function NewReviewPage() {
 
     setIsSaving(true);
     try {
-      // Map ngược từ UIWord sang cấu trúc Payload mà createCollectionWithWords cần
-      // Lưu ý: createCollectionWithWords sẽ tự lo việc convert synonyms string -> array
       const apiWordsPayload = words.map((w) => ({
         wordText: w.word,
         wordVn: w.meaning,
@@ -126,11 +124,8 @@ export default function NewReviewPage() {
       toast.success("Collection created successfully!");
       localStorage.removeItem("newCollectionData");
 
-      // Chuyển hướng đến trang collection vừa tạo (dùng ID hoặc Name tùy logic)
       if (res.data && res.data.collectionId) {
-        // Nếu router dùng name, hãy đổi thành res.data.name
-        // Ở đây giả sử dùng collectionId nhưng theo component List trước đó thì dùng name
-        router.push(`/collections/${res.data.name || res.data.collectionId}`);
+        router.push(`/collections/${res.data.name }`);
       } else {
         router.push("/collections");
       }
