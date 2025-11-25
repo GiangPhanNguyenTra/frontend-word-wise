@@ -13,7 +13,7 @@ import {
   Check,
   Volume2,
   Workflow,
-  Copy, // Import thêm icon Copy cho phần Synonyms
+  Copy,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
