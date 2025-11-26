@@ -188,7 +188,7 @@ export default function HomeScreen() {
               icon={<Zap size={24} color="#10B981" />}
               color="#10B981"
               value={stats.todayWords}
-              label="Learned Today"
+              label="Today's Word"
             />
           </View>
           <View className="w-[48%]">
@@ -196,7 +196,7 @@ export default function HomeScreen() {
               icon={<Mic size={24} color="#EF4444" />}
               color="#EF4444"
               value={Math.round(stats.avgPronunciationScore)}
-              label="Avg. Score"
+              label="Pronunciation"
             />
           </View>
         </View>

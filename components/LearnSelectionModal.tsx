@@ -1,42 +1,54 @@
+import { Checkbox } from "expo-checkbox";
+import { X } from "lucide-react-native";
 import React, { useState } from "react";
-import {
-  Modal,
-  Pressable,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View
-} from "react-native";
+import { Modal, Text, TouchableOpacity, View } from "react-native";
 
-type Option = { id: string; label: string };
-
-type Props = {
+interface LearnSelectionModalProps {
   visible: boolean;
   onClose: () => void;
-  onConfirm: (selected: string[]) => void;
-  options: Option[];
-};
+  onConfirm: (selectedModes: string[]) => void;
+}
+
+const LEARNING_MODES = [
+  {
+    id: "flashcards",
+    label: "Flashcards",
+    description: "Flip cards to learn meaning & definition.",
+  },
+  {
+    id: "translation",
+    label: "Translation",
+    description: "Type the English word given Vietnamese meaning.",
+  },
+  {
+    id: "definition",
+    label: "Definition Choice",
+    description: "Choose word from definition.",
+  },
+  {
+    id: "fill",
+    label: "Fill in the Blank",
+    description: "Complete sentence with missing word.",
+  },
+];
 
 export default function LearnSelectionModal({
   visible,
   onClose,
   onConfirm,
-  options,
-}: Props) {
-  const [selected, setSelected] = useState<string[]>(["All"]);
+}: LearnSelectionModalProps) {
+  const [selectedModes, setSelectedModes] = useState<string[]>(["flashcards"]);
 
-  const toggleSelect = (id: string) => {
-    console.log("Toggled:", id);
-    if (id === "All") {
-      setSelected(["All"]);
-      return;
+  const toggleMode = (id: string) => {
+    setSelectedModes((prev) =>
+      prev.includes(id) ? prev.filter((m) => m !== id) : [...prev, id]
+    );
+  };
+
+  const handleStart = () => {
+    if (selectedModes.length > 0) {
+      onConfirm(selectedModes);
     }
-    const exists = selected.includes(id);
-    const updated = exists
-      ? selected.filter((x) => x !== id)
-      : [...selected.filter((x) => x !== "All"), id];
-    setSelected(updated);
   };
 
   return (
@@ -46,55 +58,58 @@ export default function LearnSelectionModal({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <View className="flex-1 bg-black/40 justify-center items-center px-5">
-        <TouchableWithoutFeedback onPress={onClose}>
-          <View className="absolute top-0 left-0 right-0 bottom-0" />
-        </TouchableWithoutFeedback>
-        {/* Modal container */}
-        <View className="w-full bg-white rounded-2xl p-5">
-          <Text className="text-lg font-[Montserrat-Bold] text-left mb-3">
-            Select Words to Learn
-          </Text>
-
-          {/* Options list */}
-          <ScrollView className="max-h-[300px]" showsVerticalScrollIndicator={false}>
-            {options.map((opt) => {
-              const isSelected = selected.includes(opt.id);
-              return (
-                <Pressable
-                  key={opt.id}
-                  onPress={() => toggleSelect(opt.id)}
-                  className="flex-row items-center py-1.5"
-                >
-                  <View
-                    className={`w-5 h-5 mr-3 rounded ${
-                      isSelected ? "bg-blue-600" : "bg-gray-200"
-                    }`}
-                  />
-                  <Text className="text-base font-[Montserrat-Medium] text-[#333]">
-                    {opt.label}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
-
-          {/* Footer buttons */}
-          <View className="flex-row justify-end mt-4">
-            {/* <TouchableOpacity
-              onPress={onClose}
-              className="flex-1 items-center py-3 mr-2 border border-gray-300 rounded-lg"
-            >
-              <Text className="font-[Montserrat-Bold] text-[#333]">Cancel</Text>
-            </TouchableOpacity> */}
-
-            <TouchableOpacity
-              onPress={() => onConfirm(selected)}
-              className="w-[50px] items-center py-3 ml-2 bg-[#EBAD25] rounded-lg"
-            >
-              <Text className="text-white">Learn</Text>
+      <View className="flex-1 bg-black/50 justify-center items-center px-4">
+        <View className="bg-white w-full max-w-sm rounded-2xl p-6">
+          <View className="flex-row justify-between items-center mb-4">
+            <Text className="text-xl font-[Montserrat-Bold] text-[#1F2937]">
+              Choose Learning Mode
+            </Text>
+            <TouchableOpacity onPress={onClose}>
+              <X size={24} color="#6B7280" />
             </TouchableOpacity>
           </View>
+
+          <Text className="text-gray-500 font-[Montserrat-Regular] mb-4">
+            Select one or more practice types for this session.
+          </Text>
+
+          <View className="gap-4 mb-6">
+            {LEARNING_MODES.map((mode) => (
+              <TouchableOpacity
+                key={mode.id}
+                className="flex-row items-start gap-3"
+                onPress={() => toggleMode(mode.id)}
+              >
+                <Checkbox
+                  value={selectedModes.includes(mode.id)}
+                  onValueChange={() => toggleMode(mode.id)}
+                  color={
+                    selectedModes.includes(mode.id) ? "#2563EB" : undefined
+                  }
+                />
+                <View className="flex-1">
+                  <Text className="font-[Montserrat-SemiBold] text-base text-gray-800">
+                    {mode.label}
+                  </Text>
+                  <Text className="text-gray-500 text-xs font-[Montserrat-Regular]">
+                    {mode.description}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <TouchableOpacity
+            onPress={handleStart}
+            disabled={selectedModes.length === 0}
+            className={`w-full py-3 rounded-xl items-center ${
+              selectedModes.length === 0 ? "bg-gray-300" : "bg-[#2563EB]"
+            }`}
+          >
+            <Text className="text-white font-[Montserrat-Bold] text-base">
+              Start Practice
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
     </Modal>

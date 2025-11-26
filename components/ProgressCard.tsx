@@ -47,8 +47,7 @@ export default function ProgressCard({
   });
 
   return compact ? (
-    // === Dạng mini cho CollectionViewPage ===
-    <View className="items-center justify-center">
+    <View className="items-center justify-center ">
       <Svg width={size} height={size}>
         <Circle
           stroke="#E5E7EB"
