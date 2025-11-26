@@ -5,22 +5,46 @@ import Activity4 from "@/assets/images/activity4.svg";
 import Activity5 from "@/assets/images/activity5.svg";
 import Decor from "@/assets/images/decor.svg";
 import Logo from "@/assets/images/logo.svg";
-import ProgressCard from "@/components/ProgressCard";
-import { useRouter } from "expo-router";
-import { FileSearch, MessageSquareText, MicVocal, Play, Settings } from "lucide-react-native";
-import React, { useRef, useState } from "react";
+import HomeStatisticCard from "@/components/HomeStatisticCard";
+import { getHomeStatistics } from "@/services/statisticService";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect, useRouter } from "expo-router";
+import {
+  BookOpen,
+  Library,
+  MessageSquareText,
+  Mic,
+  Play,
+  Settings,
+  Zap,
+} from "lucide-react-native";
+import React, { useCallback, useRef, useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+
+interface HomeStatistics {
+  totalWords: number;
+  totalCollections: number;
+  todayWords: number;
+  avgPronunciationScore: number;
+}
 
 export default function HomeScreen() {
   const router = useRouter();
   const scrollRef = useRef<ScrollView>(null);
   const [activitiesY, setActivitiesY] = useState(0);
+  const [username, setUsername] = useState("User");
+  const [stats, setStats] = useState<HomeStatistics>({
+    totalWords: 0,
+    totalCollections: 0,
+    todayWords: 0,
+    avgPronunciationScore: 0,
+  });
 
   const activities = [
     {
       id: 1,
       icon: <Activity1 />,
-      label: "Daily Vocabulary Review",
+      label: "Collections Review",
       bg: "#E9EFFD",
       color: "#2563EB",
       route: "/(tabs)/learn",
@@ -59,6 +83,29 @@ export default function HomeScreen() {
     },
   ];
 
+  const fetchData = async () => {
+    try {
+      const userStr = await AsyncStorage.getItem("user");
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        setUsername(user.username || user.fullName || "User");
+      }
+
+      const response = await getHomeStatistics();
+      if (response.success) {
+        setStats(response.data);
+      }
+    } catch (error) {
+      console.error("Failed to load home data", error);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [])
+  );
+
   const handleExploreMore = () => {
     scrollRef.current?.scrollTo({
       y: activitiesY - 10,
@@ -68,8 +115,7 @@ export default function HomeScreen() {
 
   return (
     <View className="flex-1 bg-[#F6F6F6]">
-      {/* Header */}
-      <View className="w-full flex-row items-center justify-between px-4 mt-8">
+      <View className="w-full flex-row items-center justify-between pr-4 mt-8">
         <View className="flex-row items-center">
           <Logo width={80} height={50} />
           <Text className="font-[Montserrat-ExtraBold] text-2xl text-[#2563EB] ml-2">
@@ -78,29 +124,30 @@ export default function HomeScreen() {
         </View>
         <View className="flex-row items-center gap-6">
           <TouchableOpacity onPress={() => router.push("/(tabs)/chat")}>
-            <MessageSquareText strokeWidth={1.5} />
+            <MessageSquareText strokeWidth={1.5} color="#1F2937" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push("/(tabs)/home/settings")}>
-            <Settings strokeWidth={1.5} />
+          <TouchableOpacity
+            onPress={() => router.push("/(tabs)/home/settings")}
+          >
+            <Settings strokeWidth={1.5} color="#1F2937" />
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* Body */}
       <ScrollView
         ref={scrollRef}
         className="p-4"
         contentContainerStyle={{ paddingBottom: 40 }}
+        showsVerticalScrollIndicator={false}
       >
-        {/* Greeting Card */}
-        <View className="flex-row justify-between items-center bg-[#2563EB] rounded-2xl">
+        <View className="flex-row justify-between items-center bg-[#2563EB] rounded-2xl mb-8 shadow-sm">
           <View className="flex-1 pl-4 pt-4 pb-4">
             <Text className="text-white font-[Montserrat-Bold] text-xl">
-              Hello, phangiang293
+              Hello, {username}
             </Text>
-            <Text className="text-white mt-2 font-[Montserrat-Regular] text-sm">
-              Hope you are enjoying your day. If not then we are here for you
-              as always.
+            <Text className="text-white mt-2 font-[Montserrat-Regular] text-sm leading-5">
+              Hope you are enjoying your day. If not then we are here for you as
+              always.
             </Text>
             <TouchableOpacity
               className="mt-4 bg-white rounded-full px-4 py-2 self-start"
@@ -111,35 +158,55 @@ export default function HomeScreen() {
               </Text>
             </TouchableOpacity>
           </View>
-          <Decor width={100} height={170} />
+          <View className="pr-2">
+            <Decor width={100} height={170} />
+          </View>
         </View>
 
-        {/* Progress */}
-        <Text className="text-black font-[Montserrat-Bold] text-2xl mt-6">
-          Today's review progress
+        <Text className="text-[#1F2937] font-[Montserrat-Bold] text-xl mb-4">
+          Daily Overview
         </Text>
-        <View className="flex-row justify-between mt-6">
-          <ProgressCard
-            icon={<FileSearch size={24} color="white" />}
-            color="#2563EB"
-            label="Collection"
-            percent={73}
-          />
-          <ProgressCard
-            icon={<MicVocal size={24} color="white" />}
-            color="#EBAD25"
-            label="Pronunciation"
-            percent={16}
-          />
+        <View className="flex-row flex-wrap justify-between gap-y-4">
+          <View className="w-[48%]">
+            <HomeStatisticCard
+              icon={<BookOpen size={24} color="#2563EB" />}
+              color="#2563EB"
+              value={stats.totalWords}
+              label="Total Words"
+            />
+          </View>
+          <View className="w-[48%]">
+            <HomeStatisticCard
+              icon={<Library size={24} color="#F59E0B" />}
+              color="#F59E0B"
+              value={stats.totalCollections}
+              label="Collections"
+            />
+          </View>
+          <View className="w-[48%]">
+            <HomeStatisticCard
+              icon={<Zap size={24} color="#10B981" />}
+              color="#10B981"
+              value={stats.todayWords}
+              label="Learned Today"
+            />
+          </View>
+          <View className="w-[48%]">
+            <HomeStatisticCard
+              icon={<Mic size={24} color="#EF4444" />}
+              color="#EF4444"
+              value={Math.round(stats.avgPronunciationScore)}
+              label="Avg. Score"
+            />
+          </View>
         </View>
 
-        {/* Activities */}
         <View
-          className="mt-6"
+          className="mt-8"
           onLayout={(e) => setActivitiesY(e.nativeEvent.layout.y)}
         >
-          <Text className="text-black font-[Montserrat-Bold] text-2xl mb-6">
-            What should we do today?
+          <Text className="text-[#1F2937] font-[Montserrat-Bold] text-xl mb-4">
+            Suggested Activities
           </Text>
 
           {activities.map((item) => (
