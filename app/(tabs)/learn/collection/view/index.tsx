@@ -155,13 +155,13 @@ export default function CollectionViewPage() {
         Toast.show({
           type: "success",
           text1: "Deleted",
-          text2: "Word removed",
+          text2: `Successfully deleted the word "${confirmDeleteWord.wordText}"`,
         });
       } catch (e) {
         Toast.show({
           type: "error",
           text1: "Error",
-          text2: collectionId.toString(),
+          text2: `Failed deleted the word "${confirmDeleteWord.wordText}"`,
         });
       }
     }

@@ -22,7 +22,6 @@ export async function getUserCollections(): Promise<Collection[]> {
   const data = await response.json();
   return data.data.map((item: any) => ({
     ...item,
-    id: item.collectionId,
     wordCount: item.totalWords || item.wordCount || 0,
   }));
 }
