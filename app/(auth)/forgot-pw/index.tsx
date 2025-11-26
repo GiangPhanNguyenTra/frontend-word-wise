@@ -8,13 +8,14 @@ import { ChevronLeft } from "lucide-react-native";
 import React, { useRef, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import PagerView from "react-native-pager-view";
+import Toast from "react-native-toast-message";
 import FooterAgreement from "./components/FooterAgreement";
 import NewPassword from "./components/NewPassword";
 import OTPInput from "./components/OTPInput";
@@ -33,16 +34,29 @@ export default function SignupPager() {
 
   const handleStep1 = async () => {
     if (!email) {
-      Alert.alert("Error", "Please enter your email");
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Please enter your email",
+      });
       return;
     }
     setIsLoading(true);
     try {
       await requestForgotPasswordCode(email);
+      Toast.show({
+        type: "success",
+        text1: "Code Sent",
+        text2: "Check your email for the verification code",
+      });
       pagerRef.current?.setPage(1);
       setPage(1);
     } catch (error: any) {
-      Alert.alert("Error", error.message || "Failed to send code");
+      Toast.show({
+        type: "error",
+        text1: "Request Failed",
+        text2: error.message || "Failed to send code",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -50,7 +64,11 @@ export default function SignupPager() {
 
   const handleStep2 = () => {
     if (code.length < 4) {
-      Alert.alert("Error", "Please enter valid code");
+      Toast.show({
+        type: "error",
+        text1: "Invalid Code",
+        text2: "Please enter the full 4-digit code",
+      });
       return;
     }
     pagerRef.current?.setPage(2);
@@ -59,7 +77,11 @@ export default function SignupPager() {
 
   const handleStep3 = async () => {
     if (!password) {
-      Alert.alert("Error", "Please enter a valid password");
+      Toast.show({
+        type: "error",
+        text1: "Invalid Password",
+        text2: "Please enter a valid password",
+      });
       return;
     }
     setIsLoading(true);
@@ -70,10 +92,19 @@ export default function SignupPager() {
         newPassword: password,
         confirmPassword: password,
       });
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: "Password has been reset successfully",
+      });
       pagerRef.current?.setPage(3);
       setPage(3);
     } catch (error: any) {
-      Alert.alert("Error", error.message || "Failed to reset password");
+      Toast.show({
+        type: "error",
+        text1: "Reset Failed",
+        text2: error.message || "Failed to reset password",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -128,126 +159,134 @@ export default function SignupPager() {
     ) : null;
 
   return (
-    <View className="flex-1 bg-[#FAF9FF] w-full">
-      <Heading />
+    <KeyboardAwareScrollView
+      style={{ flex: 1, backgroundColor: "#FAF9FF" }}
+      contentContainerStyle={{ flexGrow: 1 }}
+      enableOnAndroid={true}
+      extraScrollHeight={50}
+      keyboardShouldPersistTaps="handled"
+    >
+      <View className="flex-1 w-full">
+        <Heading />
 
-      <PagerView
-        ref={pagerRef}
-        style={{ flex: 1 }}
-        scrollEnabled={false}
-        initialPage={0}
-        onPageSelected={(e) => setPage(e.nativeEvent.position)}
-      >
-        <View key="1" className="flex-1 px-6">
-          <Text className="text-base font-[Montserrat-Medium] text-[#ABABAB] mb-2 mt-8">
-            Email Address
-          </Text>
-          <TextInput
-            placeholder="Enter your email"
-            placeholderTextColor="#9CA3AF"
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-            className="w-full h-16 bg-[#F7F8F9] rounded-[10px] px-4 border border-[#DADADA] font-[Montserrat-Regular]"
-          />
-
-          <TouchableOpacity
-            onPress={handleStep1}
-            disabled={isLoading}
-            className="w-full h-16 rounded-lg items-center justify-center bg-[#2563EB] mt-10"
-          >
-            {isLoading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text className="text-white font-[Montserrat-Bold] text-base">
-                Create an account
-              </Text>
-            )}
-          </TouchableOpacity>
-          <FooterAgreement />
-        </View>
-
-        <View key="2" className="flex-1 px-6">
-          <Text className="text-base font-[Montserrat-Medium] text-[#27252E] mb-8 mt-8 text-center">
-            We just sent a 4-digit code to {email || "your email"}, enter it
-            below:
-          </Text>
-          <Text className="text-[#ABABAB] font-[Montserrat-Bold]">Code</Text>
-          <OTPInput length={4} onComplete={(val) => setCode(val)} />
-
-          <TouchableOpacity
-            onPress={handleStep2}
-            disabled={code.length < 4}
-            className={`w-full h-16 rounded-lg items-center justify-center mt-8 ${
-              code.length < 4 ? "bg-gray-300" : "bg-[#2563EB]"
-            }`}
-          >
-            <Text className="text-white font-[Montserrat-Bold] text-base">
-              Verify email
+        <PagerView
+          ref={pagerRef}
+          style={{ flex: 1 }}
+          scrollEnabled={false}
+          initialPage={0}
+          onPageSelected={(e) => setPage(e.nativeEvent.position)}
+        >
+          <View key="1" className="flex-1 px-6">
+            <Text className="text-base font-[Montserrat-Medium] text-[#ABABAB] mb-2 mt-8">
+              Email Address
             </Text>
-          </TouchableOpacity>
-          <View className="flex-row justify-center mt-4">
-            <Text className="text-black font-[Montserrat-Regular]">
-              Wrong email?{" "}
-            </Text>
+            <TextInput
+              placeholder="Enter your email"
+              placeholderTextColor="#9CA3AF"
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              className="w-full h-16 bg-[#F7F8F9] rounded-[10px] px-4 border border-[#DADADA] font-[Montserrat-Regular]"
+            />
+
             <TouchableOpacity
-              onPress={() => {
-                pagerRef.current?.setPage(0);
-                setPage(0);
-                setEmail("");
-              }}
+              onPress={handleStep1}
+              disabled={isLoading}
+              className="w-full h-16 rounded-lg items-center justify-center bg-[#2563EB] mt-10"
             >
-              <Text className="text-[#2563EB] font-[Montserrat-Medium]">
-                Send to different email
+              {isLoading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text className="text-white font-[Montserrat-Bold] text-base">
+                  Create an account
+                </Text>
+              )}
+            </TouchableOpacity>
+            <FooterAgreement />
+          </View>
+
+          <View key="2" className="flex-1 px-6">
+            <Text className="text-base font-[Montserrat-Medium] text-[#27252E] mb-8 mt-8 text-center">
+              We just sent a 4-digit code to {email || "your email"}, enter it
+              below:
+            </Text>
+            <Text className="text-[#ABABAB] font-[Montserrat-Bold]">Code</Text>
+            <OTPInput length={4} onComplete={(val) => setCode(val)} />
+
+            <TouchableOpacity
+              onPress={handleStep2}
+              disabled={code.length < 4}
+              className={`w-full h-16 rounded-lg items-center justify-center mt-8 ${
+                code.length < 4 ? "bg-gray-300" : "bg-[#2563EB]"
+              }`}
+            >
+              <Text className="text-white font-[Montserrat-Bold] text-base">
+                Verify email
               </Text>
             </TouchableOpacity>
-          </View>
-          <FooterAgreement />
-        </View>
-
-        <View key="3" className="flex-1 px-6 mt-8">
-          <NewPassword
-            onValidChange={(valid, val) => {
-              setPassword(valid ? val : "");
-            }}
-          />
-
-          <TouchableOpacity
-            onPress={handleStep3}
-            disabled={isLoading}
-            className={`w-full h-16 rounded-lg items-center justify-center mt-8 ${
-              password.length < 8 ? "bg-gray-300" : "bg-[#2563EB]"
-            }`}
-          >
-            {isLoading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text className="text-white font-[Montserrat-Bold] text-base">
-                Continue
+            <View className="flex-row justify-center mt-4">
+              <Text className="text-black font-[Montserrat-Regular]">
+                Wrong email?{" "}
               </Text>
-            )}
-          </TouchableOpacity>
-          <FooterAgreement />
-        </View>
+              <TouchableOpacity
+                onPress={() => {
+                  pagerRef.current?.setPage(0);
+                  setPage(0);
+                  setEmail("");
+                }}
+              >
+                <Text className="text-[#2563EB] font-[Montserrat-Medium]">
+                  Send to different email
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <FooterAgreement />
+          </View>
 
-        <View className="flex-1 items-center justify-center mt-40 px-6">
-          <CreateAccount width={100} height={100} />
-          <Text className="text-3xl font-[Montserrat-Bold] mb-6 text-center mt-20">
-            Your password was successfully reset!
-          </Text>
-          <Text className="text-lg font-[Montserrat-Regular] mb-6 text-center">
-            You can now login with your new password.
-          </Text>
-          <TouchableOpacity
-            className="w-full h-16 rounded-lg items-center justify-center bg-[#2563EB]"
-            onPress={() => router.replace("/(auth)/login")}
-          >
-            <Text className="text-white font-[Montserrat-Bold]">Log In</Text>
-          </TouchableOpacity>
-          <FooterAgreement />
-        </View>
-      </PagerView>
-    </View>
+          <View key="3" className="flex-1 px-6 mt-8">
+            <NewPassword
+              onValidChange={(valid, val) => {
+                setPassword(valid ? val : "");
+              }}
+            />
+
+            <TouchableOpacity
+              onPress={handleStep3}
+              disabled={isLoading}
+              className={`w-full h-16 rounded-lg items-center justify-center mt-8 ${
+                password.length < 8 ? "bg-gray-300" : "bg-[#2563EB]"
+              }`}
+            >
+              {isLoading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text className="text-white font-[Montserrat-Bold] text-base">
+                  Continue
+                </Text>
+              )}
+            </TouchableOpacity>
+            <FooterAgreement />
+          </View>
+
+          <View className="flex-1 items-center justify-center mt-40 px-6">
+            <CreateAccount width={100} height={100} />
+            <Text className="text-3xl font-[Montserrat-Bold] mb-6 text-center mt-20">
+              Your password was successfully reset!
+            </Text>
+            <Text className="text-lg font-[Montserrat-Regular] mb-6 text-center">
+              You can now login with your new password.
+            </Text>
+            <TouchableOpacity
+              className="w-full h-16 rounded-lg items-center justify-center bg-[#2563EB]"
+              onPress={() => router.replace("/(auth)/login")}
+            >
+              <Text className="text-white font-[Montserrat-Bold]">Log In</Text>
+            </TouchableOpacity>
+            <FooterAgreement />
+          </View>
+        </PagerView>
+      </View>
+    </KeyboardAwareScrollView>
   );
 }

@@ -6,7 +6,6 @@ import { ChevronLeft, Eye, EyeOff } from "lucide-react-native";
 import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   Pressable,
   Text,
   TextInput,
@@ -14,6 +13,7 @@ import {
   View,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import Toast from "react-native-toast-message";
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -49,12 +49,20 @@ export default function RegisterScreen() {
 
   const handleRegister = async () => {
     if (!username || !email || !password || !confirmPassword) {
-      Alert.alert("Error", "Please fill in all fields");
+      Toast.show({
+        type: "error",
+        text1: "Missing Information",
+        text2: "Please fill in all fields",
+      });
       return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match");
+      Toast.show({
+        type: "error",
+        text1: "Validation Error",
+        text2: "Passwords do not match",
+      });
       return;
     }
 
@@ -66,14 +74,18 @@ export default function RegisterScreen() {
         password,
         confirmPassword,
       });
-      Alert.alert("Success", "Account created successfully", [
-        { text: "OK", onPress: () => router.replace("/(auth)/login") },
-      ]);
+      Toast.show({
+        type: "success",
+        text1: "Registration Successful",
+        text2: "You can now login",
+      });
+      router.replace("/(auth)/login");
     } catch (error: any) {
-      Alert.alert(
-        "Registration Failed",
-        error.message || "Something went wrong"
-      );
+      Toast.show({
+        type: "error",
+        text1: "Registration Failed",
+        text2: error.message || "Something went wrong",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -83,9 +95,9 @@ export default function RegisterScreen() {
     <KeyboardAwareScrollView
       style={{ flex: 1, backgroundColor: "#FAF9FF" }}
       contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
+      enableOnAndroid={true}
       extraScrollHeight={50}
       keyboardShouldPersistTaps="handled"
-      enableOnAndroid
       onLayout={onLayoutRootView}
     >
       <View className="flex-1 bg-[#FAF9FF] pt-12">
