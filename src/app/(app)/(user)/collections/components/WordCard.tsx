@@ -26,7 +26,7 @@ interface UIWord {
 
 interface WordCardProps {
   wordData: UIWord;
-  onEdit: (updatedWord: UIWord) => void;
+  onEdit: (updatedWord: UIWord) => Promise<void>;
   onDelete: () => void;
 }
 
