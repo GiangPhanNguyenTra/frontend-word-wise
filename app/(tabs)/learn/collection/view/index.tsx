@@ -158,7 +158,11 @@ export default function CollectionViewPage() {
           text2: "Word removed",
         });
       } catch (e) {
-        Toast.show({ type: "error", text1: "Error", text2: "Delete failed" });
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: collectionId.toString(),
+        });
       }
     }
   };
@@ -167,8 +171,17 @@ export default function CollectionViewPage() {
     router.push({
       pathname: "/(tabs)/learn/collection/edit",
       params: {
-        wordId: word.wordId,
+        wordId: word.wordId.toString(),
         wordText: word.wordText,
+        wordVn: word.wordVn,
+        partOfSpeech: word.partOfSpeech,
+        definitionEn: word.definitionEn || "",
+        definitionVi: word.definitionVi || "",
+        phonetics: JSON.stringify(word.phonetics || null),
+        examples: JSON.stringify(word.examples || []),
+        synonyms: word.synonyms || "",
+        idiomsCollocations: JSON.stringify(word.idiomsCollocations || []),
+        phrasalVerbs: JSON.stringify(word.phrasalVerbs || []),
       },
     });
   };
