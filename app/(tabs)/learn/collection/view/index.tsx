@@ -45,45 +45,53 @@ export default function CollectionViewPage() {
   const collectionName = params.collectionName || "";
 
   const [detail, setDetail] = useState<CollectionDetail | null>(null);
+  const [progressData, setProgressData] =
+    useState<CollectionProgressData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [learnModalVisible, setLearnModalVisible] = useState(false);
 
-  // Edit Collection Name
   const [editColVisible, setEditColVisible] = useState(false);
   const [editedColName, setEditedColName] = useState("");
 
-  // Confirm Delete Word
   const [confirmDeleteWord, setConfirmDeleteWord] = useState<{
     show: boolean;
     wordId: number | null;
     wordText: string;
   }>({ show: false, wordId: null, wordText: "" });
 
-  const [progressData, setProgressData] =
-    useState<CollectionProgressData | null>(null);
-
-  const fetchDetail = async () => {
+  const fetchData = async () => {
     if (!collectionName) return;
 
     try {
       setIsLoading(true);
-      const [detailData, statData] = await Promise.all([
-        getCollectionDetail(collectionName),
-        getCollectionProgress(collectionName),
-      ]);
 
+      const detailData = await getCollectionDetail(collectionName);
       setDetail(detailData);
       setEditedColName(detailData.name);
-      setProgressData(statData);
+
+      // Chỉ gọi API progress nếu collection có từ
+      if (detailData.words && detailData.words.length > 0) {
+        try {
+          const statData = await getCollectionProgress(collectionName);
+          setProgressData(statData);
+        } catch (e) {
+          console.log("No progress data or error fetching progress");
+          setProgressData(null);
+        }
+      } else {
+        setProgressData(null);
+      }
     } catch (error) {
-      console.error("Fetch Collection Detail Error:", error);
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "Failed to load collection details",
-      });
-      router.back();
+      console.error("Fetch Error:", error);
+      if (!detail) {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Failed to load collection data",
+        });
+        router.back();
+      }
     } finally {
       setIsLoading(false);
     }
@@ -92,13 +100,12 @@ export default function CollectionViewPage() {
   useFocusEffect(
     useCallback(() => {
       if (collectionName) {
-        fetchDetail();
+        fetchData();
       } else {
-        // Nếu không có ID hợp lệ, quay lại
         Toast.show({
           type: "error",
           text1: "Error",
-          text2: "Invalid Collection ID",
+          text2: "Invalid Collection Name",
         });
         router.back();
       }
@@ -106,7 +113,7 @@ export default function CollectionViewPage() {
   );
 
   const filteredWords =
-    detail?.words.filter((item) =>
+    detail?.words?.filter((item) =>
       item.wordText.toLowerCase().includes(search.toLowerCase())
     ) || [];
 
@@ -135,7 +142,7 @@ export default function CollectionViewPage() {
     try {
       await updateCollection(collectionId, editedColName);
       setEditColVisible(false);
-      fetchDetail();
+      fetchData();
       Toast.show({
         type: "success",
         text1: "Updated",
@@ -151,18 +158,14 @@ export default function CollectionViewPage() {
       try {
         await deleteWord(collectionId, confirmDeleteWord.wordId);
         setConfirmDeleteWord({ show: false, wordId: null, wordText: "" });
-        fetchDetail();
+        fetchData();
         Toast.show({
           type: "success",
           text1: "Deleted",
-          text2: `Successfully deleted the word "${confirmDeleteWord.wordText}"`,
+          text2: "Word removed",
         });
       } catch (e) {
-        Toast.show({
-          type: "error",
-          text1: "Error",
-          text2: `Failed deleted the word "${confirmDeleteWord.wordText}"`,
-        });
+        Toast.show({ type: "error", text1: "Error", text2: "Delete failed" });
       }
     }
   };
@@ -200,11 +203,12 @@ export default function CollectionViewPage() {
 
   if (!detail) return null;
 
+  const hasWords = detail.words && detail.words.length > 0;
   const progressPercent = progressData
     ? Math.round(progressData.averageScore * 100)
     : 0;
   const masteredCount =
-    progressData?.progress_chart.data.find((d) => d.levelName === "Mastered")
+    progressData?.progress_chart?.data?.find((d) => d.levelName === "Mastered")
       ?.wordCount || 0;
 
   return (
@@ -226,85 +230,101 @@ export default function CollectionViewPage() {
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 80 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Stat Card */}
-        {/* Progress & Stats Card */}
-        <View className="bg-white rounded-[24px] shadow-sm p-5 mt-3 mb-4">
-          <View className="flex-row justify-between items-center mb-2">
-            <View>
-              <View className="flex-row justify-between items-center mb-4">
-                <Text className="text-4xl font-[Montserrat-Bold] text-[#1F2937] ">
-                  {detail.words.length + " "}
-                  <Text className="text-gray-800 text-sm font-[Montserrat-SemiBold] ">
-                    words
+        {/* Chỉ hiển thị thống kê và nút học nếu có từ vựng */}
+        {hasWords ? (
+          <View className="bg-white rounded-[24px] shadow-sm p-5 mt-3 mb-4">
+            <View className="flex-row justify-between items-center mb-2">
+              <View>
+                <View className="flex-row justify-between items-center mb-4">
+                  <Text className="text-4xl font-[Montserrat-Bold] text-[#1F2937] ">
+                    {detail.words.length + " "}
+                    <Text className="text-gray-800 text-sm font-[Montserrat-SemiBold] ">
+                      words
+                    </Text>
                   </Text>
-                </Text>
+                </View>
               </View>
+
+              <ProgressCard color="#2563EB" percent={progressPercent} compact />
             </View>
 
-            <ProgressCard color="#2563EB" percent={progressPercent} compact />
+            {/* Kiểm tra progress_chart trước khi render */}
+            {progressData &&
+            progressData.progress_chart &&
+            progressData.progress_chart.data ? (
+              <CollectionProgressChart
+                data={progressData.progress_chart.data}
+                totalWords={progressData.totalWords}
+              />
+            ) : null}
+
+            <TouchableOpacity
+              onPress={() => setLearnModalVisible(true)}
+              className="bg-[#EBAD25] py-4 rounded-[16px] items-center flex-row justify-center mb-2 mt-4 shadow-sm"
+            >
+              <Text className="text-white font-[Montserrat-Bold] text-lg mr-2">
+                Learn
+              </Text>
+              <Play size={20} color="white" fill="white" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="bg-[#2563EB] py-4 rounded-[16px] items-center flex-row justify-center shadow-sm mt-2"
+              onPress={() => handleStartLearn(["flashcards"])}
+            >
+              <LibraryBig size={20} color="white" />
+              <Text className="text-white font-[Montserrat-Bold] text-lg ml-2">
+                Flashcards
+              </Text>
+            </TouchableOpacity>
           </View>
-
-          {/* Biểu đồ cột */}
-          {progressData && progressData.progress_chart && (
-            <CollectionProgressChart
-              data={progressData.progress_chart.data}
-              totalWords={progressData.totalWords}
-            />
-          )}
-
-          <TouchableOpacity
-            onPress={() => setLearnModalVisible(true)}
-            className="bg-[#EBAD25] py-4 rounded-[16px] items-center flex-row justify-center mb-2 shadow-sm"
-          >
-            <Text className="text-white font-[Montserrat-Bold] text-lg mr-2">
-              Learn
+        ) : (
+          // Hiển thị Empty State nếu chưa có từ
+          <View className="bg-white rounded-[24px] p-8 mt-4 items-center justify-center shadow-sm border border-dashed border-gray-300">
+            <Text className="text-lg font-[Montserrat-Bold] text-gray-700 text-center mb-2">
+              This collection is empty
             </Text>
-            <Play size={20} color="white" fill="white" />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            className="bg-[#2563EB] py-4 rounded-[16px] items-center flex-row justify-center shadow-sm mt-2"
-            onPress={() => handleStartLearn(["flashcards"])}
-          >
-            <LibraryBig size={20} color="white" />
-            <Text className="text-white font-[Montserrat-Bold] text-lg ml-2">
-              Flashcards
+            <Text className="text-sm text-gray-500 font-[Montserrat-Regular] text-center mb-6">
+              Start building your vocabulary by adding new words.
             </Text>
-          </TouchableOpacity>
-        </View>
+          </View>
+        )}
 
-        {/* Search */}
-        <View className="w-full bg-white rounded-full flex-row items-center px-4 py-3 mb-6 shadow-sm border border-gray-100">
-          <Search color="#9CA3AF" size={20} />
-          <TextInput
-            className="flex-1 ml-2 text-base font-[Montserrat-Medium] text-[#333]"
-            placeholder="Search words..."
-            placeholderTextColor="#9CA3AF"
-            value={search}
-            onChangeText={setSearch}
-          />
-        </View>
+        {/* Search & List chỉ hiện khi có từ */}
+        {hasWords && (
+          <>
+            <View className="w-full bg-white rounded-full flex-row items-center px-4 py-3 mb-6 shadow-sm border border-gray-100">
+              <Search color="#9CA3AF" size={20} />
+              <TextInput
+                className="flex-1 ml-2 text-base font-[Montserrat-Medium] text-[#333]"
+                placeholder="Search words..."
+                placeholderTextColor="#9CA3AF"
+                value={search}
+                onChangeText={setSearch}
+              />
+            </View>
 
-        {/* Words List using WordCard */}
-        {filteredWords.map((item) => (
-          <WordCard
-            key={item.wordId.toString()} // KEY DUY NHẤT
-            wordData={item}
-            onEdit={handleEditWord}
-            onDelete={() =>
-              setConfirmDeleteWord({
-                show: true,
-                wordId: item.wordId,
-                wordText: item.wordText,
-              })
-            }
-          />
-        ))}
+            {filteredWords.map((item) => (
+              <WordCard
+                key={item.wordId.toString()}
+                wordData={item}
+                onEdit={handleEditWord}
+                onDelete={() =>
+                  setConfirmDeleteWord({
+                    show: true,
+                    wordId: item.wordId,
+                    wordText: item.wordText,
+                  })
+                }
+              />
+            ))}
 
-        {filteredWords.length === 0 && (
-          <Text className="text-center text-gray-400 mt-10 font-[Montserrat-Medium]">
-            No words found in this collection.
-          </Text>
+            {filteredWords.length === 0 && search.length > 0 && (
+              <Text className="text-center text-gray-400 mt-10 font-[Montserrat-Medium]">
+                No words found matching &quot;{search}&quot;.
+              </Text>
+            )}
+          </>
         )}
       </ScrollView>
 
@@ -316,8 +336,6 @@ export default function CollectionViewPage() {
             pathname: "/(tabs)/learn/collection/add",
             params: {
               mode: "addWord",
-              // Truyền ID hoặc Name tùy vào trang Add xử lý thế nào.
-              // Nếu trang Add cần Collection Name để gọi API addWordsToCollection(name, ...):
               collectionName: detail.name,
               from: params.from,
             },
@@ -334,7 +352,6 @@ export default function CollectionViewPage() {
         onConfirm={handleStartLearn}
       />
 
-      {/* Edit Collection Name Modal */}
       <Modal
         transparent
         visible={editColVisible}
@@ -371,7 +388,6 @@ export default function CollectionViewPage() {
         </View>
       </Modal>
 
-      {/* Confirm Delete Word Modal */}
       <Modal
         transparent
         visible={confirmDeleteWord.show}

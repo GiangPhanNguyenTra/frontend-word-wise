@@ -1,8 +1,8 @@
 import { ApiWord, Collection, CollectionDetail } from "@/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const BASE_URL = "http://10.45.86.87:8080/api/v1";
-const CHATBOT_API_URL = "https://your-chatbot-url.com";
+const BASE_URL = process.env.EXPO_PUBLIC_CORE_SERVICE_API;
+const CHATBOT_API_URL = process.env.EXPO_PUBLIC_CHATBOT_API_URL;
 
 const getHeaders = async () => {
   const token = await AsyncStorage.getItem("accessToken");
@@ -100,7 +100,7 @@ export async function deleteCollection(collectionId: number): Promise<void> {
 }
 
 export async function enrichWord(word: string): Promise<ApiWord> {
-  if (!CHATBOT_API_URL) throw new Error("Chatbot URL not defined");
+  // Không cần header Authorization cho chatbot nếu không yêu cầu
   const response = await fetch(`${CHATBOT_API_URL}/api/v1/enrich/${word}`, {
     method: "GET",
     headers: {
@@ -108,11 +108,14 @@ export async function enrichWord(word: string): Promise<ApiWord> {
       "ngrok-skip-browser-warning": "true",
     },
   });
+
   if (!response.ok) throw new Error("Failed to enrich word");
   const data = await response.json();
+
   const synonymsString = Array.isArray(data.synonyms)
     ? data.synonyms.join(", ")
     : data.synonyms || "";
+
   return {
     ...data,
     wordText: data.word,
@@ -123,6 +126,34 @@ export async function enrichWord(word: string): Promise<ApiWord> {
     phrasalVerbs: data.phrasal_verbs,
     synonyms: synonymsString,
   };
+}
+
+export async function enrichWordsBulk(words: string[]): Promise<ApiWord[]> {
+  const response = await fetch(`${CHATBOT_API_URL}/api/v1/enrich/bulk`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "ngrok-skip-browser-warning": "true",
+    },
+    body: JSON.stringify({ words }),
+  });
+
+  if (!response.ok) throw new Error("Failed to enrich list of words");
+  const data = await response.json();
+  const results = data.results || [];
+
+  return results.map((item: any) => ({
+    ...item,
+    wordText: item.word,
+    wordVn: item.word_vn,
+    definitionEn: item.definition_en,
+    definitionVi: item.definition_vi,
+    idiomsCollocations: item.idioms_collocations,
+    phrasalVerbs: item.phrasal_verbs,
+    synonyms: Array.isArray(item.synonyms)
+      ? item.synonyms.join(", ")
+      : item.synonyms || "",
+  }));
 }
 
 export async function addWordsToCollection(
@@ -152,11 +183,13 @@ export async function addWordsToCollection(
       source: w.sourceUrl,
     })),
   };
+
   const response = await fetch(`${BASE_URL}/collections/add-words`, {
     method: "POST",
     headers,
     body: JSON.stringify(payload),
   });
+
   if (!response.ok) throw new Error("Failed to add words");
   return await response.json();
 }
@@ -165,7 +198,6 @@ export async function createCollectionWithWords(
   collectionName: string,
   words: any[]
 ) {
-  // Logic tương tự addWordsToCollection nhưng gọi endpoint bulk
   const headers = await getHeaders();
   const payload = {
     collection: collectionName,
@@ -178,7 +210,7 @@ export async function createCollectionWithWords(
       definition_vi: w.definitionVi,
       examples: w.examples,
       idioms_collocations: w.idiomsCollocations,
-      phrasal_verbs: w.phrasalVerbs,
+      phrasal_verbs: w.phrasal_verbs || w.phrasalVerbs,
       synonyms:
         typeof w.synonyms === "string"
           ? w.synonyms
@@ -189,11 +221,13 @@ export async function createCollectionWithWords(
       source: w.sourceUrl,
     })),
   };
+
   const response = await fetch(`${BASE_URL}/collections/add-word/bulk`, {
     method: "POST",
     headers,
     body: JSON.stringify(payload),
   });
+
   if (!response.ok) throw new Error("Failed to create collection");
   return await response.json();
 }
