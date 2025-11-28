@@ -30,6 +30,11 @@ const LEARNING_MODES = [
     label: "Fill in the Blank",
     description: "Complete sentence with missing word.",
   },
+  {
+    id: "match",
+    label: "Match Words",
+    description: "Connect words with their meanings.",
+  },
 ];
 
 export default function LearnSelectionModal({

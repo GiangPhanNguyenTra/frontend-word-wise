@@ -1,7 +1,7 @@
 import { PracticeCompletionResponse, PracticeSessionData } from "@/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const BASE_URL = "http://10.45.86.87:8080/api/v1";
+const BASE_URL = process.env.EXPO_PUBLIC_CORE_SERVICE_API;
 
 const getHeaders = async () => {
   const token = await AsyncStorage.getItem("accessToken");
@@ -61,7 +61,13 @@ export async function completeCustomPracticeSession(
     headers,
     body: JSON.stringify(results),
   });
-  if (!response.ok) throw new Error("Failed to submit custom results");
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("Custom Complete Error:", errorText);
+    throw new Error("Failed to submit custom practice results");
+  }
+
   const data = await response.json();
   return data.data;
 }

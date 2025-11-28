@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const BASE_URL = "http://10.45.86.87:8080/api/v1";
+const BASE_URL = process.env.EXPO_PUBLIC_CORE_SERVICE_API;
 
 export async function getHomeStatistics() {
   const token = await AsyncStorage.getItem("accessToken");
