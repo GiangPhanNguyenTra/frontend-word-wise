@@ -40,6 +40,36 @@ export default function HomeScreen() {
     avgPronunciationScore: 0,
   });
 
+  const handleActivityPress = (activityId: number) => {
+    switch (activityId) {
+      case 1: // Collection Review
+        router.push("/(tabs)/learn");
+        break;
+      case 2: // Quick Flashcard Quiz
+        // Chuyển hướng sang session học Today với mode Flashcards
+        router.push({
+          pathname: "/(tabs)/learn/session",
+          params: {
+            mode: JSON.stringify(["flashcards"]),
+            type: "today",
+            collectionName: "Quick Flashcard Quiz",
+          },
+        });
+        break;
+      case 3: // Pronunciation
+        router.push("/(tabs)/speak");
+        break;
+      case 4: // Chat
+        router.push("/(tabs)/chat");
+        break;
+      case 5: // Progress
+        router.push("/(tabs)/progress");
+        break;
+      default:
+        break;
+    }
+  };
+
   const activities = [
     {
       id: 1,
@@ -47,7 +77,6 @@ export default function HomeScreen() {
       label: "Collections Review",
       bg: "#E9EFFD",
       color: "#2563EB",
-      route: "/(tabs)/learn",
     },
     {
       id: 2,
@@ -55,7 +84,6 @@ export default function HomeScreen() {
       label: "Quick Flashcard Quiz",
       bg: "#FEF3E5",
       color: "#FFB34D",
-      route: "/(tabs)/learn/collection/learn/flashcard",
     },
     {
       id: 3,
@@ -63,7 +91,6 @@ export default function HomeScreen() {
       label: "Pronunciation Practice",
       bg: "#E5FFFC",
       color: "#106057",
-      route: "/(tabs)/speak",
     },
     {
       id: 4,
@@ -71,7 +98,6 @@ export default function HomeScreen() {
       label: "Chat & Learn with Friends",
       bg: "#E6FFE3",
       color: "#4DC93E",
-      route: "/(tabs)/chat",
     },
     {
       id: 5,
@@ -79,7 +105,6 @@ export default function HomeScreen() {
       label: "Progress Statistics",
       bg: "#FFE9E5",
       color: "#D15743",
-      route: "/(tabs)/progress",
     },
   ];
 
@@ -212,7 +237,7 @@ export default function HomeScreen() {
           {activities.map((item) => (
             <TouchableOpacity
               key={item.id}
-              onPress={() => router.push(item.route as any)}
+              onPress={() => handleActivityPress(item.id)}
               className="w-full flex-row items-center justify-between rounded-2xl p-4 mb-4 shadow-sm"
               style={{
                 backgroundColor: item.bg,
