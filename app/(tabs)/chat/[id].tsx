@@ -6,19 +6,17 @@ import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { ChevronLeft, Send } from "lucide-react-native";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
-  ActivityIndicator,
   FlatList,
   Image,
-  KeyboardAvoidingView,
-  Platform,
+  Keyboard,
   SafeAreaView,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import { KeyboardStickyView } from "react-native-keyboard-controller";
 import Toast from "react-native-toast-message";
-import "text-encoding";
 
 const WS_URL = process.env.EXPO_PUBLIC_CORE_SERVICE_API
   ? process.env.EXPO_PUBLIC_CORE_SERVICE_API.replace("http", "ws").replace(
@@ -38,6 +36,17 @@ export default function ChatDetailScreen() {
     type: "new" | "existing";
   }>();
 
+  const isNewChat = type === "new";
+  const conversationId = isNewChat ? null : Number(id);
+  const recipientId = Number(otherUserId);
+
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [text, setText] = useState("");
+
+  const flatListRef = useRef<FlatList>(null);
+  const stompClient = useRef<Client | null>(null);
+
+  // Hide Tab Bar
   useLayoutEffect(() => {
     navigation.getParent()?.setOptions({ tabBarStyle: { display: "none" } });
     return () => {
@@ -52,54 +61,40 @@ export default function ChatDetailScreen() {
         },
       });
     };
-  }, [navigation]);
+  }, []);
 
-  const isNewChat = type === "new";
-  const conversationId = isNewChat ? null : Number(id);
-  const recipientId = Number(otherUserId);
-
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [text, setText] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-
-  const flatListRef = useRef<FlatList>(null);
-  const stompClient = useRef<Client | null>(null);
-
-  // Load Messages
+  // Load old messages
   useEffect(() => {
     const loadMessages = async () => {
-      if (isNewChat) {
-        setIsLoading(false);
-        return;
-      }
+      if (isNewChat) return;
+
       try {
         const detail = await getConversationDetail(conversationId!);
         setMessages(detail.messages);
-      } catch (error) {
-        console.error("Load Chat Error:", error);
-      } finally {
-        setIsLoading(false);
+      } catch (err) {
+        console.log(err);
       }
     };
     loadMessages();
   }, [conversationId]);
 
-  // WebSocket
+  // Websocket
   useEffect(() => {
     if (isNewChat) return;
-    const connectWebSocket = async () => {
+
+    const connectWS = async () => {
       const token = await AsyncStorage.getItem("accessToken");
+
       const client = new Client({
         brokerURL: WS_URL,
         connectHeaders: { Authorization: `Bearer ${token}` },
         reconnectDelay: 5000,
-        forceBinaryWSFrames: true,
-        appendMissingNULLonIncoming: true,
       });
 
       client.onConnect = () => {
         client.subscribe(`/topic/conversation/${conversationId}`, (message) => {
           const body = JSON.parse(message.body);
+
           const newMessage: ChatMessage = {
             messageId: body.messageId || Date.now(),
             senderId: body.senderId,
@@ -107,64 +102,87 @@ export default function ChatDetailScreen() {
             timestamp: body.timestamp || new Date().toISOString(),
             sender: body.senderId !== recipientId,
           };
-          setMessages((prev) => {
-            if (prev.some((m) => m.messageId === newMessage.messageId))
-              return prev;
-            return [...prev, newMessage];
-          });
+
+          setMessages((prev) => [...prev, newMessage]);
         });
       };
+
       client.activate();
       stompClient.current = client;
     };
-    connectWebSocket();
+
+    connectWS();
+
     return () => {
-      if (stompClient.current) stompClient.current.deactivate();
+      stompClient.current?.deactivate();
     };
   }, [conversationId]);
 
-  // Auto Scroll
+  // Auto scroll on message update
   useEffect(() => {
-    setTimeout(() => {
-      flatListRef.current?.scrollToEnd({ animated: true });
-    }, 200);
-  }, [messages, isLoading]);
+    flatListRef.current?.scrollToEnd({ animated: true });
+  }, [messages]);
 
-  // Send Message
   const handleSend = async () => {
     if (!text.trim()) return;
-    const contentToSend = text.trim();
+
+    const messageText = text.trim();
     setText("");
 
+    Keyboard.dismiss(); // 👉 FIX: đóng keyboard sau khi gửi
+
     try {
-      const sentMsg = await sendMessageApi(recipientId, contentToSend);
+      const sent = await sendMessageApi(recipientId, messageText);
+
       if (isNewChat) {
         router.replace("/(tabs)/chat");
       } else {
-        setMessages((prev) => [...prev, sentMsg]);
+        setMessages((prev) => [...prev, sent]);
       }
-    } catch (error) {
-      Toast.show({ type: "error", text1: "Failed", text2: "Message not sent" });
-      setText(contentToSend);
+    } catch (error: any) {
+      Toast.show({
+        type: "error",
+        text1: "Failed",
+        text2: error.message || "Failed to send",
+      });
     }
   };
 
   const renderMessage = ({ item }: { item: ChatMessage }) => (
     <View
-      className={`flex-row mb-3 ${item.sender ? "justify-end" : "justify-start"}`}
+      style={{
+        flexDirection: "row",
+        marginBottom: 14,
+        justifyContent: item.sender ? "flex-end" : "flex-start",
+      }}
     >
       {!item.sender && (
         <Image
           source={{ uri: avatar || "https://i.pravatar.cc/150" }}
-          className="w-8 h-8 rounded-full mr-2 self-end mb-1"
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: 999,
+            marginRight: 8,
+            alignSelf: "flex-end",
+          }}
         />
       )}
+
       <View
-        className={`px-4 py-3 rounded-2xl max-w-[75%] ${item.sender ? "bg-[#2563EB] rounded-br-sm" : "bg-white border border-gray-100 rounded-bl-sm shadow-sm"}`}
+        style={{
+          maxWidth: "75%",
+          paddingHorizontal: 14,
+          paddingVertical: 10,
+          backgroundColor: item.sender ? "#2563EB" : "#fff",
+          borderRadius: 18,
+          borderBottomLeftRadius: item.sender ? 18 : 6,
+          borderBottomRightRadius: item.sender ? 6 : 18,
+          borderWidth: item.sender ? 0 : 1,
+          borderColor: "#e5e5e5",
+        }}
       >
-        <Text
-          className={`text-[15px] font-[Montserrat-Medium] ${item.sender ? "text-white" : "text-gray-800"}`}
-        >
+        <Text style={{ color: item.sender ? "#fff" : "#000", fontSize: 15 }}>
           {item.content}
         </Text>
       </View>
@@ -172,83 +190,115 @@ export default function ChatDetailScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-[#F6F6F6]">
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#F6F6F6" }}>
       {/* Header */}
-      <View className="flex-row items-center px-4 py-3 mt-8 border-b border-gray-200 bg-white shadow-sm z-10">
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          paddingHorizontal: 16,
+          paddingVertical: 12,
+          marginTop: 20,
+          backgroundColor: "white",
+          borderBottomWidth: 1,
+          borderBottomColor: "#ddd",
+        }}
+      >
         <TouchableOpacity
           onPress={() => router.back()}
-          className="w-10 h-10 bg-gray-50 rounded-full items-center justify-center mr-3"
+          style={{
+            width: 40,
+            height: 40,
+            backgroundColor: "#f3f4f6",
+            borderRadius: 999,
+            alignItems: "center",
+            justifyContent: "center",
+            marginRight: 12,
+          }}
         >
           <ChevronLeft size={24} color="#374151" />
         </TouchableOpacity>
-        <View className="flex-1 flex-row items-center">
-          <Image
-            source={{
-              uri:
-                avatar && avatar.trim() !== ""
-                  ? avatar
-                  : "https://i.pravatar.cc/150?img=12",
-            }}
-            className="w-10 h-10 rounded-full mr-3 bg-gray-200"
-          />
-          <View className="flex-col">
-            <Text className="font-[Montserrat-Bold] text-[16px] text-[#111]">
-              {name}
-            </Text>
-            <Text className="text-xs font-[Montserrat-Medium] text-green-600">
-              Online
-            </Text>
-          </View>
-        </View>
+
+        <Image
+          source={{
+            uri: avatar || "https://i.pravatar.cc/150?img=12",
+          }}
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 999,
+            marginRight: 10,
+            backgroundColor: "#eee",
+          }}
+        />
+
+        <Text style={{ fontSize: 16, fontWeight: "700", color: "#111" }}>
+          {name}
+        </Text>
       </View>
 
-      {/* Thay KeyboardAwareScrollView bằng KeyboardAvoidingView chuẩn */}
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 0}
-      >
-        <View className="flex-1">
-          {isLoading ? (
-            <View className="flex-1 justify-center items-center">
-              <ActivityIndicator size="large" color="#2563EB" />
-            </View>
-          ) : (
-            <FlatList
-              ref={flatListRef}
-              data={messages}
-              renderItem={renderMessage}
-              keyExtractor={(item) => item.messageId.toString()}
-              contentContainerStyle={{ padding: 16, paddingBottom: 20 }}
-              onContentSizeChange={() =>
-                flatListRef.current?.scrollToEnd({ animated: false })
-              }
-              onLayout={() =>
-                flatListRef.current?.scrollToEnd({ animated: false })
-              }
-            />
-          )}
-        </View>
+      {/* Messages */}
+      <FlatList
+        ref={flatListRef}
+        data={messages}
+        renderItem={renderMessage}
+        keyExtractor={(item) => item.messageId.toString()}
+        contentContainerStyle={{
+          padding: 16,
+          paddingBottom: 40, // space for scroll below last message
+        }}
+        keyboardShouldPersistTaps="handled"
+        onContentSizeChange={() =>
+          flatListRef.current?.scrollToEnd({ animated: false })
+        }
+      />
 
-        {/* Input Bar */}
-        <View className="border-t border-gray-200 bg-white flex-row items-center px-4 py-3 pb-4">
+      {/* Sticky Input Bar */}
+      <KeyboardStickyView>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+            borderTopWidth: 1,
+            borderTopColor: "#ddd",
+            backgroundColor: "white",
+          }}
+        >
           <TextInput
             value={text}
             onChangeText={setText}
             placeholder="Type a message..."
             multiline
-            className="flex-1 bg-gray-100 rounded-full px-5 py-3 text-base font-[Montserrat-Medium] max-h-[100px]"
-            returnKeyType="default"
+            style={{
+              flex: 1,
+              backgroundColor: "#f3f4f6",
+              borderRadius: 25,
+              paddingHorizontal: 16,
+              paddingVertical: 10,
+              fontSize: 16,
+              maxHeight: 120,
+            }}
           />
+
           <TouchableOpacity
             onPress={handleSend}
             disabled={!text.trim()}
-            className={`ml-3 w-12 h-12 rounded-full items-center justify-center ${text.trim() ? "bg-[#2563EB]" : "bg-gray-300"}`}
+            style={{
+              marginLeft: 12,
+              width: 48,
+              height: 48,
+              borderRadius: 999,
+              backgroundColor: text.trim() ? "#2563EB" : "#9ca3af",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
           >
-            <Send size={20} color="white" style={{ marginLeft: 2 }} />
+            <Send size={20} color="#fff" style={{ marginLeft: 2 }} />
           </TouchableOpacity>
         </View>
-      </KeyboardAvoidingView>
+      </KeyboardStickyView>
     </SafeAreaView>
   );
 }

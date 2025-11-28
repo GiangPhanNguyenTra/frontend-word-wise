@@ -1,7 +1,7 @@
 import Heading from "@/components/Heading";
 import { getChatTopics, getUserFriends } from "@/services/chatService";
 import { ChatTopic } from "@/types";
-import { formatDistanceToNow } from "date-fns"; // Cần cài: npm install date-fns
+import { formatDistanceToNow } from "date-fns";
 import { useFocusEffect, useRouter } from "expo-router";
 import { Search } from "lucide-react-native";
 import React, { useCallback, useState } from "react";
@@ -25,13 +25,11 @@ export default function ChatScreen() {
     useCallback(() => {
       const fetchData = async () => {
         try {
-          // Gọi song song cả topics và friends
           const [topicsData, friendsData] = await Promise.all([
             getChatTopics(),
             getUserFriends(),
           ]);
 
-          // Lọc ra những người bạn chưa có trong danh sách chat topics
           const friendIdsInTopics = new Set(
             topicsData.map((t) => t.otherUserId)
           );
@@ -39,7 +37,7 @@ export default function ChatScreen() {
           const friendsAsTopics: ChatTopic[] = friendsData
             .filter((f) => !friendIdsInTopics.has(f.userId))
             .map((f) => ({
-              conversationId: 0, // 0 đánh dấu là chat mới
+              conversationId: 0,
               otherUserId: f.userId,
               name: f.username,
               avatar: f.avatarUrl,
@@ -49,7 +47,6 @@ export default function ChatScreen() {
               online: false,
             }));
 
-          // Gộp lại và set state
           setDisplayList([...topicsData, ...friendsAsTopics]);
         } catch (error) {
           console.error("Chat List Error:", error);
@@ -67,31 +64,16 @@ export default function ChatScreen() {
   );
 
   const handleSelectUser = (item: ChatTopic) => {
-    // Nếu conversationId = 0 (chat mới) -> Truyền userId để tạo mới
-    // Nếu > 0 -> Truyền id conversation để load tin nhắn cũ
-    if (item.conversationId && item.conversationId !== 0) {
-      router.push({
-        pathname: "/chat/[id]",
-        params: {
-          id: item.conversationId.toString(),
-          name: item.name,
-          avatar: item.avatar || "",
-          otherUserId: item.otherUserId.toString(),
-          type: "existing",
-        },
-      });
-    } else {
-      router.push({
-        pathname: "/chat/[id]",
-        params: {
-          id: "new",
-          name: item.name,
-          avatar: item.avatar || "",
-          otherUserId: item.otherUserId.toString(),
-          type: "new",
-        },
-      });
-    }
+    router.push({
+      pathname: "/chat/[id]",
+      params: {
+        id: item.conversationId ? item.conversationId.toString() : "new",
+        name: item.name,
+        avatar: item.avatar || "",
+        otherUserId: item.otherUserId.toString(),
+        type: item.conversationId ? "existing" : "new",
+      },
+    });
   };
 
   return (
@@ -114,73 +96,67 @@ export default function ChatScreen() {
           />
         </View>
 
-        {/* Loading State */}
+        {/* List */}
         {isLoading ? (
           <ActivityIndicator size="large" color="#2563EB" />
         ) : (
           <View>
-            {filteredList.length === 0 ? (
-              <Text className="text-center text-gray-400 font-[Montserrat-Medium] mt-10">
-                No conversations found.
-              </Text>
-            ) : (
-              filteredList.map((item) => (
-                <TouchableOpacity
-                  key={`${item.otherUserId}-${item.conversationId}`}
-                  onPress={() => handleSelectUser(item)}
-                  className={`flex-row items-center justify-between p-4 mb-3 rounded-[20px] ${
-                    item.unreadCount > 0
-                      ? "bg-white shadow-sm border border-blue-100"
-                      : "bg-white border border-transparent"
-                  }`}
-                >
-                  <View className="flex-row items-center flex-1">
-                    <Image
-                      source={{
-                        uri: item.avatar || "https://i.pravatar.cc/150?img=12",
-                      }}
-                      className="w-12 h-12 rounded-full mr-4 bg-gray-200"
-                    />
-                    <View className="flex-col flex-1 mr-2">
-                      <View className="flex-row justify-between items-center mb-1">
-                        <Text
-                          className="font-[Montserrat-Bold] text-[16px] text-[#1F2937]"
-                          numberOfLines={1}
-                        >
-                          {item.name}
-                        </Text>
-                        {item.time && (
-                          <Text className="text-xs text-gray-400 font-[Montserrat-Regular]">
-                            {formatDistanceToNow(new Date(item.time), {
-                              addSuffix: false,
-                            }).replace("about ", "")}
-                          </Text>
-                        )}
-                      </View>
-
+            {filteredList.map((item) => (
+              <TouchableOpacity
+                key={`${item.otherUserId}-${item.conversationId}`}
+                onPress={() => handleSelectUser(item)}
+                className={`flex-row items-center justify-between p-4 mb-3 rounded-[20px] ${
+                  item.unreadCount > 0
+                    ? "bg-white shadow-sm border border-blue-100"
+                    : "bg-white border border-transparent"
+                }`}
+              >
+                <View className="flex-row items-center flex-1">
+                  <Image
+                    source={{
+                      uri: item.avatar || "https://i.pravatar.cc/150?img=12",
+                    }}
+                    className="w-12 h-12 rounded-full mr-4 bg-gray-200"
+                  />
+                  <View className="flex-col flex-1 mr-2">
+                    <View className="flex-row justify-between items-center mb-1">
                       <Text
+                        className="font-[Montserrat-Bold] text-[16px] text-[#1F2937]"
                         numberOfLines={1}
-                        className={`text-sm font-[Montserrat-Medium] ${
-                          item.unreadCount > 0
-                            ? "text-[#111] font-bold"
-                            : "text-gray-500"
-                        }`}
                       >
-                        {item.lastMessage}
+                        {item.name}
                       </Text>
+                      {item.time && (
+                        <Text className="text-xs text-gray-400 font-[Montserrat-Regular]">
+                          {formatDistanceToNow(new Date(item.time), {
+                            addSuffix: false,
+                          }).replace("about ", "")}
+                        </Text>
+                      )}
                     </View>
-                  </View>
 
-                  {item.unreadCount > 0 && (
-                    <View className="w-5 h-5 bg-blue-500 rounded-full items-center justify-center ml-2">
-                      <Text className="text-white text-[10px] font-bold">
-                        {item.unreadCount}
-                      </Text>
-                    </View>
-                  )}
-                </TouchableOpacity>
-              ))
-            )}
+                    <Text
+                      numberOfLines={1}
+                      className={`text-sm font-[Montserrat-Medium] ${
+                        item.unreadCount > 0
+                          ? "text-[#111] font-bold"
+                          : "text-gray-500"
+                      }`}
+                    >
+                      {item.lastMessage}
+                    </Text>
+                  </View>
+                </View>
+
+                {item.unreadCount > 0 && (
+                  <View className="w-5 h-5 bg-blue-500 rounded-full items-center justify-center ml-2">
+                    <Text className="text-white text-[10px] font-bold">
+                      {item.unreadCount}
+                    </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            ))}
           </View>
         )}
       </ScrollView>

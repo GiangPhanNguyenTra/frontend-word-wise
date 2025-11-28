@@ -1,3 +1,4 @@
+import { useColorScheme } from "@/hooks/useColorScheme";
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -14,10 +15,9 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { CheckCircle, Info, XCircle } from "lucide-react-native";
 import { Text, View } from "react-native";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import "react-native-reanimated";
 import Toast, { ToastConfig } from "react-native-toast-message";
-
-import { useColorScheme } from "@/hooks/useColorScheme";
 import "../global.css";
 
 const toastConfig: ToastConfig = {
@@ -82,33 +82,35 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack
-        initialRouteName="(auth)/welcome"
-        screenOptions={{
-          headerShown: false,
-          animation: "slide_from_right",
-          presentation: "card",
-        }}
-      >
-        <Stack.Screen name="(auth)/welcome" />
-        <Stack.Screen
-          name="(auth)/introduce"
-          options={{
-            animation: "fade",
+    <KeyboardProvider>
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <Stack
+          initialRouteName="(auth)/welcome"
+          screenOptions={{
+            headerShown: false,
+            animation: "slide_from_right",
+            presentation: "card",
           }}
-        />
-        <Stack.Screen name="(auth)/login" />
-        <Stack.Screen name="(auth)/signup" />
-        <Stack.Screen name="(auth)/forgot-pw/index" />
-        <Stack.Screen name="(auth)/forgot-pw/confirm-otp" />
-        <Stack.Screen name="(auth)/forgot-pw/new-pw" />
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
+        >
+          <Stack.Screen name="(auth)/welcome" />
+          <Stack.Screen
+            name="(auth)/introduce"
+            options={{
+              animation: "fade",
+            }}
+          />
+          <Stack.Screen name="(auth)/login" />
+          <Stack.Screen name="(auth)/signup" />
+          <Stack.Screen name="(auth)/forgot-pw/index" />
+          <Stack.Screen name="(auth)/forgot-pw/confirm-otp" />
+          <Stack.Screen name="(auth)/forgot-pw/new-pw" />
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+        <StatusBar style="auto" />
 
-      <Toast config={toastConfig} topOffset={10} />
-    </ThemeProvider>
+        <Toast config={toastConfig} topOffset={10} />
+      </ThemeProvider>
+    </KeyboardProvider>
   );
 }

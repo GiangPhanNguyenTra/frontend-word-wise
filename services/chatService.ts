@@ -41,17 +41,26 @@ export async function getConversationDetail(
 }
 
 export async function sendMessageApi(
-  recipientId: number,
+  receiverId: number,
   content: string
 ): Promise<ChatMessage> {
   const headers = await getHeaders();
-  const response = await fetch(`${BASE_URL}/chat/send`, {
+
+  // Log payload để debug
+  console.log("Sending Message Payload:", { receiverId, content });
+
+  const response = await fetch(`${BASE_URL}/chat/send/messages`, {
     method: "POST",
     headers,
-    body: JSON.stringify({ recipientId, content }),
+    body: JSON.stringify({ receiverId, content }),
   });
 
-  if (!response.ok) throw new Error("Failed to send message");
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("API Send Error:", response.status, errorText);
+    throw new Error(`Failed to send message: ${errorText}`);
+  }
+
   const data = await response.json();
   return data.data;
 }
