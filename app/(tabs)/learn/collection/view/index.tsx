@@ -270,7 +270,17 @@ export default function CollectionViewPage() {
 
             <TouchableOpacity
               className="bg-[#2563EB] py-4 rounded-[16px] items-center flex-row justify-center shadow-sm mt-2"
-              onPress={() => handleStartLearn(["flashcards"])}
+              onPress={() => {
+                // Chuyển sang session với type='review' và mode=['flashcards']
+                router.push({
+                  pathname: "/(tabs)/learn/session",
+                  params: {
+                    mode: JSON.stringify(["flashcards"]),
+                    type: "review",
+                    collectionName: detail.name,
+                  },
+                });
+              }}
             >
               <LibraryBig size={20} color="white" />
               <Text className="text-white font-[Montserrat-Bold] text-lg ml-2">

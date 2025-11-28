@@ -12,7 +12,7 @@ import {
 } from "@/services/practiceService";
 import { ApiWord, PracticeCompletionResponse } from "@/types";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Check, RotateCw, X } from "lucide-react-native";
+import { ArrowLeft, ArrowRight, Check, RotateCw, X } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -24,6 +24,7 @@ import {
 import * as Progress from "react-native-progress";
 import Toast from "react-native-toast-message";
 
+// Queue Item có thể là 1 từ đơn lẻ HOẶC 1 nhóm từ (cho bài match)
 type QueueItem =
   | { type: "single"; word: ApiWord; mode: string; attempts: number }
   | { type: "match"; words: ApiWord[]; attempts: number };
@@ -36,29 +37,35 @@ export default function SessionPage() {
   const router = useRouter();
   const params = useLocalSearchParams<{
     mode: string;
-    type: string;
+    type: string; // 'today' | 'collection' | 'review'
     collectionId?: string;
     collectionName?: string;
   }>();
 
   const selectedModes = params.mode ? JSON.parse(params.mode) : ["flashcards"];
 
+  // Xác định đây là chế độ Review (xem chơi) hay Practice (học tính điểm)
+  const isReviewMode = params.type === "review";
+
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const [allWords, setAllWords] = useState<ApiWord[]>([]);
   const [totalItems, setTotalItems] = useState(0);
+
+  // Index cho chế độ Review (để lướt qua lại)
+  const [reviewIndex, setReviewIndex] = useState(0);
+
   const [completedCount, setCompletedCount] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [wrongCount, setWrongCount] = useState(0);
+
   const [isLoading, setIsLoading] = useState(true);
   const [isFinished, setIsFinished] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
 
-  // Thống kê: Map<WordId, Số lần học> (bao gồm cả đúng và sai)
   const [wordStats, setWordStats] = useState<Record<number, number>>({});
   const [resultSummary, setResultSummary] =
     useState<PracticeCompletionResponse | null>(null);
 
-  // State điều khiển đáp án cho Translation/Flashcard
   const [forceShowAnswer, setForceShowAnswer] = useState(false);
 
   useEffect(() => {
@@ -67,22 +74,38 @@ export default function SessionPage() {
         let wordsToLearn: ApiWord[] = [];
         let currentSessionId = null;
 
-        if (params.type === "today") {
+        // 1. Chế độ Review (Flashcard xem chơi)
+        if (isReviewMode && params.collectionName) {
+          const detail = await getCollectionDetail(params.collectionName);
+          wordsToLearn = detail.words;
+        }
+        // 2. Chế độ Today (Học theo lịch)
+        else if (params.type === "today") {
           const session = await getPracticeSession();
           wordsToLearn = session.list_words || [];
           currentSessionId = session.sessionId;
-        } else if (params.type === "collection" && params.collectionId) {
+        }
+        // 3. Chế độ Collection Learn (Học Collection cụ thể)
+        else if (params.type === "collection" && params.collectionName) {
           try {
+            // Thử lấy bài tập Spaced Repetition
             const session = await getPracticeSession(params.collectionName);
-            if (session.list_words.length > 0) {
+            if (session.list_words && session.list_words.length > 0) {
               wordsToLearn = session.list_words;
               currentSessionId = session.sessionId;
             } else {
-              throw new Error("No session");
+              // Nếu không có bài tập -> Lấy TOÀN BỘ từ để học Custom
+              throw new Error("Empty session");
             }
           } catch (e) {
-            const detail = await getCollectionDetail(params.collectionId);
+            // Fallback: Custom Practice (Lấy hết từ)
+            const detail = await getCollectionDetail(params.collectionName);
             wordsToLearn = detail.words;
+
+            // Nếu custom thì shuffle luôn cho đỡ chán
+            if (wordsToLearn.length > 0) {
+              wordsToLearn = shuffleArray(wordsToLearn);
+            }
           }
         }
 
@@ -90,7 +113,7 @@ export default function SessionPage() {
           Toast.show({
             type: "info",
             text1: "Empty",
-            text2: "No words to learn",
+            text2: "No words found in this collection.",
           });
           router.back();
           return;
@@ -100,65 +123,104 @@ export default function SessionPage() {
         setSessionId(currentSessionId);
 
         // --- Xây dựng hàng đợi (Queue) ---
-        const initialQueue: QueueItem[] = [];
-        const shuffledWords = shuffleArray(wordsToLearn);
+        if (isReviewMode) {
+          // Review mode: Giữ nguyên danh sách để lướt, không cần queue phức tạp
+          // Chỉ cần map sang format QueueItem để dùng chung logic render
+          const reviewQueue = wordsToLearn.map((w) => ({
+            type: "single" as const,
+            word: w,
+            mode: "flashcards",
+            attempts: 0,
+          }));
+          setQueue(reviewQueue);
+          setTotalItems(reviewQueue.length);
+        } else {
+          // Learn mode: Logic trộn bài, match, v.v.
+          const initialQueue: QueueItem[] = [];
+          const shuffledWords =
+            params.type === "today" ? wordsToLearn : shuffleArray(wordsToLearn);
 
-        // Init stats
-        const stats: Record<number, number> = {};
-        wordsToLearn.forEach((w) => (stats[w.wordId] = 0));
-        setWordStats(stats);
+          // Init stats
+          const stats: Record<number, number> = {};
+          wordsToLearn.forEach((w) => (stats[w.wordId] = 0));
+          setWordStats(stats);
 
-        // Nếu chỉ chọn mode Match -> Gom nhóm 4 từ
-        if (selectedModes.length === 1 && selectedModes[0] === "match") {
-          for (let i = 0; i < shuffledWords.length; i += 4) {
-            initialQueue.push({
-              type: "match",
-              words: shuffledWords.slice(i, i + 4),
-              attempts: 0,
+          if (selectedModes.length === 1 && selectedModes[0] === "match") {
+            for (let i = 0; i < shuffledWords.length; i += 4) {
+              initialQueue.push({
+                type: "match",
+                words: shuffledWords.slice(i, i + 4),
+                attempts: 0,
+              });
+            }
+          } else {
+            shuffledWords.forEach((w) => {
+              let mode = selectedModes.includes("all")
+                ? ["flashcards", "definition", "fill", "translation"][
+                    Math.floor(Math.random() * 4)
+                  ]
+                : selectedModes[
+                    Math.floor(Math.random() * selectedModes.length)
+                  ];
+
+              if (mode === "match") mode = "flashcards";
+
+              initialQueue.push({
+                type: "single",
+                word: w,
+                mode,
+                attempts: 0,
+              });
             });
           }
-        } else {
-          // Các mode khác (Flashcard, Fill, Translate...)
-          shuffledWords.forEach((w) => {
-            // Chọn ngẫu nhiên mode từ danh sách đã chọn (trừ 'all')
-            let mode = selectedModes.includes("all")
-              ? ["flashcards", "definition", "fill", "translation"][
-                  Math.floor(Math.random() * 4)
-                ]
-              : selectedModes[Math.floor(Math.random() * selectedModes.length)];
-
-            // Nếu mode là match nhưng đang học trộn -> fallback về flashcards (vì match cần nhóm)
-            if (mode === "match") mode = "flashcards";
-
-            initialQueue.push({
-              type: "single",
-              word: w,
-              mode,
-              attempts: 0,
-            });
-          });
+          setQueue(initialQueue);
+          setTotalItems(initialQueue.length);
         }
 
-        setQueue(initialQueue);
-        setTotalItems(initialQueue.length);
         setIsLoading(false);
       } catch (error) {
         console.error("Init Error:", error);
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Failed to load session",
+        });
         router.back();
       }
     };
     initSession();
   }, []);
 
-  const currentItem = queue[0];
+  // --- Logic Navigation cho Review Mode ---
+  const handleReviewNext = () => {
+    if (reviewIndex < queue.length - 1) {
+      setReviewIndex((prev) => prev + 1);
+    } else {
+      // Hết danh sách -> Quay lại đầu hoặc hỏi thoát
+      Toast.show({
+        type: "success",
+        text1: "End of list",
+        text2: "Starting over",
+      });
+      setReviewIndex(0);
+    }
+  };
 
-  // Xử lý kết quả bài đơn (Single)
+  const handleReviewPrev = () => {
+    if (reviewIndex > 0) {
+      setReviewIndex((prev) => prev - 1);
+    }
+  };
+
+  // --- Logic Learning (Giữ nguyên) ---
+  const currentItem = isReviewMode ? queue[reviewIndex] : queue[0];
+
   const handleSingleResult = (isCorrect: boolean) => {
+    if (isReviewMode) return; // Không chấm điểm khi review
     if (currentItem?.type !== "single") return;
+
     const wordId = currentItem.word.wordId;
     setForceShowAnswer(false);
-
-    // Tăng số lần học (learn_count)
     setWordStats((prev) => ({ ...prev, [wordId]: (prev[wordId] || 0) + 1 }));
 
     if (isCorrect) {
@@ -167,7 +229,6 @@ export default function SessionPage() {
       setQueue((prev) => prev.slice(1));
     } else {
       setWrongCount((prev) => prev + 1);
-      // Sai -> Đẩy lại vào cuối hàng đợi (chuyển về Flashcard để ôn lại dễ hơn)
       const retryItem: QueueItem = {
         ...currentItem,
         mode: "flashcards",
@@ -177,10 +238,11 @@ export default function SessionPage() {
     }
   };
 
-  // Xử lý kết quả bài Match
   const handleMatchResult = (
     results: { wordId: number; isCorrect: boolean }[]
   ) => {
+    if (isReviewMode) return;
+
     let allCorrect = true;
     results.forEach((r) => {
       setWordStats((prev) => ({
@@ -190,28 +252,29 @@ export default function SessionPage() {
       if (!r.isCorrect) allCorrect = false;
     });
 
-    if (allCorrect) {
-      setCorrectCount((prev) => prev + results.length); // Cộng điểm cho tất cả từ trong nhóm
-    } else {
-      setWrongCount((prev) => prev + 1); // Tính là 1 lần sai chung
-    }
+    if (allCorrect) setCorrectCount((prev) => prev + results.length);
+    else setWrongCount((prev) => prev + 1);
 
     setCompletedCount((prev) => prev + 1);
     setQueue((prev) => prev.slice(1));
   };
 
-  // Nút "I don't know" cho Translation
   const handleDontKnow = () => {
     setForceShowAnswer(true);
-    // Logic: Hiện đáp án, sau đó user phải tự bấm Correct/Wrong hoặc auto tính sai
-    // Ở đây ta tính là sai luôn nhưng cho user xem đáp án trước khi next
   };
 
+  // Check Finish (Chỉ cho mode Learn)
   useEffect(() => {
-    if (!isLoading && queue.length === 0 && totalItems > 0 && !isFinished) {
+    if (
+      !isReviewMode &&
+      !isLoading &&
+      queue.length === 0 &&
+      totalItems > 0 &&
+      !isFinished
+    ) {
       finishSession();
     }
-  }, [queue.length, isLoading]);
+  }, [queue.length, isLoading, isReviewMode]);
 
   const finishSession = async () => {
     setIsLoading(true);
@@ -228,11 +291,11 @@ export default function SessionPage() {
           results: resultsPayload,
         });
       } else {
+        // Custom practice (học từ collection)
         res = await completeCustomPracticeSession(resultsPayload);
       }
       setResultSummary(res);
     } catch (e) {
-      // Fallback UI
       setResultSummary({
         message: "Done",
         updated_streak: null,
@@ -256,17 +319,16 @@ export default function SessionPage() {
       </View>
     );
 
-  // --- Màn hình Kết quả ---
-  if (isFinished) {
-    // Fix lỗi logic tính điểm
-    const totalAnswers = correctCount + wrongCount;
-    const score =
-      totalAnswers > 0 ? Math.round((correctCount / totalAnswers) * 100) : 0;
+  // --- Màn hình Kết quả (Chỉ hiện khi học xong) ---
+  if (isFinished && !isReviewMode) {
     const summary = resultSummary?.summary || {
       totalWords: totalItems,
       correct: correctCount,
       incorrect: wrongCount,
     };
+    const totalAnswered = correctCount + wrongCount;
+    const score =
+      totalAnswered > 0 ? Math.round((correctCount / totalAnswered) * 100) : 0;
 
     return (
       <View className="flex-1 bg-[#F6F6F6]">
@@ -281,8 +343,10 @@ export default function SessionPage() {
             <Text className="text-6xl font-[Montserrat-ExtraBold] text-[#2563EB] mb-4">
               {score}%
             </Text>
-            <Text className="text-gray-600 font-[Montserrat-Medium] text-lg">
-              {score >= 80 ? "Excellent job! 🎉" : "Keep practicing! 💪"}
+            <Text className="text-gray-600 font-[Montserrat-Medium] text-lg text-center">
+              {sessionId
+                ? "Great job completing your session!"
+                : "Custom practice complete!"}
             </Text>
           </View>
 
@@ -320,7 +384,6 @@ export default function SessionPage() {
               setCompletedCount(0);
               setCorrectCount(0);
               setWrongCount(0);
-              // Reload lại component bằng cách replace chính nó
               router.replace({ pathname: "/(tabs)/learn/session", params });
             }}
             className="flex-row items-center gap-2 py-3"
@@ -335,19 +398,27 @@ export default function SessionPage() {
     );
   }
 
-  // --- Render Learning View ---
-  // Fix lỗi "cannot read property 'mode' of undefined": Kiểm tra currentItem tồn tại
   if (!currentItem) return null;
 
-  const progress = totalItems > 0 ? completedCount / totalItems : 0;
+  // Tính progress bar
+  const progress = isReviewMode
+    ? (reviewIndex + 1) / totalItems
+    : totalItems > 0
+      ? completedCount / totalItems
+      : 0;
 
   return (
     <View className="flex-1 bg-[#F6F6F6]">
       <Heading
-        title={params.collectionName || "Practice Session"}
+        title={
+          isReviewMode
+            ? "Flashcard Review"
+            : params.collectionName || "Practice Session"
+        }
         onBack={() => router.back()}
       />
 
+      {/* Thanh tiến trình */}
       <View className="px-6 mt-4 mb-6">
         <Progress.Bar
           progress={progress}
@@ -359,7 +430,9 @@ export default function SessionPage() {
           borderRadius={4}
         />
         <Text className="text-right text-xs text-gray-400 font-[Montserrat-Bold] mt-2">
-          {completedCount} / {totalItems}
+          {isReviewMode
+            ? `${reviewIndex + 1} / ${totalItems}`
+            : `${completedCount} / ${totalItems}`}
         </Text>
       </View>
 
@@ -372,30 +445,55 @@ export default function SessionPage() {
         {/* --- SINGLE MODES --- */}
         {currentItem.type === "single" && (
           <>
-            {/* 1. Flashcard Mode */}
+            {/* 1. Flashcard Mode (Dùng cho cả Learn & Review) */}
             {currentItem.mode === "flashcards" && (
               <View className="flex-1 justify-center">
                 <FlashcardView word={currentItem.word} />
-                <View className="flex-row gap-4 mt-8 h-20">
-                  <TouchableOpacity
-                    onPress={() => handleSingleResult(false)}
-                    className="flex-1 bg-white border border-gray-200 rounded-2xl items-center justify-center flex-row gap-2 shadow-sm"
-                  >
-                    <X color="#D15743" size={24} />
-                    <Text className="text-[#D15743] font-[Montserrat-Bold] text-lg">
-                      Study Again
+
+                {/* Controls */}
+                {isReviewMode ? (
+                  <View className="flex-row justify-between items-center mt-8 px-4 h-20">
+                    <TouchableOpacity
+                      onPress={handleReviewPrev}
+                      disabled={reviewIndex === 0}
+                      className={`w-14 h-14 rounded-full items-center justify-center bg-white border border-gray-200 ${reviewIndex === 0 ? "opacity-50" : ""}`}
+                    >
+                      <ArrowLeft size={24} color="#374151" />
+                    </TouchableOpacity>
+
+                    <Text className="text-gray-400 font-[Montserrat-Medium]">
+                      Flip card to see meaning
                     </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => handleSingleResult(true)}
-                    className="flex-1 bg-[#2563EB] rounded-2xl items-center justify-center flex-row gap-2 shadow-md shadow-blue-200"
-                  >
-                    <Check color="white" size={24} />
-                    <Text className="text-white font-[Montserrat-Bold] text-lg">
-                      Got It
-                    </Text>
-                  </TouchableOpacity>
-                </View>
+
+                    <TouchableOpacity
+                      onPress={handleReviewNext}
+                      className="w-14 h-14 rounded-full items-center justify-center bg-[#2563EB] shadow-md"
+                    >
+                      <ArrowRight size={24} color="white" />
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  <View className="flex-row gap-4 mt-8 h-20">
+                    <TouchableOpacity
+                      onPress={() => handleSingleResult(false)}
+                      className="flex-1 bg-white border border-gray-200 rounded-2xl items-center justify-center flex-row gap-2 shadow-sm"
+                    >
+                      <X color="#D15743" size={24} />
+                      <Text className="text-[#D15743] font-[Montserrat-Bold] text-lg">
+                        Study Again
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => handleSingleResult(true)}
+                      className="flex-1 bg-[#2563EB] rounded-2xl items-center justify-center flex-row gap-2 shadow-md shadow-blue-200"
+                    >
+                      <Check color="white" size={24} />
+                      <Text className="text-white font-[Montserrat-Bold] text-lg">
+                        Got It
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
               </View>
             )}
 
@@ -421,7 +519,7 @@ export default function SessionPage() {
               />
             )}
 
-            {/* 4. Translation Mode (Mới thêm) */}
+            {/* 4. Translation Mode */}
             {currentItem.mode === "translation" && (
               <View className="w-full">
                 <TranslationView
@@ -429,7 +527,6 @@ export default function SessionPage() {
                   onAnswer={handleSingleResult}
                   forceShowAnswer={forceShowAnswer}
                 />
-                {/* Nút "I don't know" chỉ hiện khi chưa show đáp án */}
                 {!forceShowAnswer && (
                   <TouchableOpacity
                     onPress={handleDontKnow}
