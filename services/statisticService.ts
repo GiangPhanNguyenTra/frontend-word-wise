@@ -55,3 +55,53 @@ export async function getCollectionProgress(
   const data = await response.json();
   return data.data;
 }
+
+export interface TrendData {
+  day: string; // "Mon", "Tue", "Jan", "2024"...
+  score: number;
+}
+
+export interface GeneralStatistics {
+  overview: {
+    totalWordsLearned: number;
+    wordsReviewedToday: number;
+    retentionRate: number;
+  };
+  learning_trend: TrendData[];
+  most_forgotten_words: {
+    word: string;
+    partOfSpeech: string;
+  }[];
+  pronunciation: {
+    accuracy: number;
+    improvement_trend: TrendData[];
+  };
+}
+
+export async function getGeneralStatistics(
+  rangeType: string,
+  startDate: string,
+  endDate: string
+): Promise<GeneralStatistics> {
+  const token = await AsyncStorage.getItem("accessToken");
+
+  const query = `rangeType=${rangeType}&startDate=${startDate}&endDate=${endDate}`;
+
+  const response = await fetch(
+    `${BASE_URL}/statistics/mobile/general?${query}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch general statistics");
+  }
+
+  const data = await response.json();
+  return data.data;
+}

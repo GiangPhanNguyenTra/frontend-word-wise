@@ -1,6 +1,7 @@
 import { Picker } from "@react-native-picker/picker";
+import { endOfWeek, format, startOfWeek, subWeeks } from "date-fns";
 import { CalendarDays, ChevronDown } from "lucide-react-native";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, View, useWindowDimensions } from "react-native";
 
 type Props = {
@@ -17,37 +18,57 @@ export default function WeekMonthYearSelector({ mode, onChange }: Props) {
 
   const months = useMemo(
     () => [
-      "January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December",
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
     ],
     []
   );
 
-  const generateLastNWeeks = (n: number = 12) => {
-    const weeks: { label: string; start: Date; end: Date }[] = [];
-    const today = new Date();
-    const end = new Date(today);
-    end.setDate(end.getDate() - end.getDay());
-    for (let i = 0; i < n; i++) {
-      const start = new Date(end);
-      const weekEnd = new Date(end);
-      weekEnd.setDate(start.getDate() + 6);
-      weeks.unshift({
-        label: `${start.getDate().toString().padStart(2, "0")}/${start.getMonth() + 1} - ${weekEnd.getDate().toString().padStart(2, "0")}/${weekEnd.getMonth() + 1}`,
+  // Generate 12 tuần gần nhất
+  const weeks = useMemo(() => {
+    const arr = [];
+    for (let i = 0; i < 12; i++) {
+      const date = subWeeks(now, i);
+      const start = startOfWeek(date, { weekStartsOn: 1 }); // Thứ 2 đầu tuần
+      const end = endOfWeek(date, { weekStartsOn: 1 });
+      arr.push({
+        label: `${format(start, "dd/MM")} - ${format(end, "dd/MM")}`,
         start,
-        end: weekEnd,
+        end,
       });
-      end.setDate(end.getDate() - 7);
     }
-    return weeks;
-  };
+    return arr; // [Tuần này, Tuần trước, ...]
+  }, []);
 
-  const weeks = useMemo(() => generateLastNWeeks(12), []);
+  // Reset logic khi đổi mode -> Tự động trigger onChange về "Hiện tại"
+  useEffect(() => {
+    if (mode === "week") {
+      onChange({ start: weeks[0].start, end: weeks[0].end });
+      setSelectedWeekIndex(0);
+    } else if (mode === "month") {
+      const start = new Date(selectedYear, selectedMonth, 1);
+      const end = new Date(selectedYear, selectedMonth + 1, 0);
+      onChange({ start, end });
+    } else if (mode === "year") {
+      const start = new Date(selectedYear, 0, 1);
+      const end = new Date(selectedYear, 11, 31);
+      onChange({ start, end });
+    }
+  }, [mode]);
 
   const handleSelectWeek = (index: number) => {
     setSelectedWeekIndex(index);
-    const { start, end } = weeks[index];
-    onChange({ start, end });
+    onChange({ start: weeks[index].start, end: weeks[index].end });
   };
 
   const handleSelectMonth = (month: number) => {
@@ -64,41 +85,32 @@ export default function WeekMonthYearSelector({ mode, onChange }: Props) {
     onChange({ start, end });
   };
 
-  const visibleLabel =
-    mode === "week"
-      ? weeks[selectedWeekIndex]?.label ?? ""
-      : mode === "month"
-      ? months[selectedMonth]
-      : String(selectedYear);
-
-  const containerWidth =
-    mode === "year"
-      ? screenWidth * 0.3
-      : mode === "month"
-      ? screenWidth * 0.35
-      : screenWidth * 0.4;
+  let visibleLabel = "";
+  if (mode === "week") visibleLabel = weeks[selectedWeekIndex]?.label;
+  if (mode === "month")
+    visibleLabel = `${months[selectedMonth]} ${selectedYear}`;
+  if (mode === "year") visibleLabel = String(selectedYear);
 
   return (
     <View style={styles.wrapper}>
-      <View style={[styles.outerContainer, { width: containerWidth }]}>
-        <CalendarDays size={16} color="#2563EB" style={{ marginRight: 4 }} />
+      <View style={styles.outerContainer}>
+        <CalendarDays size={16} color="#4B5563" style={{ marginRight: 6 }} />
         <View style={styles.centerDisplay}>
-          <Text numberOfLines={1} ellipsizeMode="tail" style={styles.centerLabel}>
+          <Text numberOfLines={1} style={styles.centerLabel}>
             {visibleLabel}
           </Text>
-          <ChevronDown size={14} color="#2563EB" style={{ marginLeft: 6 }} />
+          <ChevronDown size={14} color="#4B5563" style={{ marginLeft: 4 }} />
         </View>
 
+        {/* Overlay Pickers */}
         {mode === "week" && (
           <Picker
             selectedValue={selectedWeekIndex}
             onValueChange={handleSelectWeek}
-            mode="dropdown"
-            dropdownIconColor="transparent"
             style={styles.invisiblePicker}
           >
             {weeks.map((w, i) => (
-              <Picker.Item key={i} label={w.label} value={i} style={styles.pickerItem} />
+              <Picker.Item key={i} label={w.label} value={i} />
             ))}
           </Picker>
         )}
@@ -106,12 +118,10 @@ export default function WeekMonthYearSelector({ mode, onChange }: Props) {
           <Picker
             selectedValue={selectedMonth}
             onValueChange={handleSelectMonth}
-            mode="dropdown"
-            dropdownIconColor="transparent"
             style={styles.invisiblePicker}
           >
             {months.map((m, i) => (
-              <Picker.Item key={i} label={m} value={i} style={styles.pickerItem} />
+              <Picker.Item key={i} label={`${m} ${selectedYear}`} value={i} />
             ))}
           </Picker>
         )}
@@ -119,13 +129,13 @@ export default function WeekMonthYearSelector({ mode, onChange }: Props) {
           <Picker
             selectedValue={selectedYear}
             onValueChange={handleSelectYear}
-            mode="dropdown"
-            dropdownIconColor="transparent"
             style={styles.invisiblePicker}
           >
-            {Array.from({ length: 10 }, (_, i) => {
-              const year = new Date().getFullYear() - i;
-              return <Picker.Item key={year} label={String(year)} value={year} style={styles.pickerItem} />;
+            {Array.from({ length: 5 }, (_, i) => {
+              const year = now.getFullYear() - i;
+              return (
+                <Picker.Item key={year} label={String(year)} value={year} />
+              );
             })}
           </Picker>
         )}
@@ -135,43 +145,33 @@ export default function WeekMonthYearSelector({ mode, onChange }: Props) {
 }
 
 const styles = StyleSheet.create({
-  wrapper: {
-    alignItems: "center",
-  },
+  wrapper: { alignItems: "flex-end" },
   outerContainer: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "white",
-    borderRadius: 20,
-    height: 32,
-    paddingHorizontal: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    borderRadius: 12,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    minWidth: 140,
   },
   centerDisplay: {
     flexDirection: "row",
     alignItems: "center",
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "space-between",
   },
   centerLabel: {
-    color: "#2563EB",
-    fontSize: 14,
+    color: "#1F2937",
+    fontSize: 13,
     fontFamily: "Montserrat-SemiBold",
-    textAlign: "center",
   },
   invisiblePicker: {
     position: "absolute",
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
+    width: "100%",
+    height: "100%",
     opacity: 0,
-  },
-  pickerItem: {
-    fontFamily: "Montserrat-Regular",
-    fontSize: 14,
   },
 });
