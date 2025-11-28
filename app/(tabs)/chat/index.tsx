@@ -1,108 +1,188 @@
-"use client";
-
 import Heading from "@/components/Heading";
-import { useRouter } from "expo-router";
+import { getChatTopics, getUserFriends } from "@/services/chatService";
+import { ChatTopic } from "@/types";
+import { formatDistanceToNow } from "date-fns"; // Cần cài: npm install date-fns
+import { useFocusEffect, useRouter } from "expo-router";
 import { Search } from "lucide-react-native";
-import { useState } from "react";
-import { Image, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import React, { useCallback, useState } from "react";
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function ChatScreen() {
   const router = useRouter();
   const [search, setSearch] = useState("");
+  const [displayList, setDisplayList] = useState<ChatTopic[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const users = [
-    {
-      id: 1,
-      name: "phanGiang293",
-      status: "online",
-      avatar: "https://i.pravatar.cc/100",
-      unread: true,
-    },
-    {
-      id: 2,
-      name: "user2",
-      status: "offline",
-      avatar: "https://i.pravatar.cc/101",
-      unread: false,
-    },
-    {
-      id: 3,
-      name: "user3",
-      status: "online",
-      avatar: "https://i.pravatar.cc/100",
-      unread: true,
-    },
-    {
-      id: 4,
-      name: "user4",
-      status: "online",
-      avatar: "https://i.pravatar.cc/101",
-      unread: false,
-    },
-  ];
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        try {
+          // Gọi song song cả topics và friends
+          const [topicsData, friendsData] = await Promise.all([
+            getChatTopics(),
+            getUserFriends(),
+          ]);
 
-  const filteredCollections = users.filter((item) =>
+          // Lọc ra những người bạn chưa có trong danh sách chat topics
+          const friendIdsInTopics = new Set(
+            topicsData.map((t) => t.otherUserId)
+          );
+
+          const friendsAsTopics: ChatTopic[] = friendsData
+            .filter((f) => !friendIdsInTopics.has(f.userId))
+            .map((f) => ({
+              conversationId: 0, // 0 đánh dấu là chat mới
+              otherUserId: f.userId,
+              name: f.username,
+              avatar: f.avatarUrl,
+              lastMessage: "Start a conversation",
+              time: "",
+              unreadCount: 0,
+              online: false,
+            }));
+
+          // Gộp lại và set state
+          setDisplayList([...topicsData, ...friendsAsTopics]);
+        } catch (error) {
+          console.error("Chat List Error:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      fetchData();
+    }, [])
+  );
+
+  const filteredList = displayList.filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleSelectUser = (userId: number) => {
-    const user = users.find((user) => user.id === userId);
-    if (user) {
-      router.push({ pathname: "/chat/[id]", params: { id: String(user.id), name: user.name, status: user.status, avatar: user.avatar } });
+  const handleSelectUser = (item: ChatTopic) => {
+    // Nếu conversationId = 0 (chat mới) -> Truyền userId để tạo mới
+    // Nếu > 0 -> Truyền id conversation để load tin nhắn cũ
+    if (item.conversationId && item.conversationId !== 0) {
+      router.push({
+        pathname: "/chat/[id]",
+        params: {
+          id: item.conversationId.toString(),
+          name: item.name,
+          avatar: item.avatar || "",
+          otherUserId: item.otherUserId.toString(),
+          type: "existing",
+        },
+      });
+    } else {
+      router.push({
+        pathname: "/chat/[id]",
+        params: {
+          id: "new",
+          name: item.name,
+          avatar: item.avatar || "",
+          otherUserId: item.otherUserId.toString(),
+          type: "new",
+        },
+      });
     }
   };
 
   return (
     <View className="flex-1 bg-[#F6F6F6]">
-      <Heading title="Chat" />
+      <Heading title="Chat" showBack={false} />
 
-      <ScrollView className="px-4" contentContainerStyle={{ paddingBottom: 40 }}>
-        <View className="w-full bg-white rounded-full flex-row items-center px-4 py-3 mb-6 shadow-sm">
-          <Search color="#696674" size={20} />
+      <ScrollView
+        className="px-4"
+        contentContainerStyle={{ paddingBottom: 40 }}
+      >
+        {/* Search Bar */}
+        <View className="w-full bg-white rounded-full flex-row items-center px-4 py-3 mb-6 shadow-sm border border-gray-100">
+          <Search color="#9CA3AF" size={20} />
           <TextInput
             className="flex-1 ml-2 text-base font-[Montserrat-Medium] text-[#333]"
             placeholder="Search by name"
-            placeholderTextColor="#696674"
+            placeholderTextColor="#9CA3AF"
             value={search}
             onChangeText={setSearch}
           />
         </View>
 
-        {/* Danh sách user */}
-        <View>
-          {filteredCollections.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              onPress={() => handleSelectUser(item.id)}
-              className={`flex-row items-center justify-between p-3 mb-4 rounded-[16px] ${
-                item.unread ? "bg-white" : "bg-transparent"
-              }`}
-            >
-              <View className="flex-row items-center flex-1">
-                <Image
-                  source={{ uri: item.avatar }}
-                  className="w-12 h-12 rounded-full mr-3"
-                />
-                <View className="flex-col flex-1">
-                  <Text className="font-[Montserrat-Bold] text-[16px] text-[#111]">
-                    {item.name}
-                  </Text>
-                  <Text
-                    className={`text-sm font-[Montserrat-Medium] ${
-                      item.status === "online" ? "text-[#10B981]" : "text-[#9CA3AF]"
-                    }`}
-                  >
-                    {item.status}
-                  </Text>
-                </View>
-              </View>
+        {/* Loading State */}
+        {isLoading ? (
+          <ActivityIndicator size="large" color="#2563EB" />
+        ) : (
+          <View>
+            {filteredList.length === 0 ? (
+              <Text className="text-center text-gray-400 font-[Montserrat-Medium] mt-10">
+                No conversations found.
+              </Text>
+            ) : (
+              filteredList.map((item) => (
+                <TouchableOpacity
+                  key={`${item.otherUserId}-${item.conversationId}`}
+                  onPress={() => handleSelectUser(item)}
+                  className={`flex-row items-center justify-between p-4 mb-3 rounded-[20px] ${
+                    item.unreadCount > 0
+                      ? "bg-white shadow-sm border border-blue-100"
+                      : "bg-white border border-transparent"
+                  }`}
+                >
+                  <View className="flex-row items-center flex-1">
+                    <Image
+                      source={{
+                        uri: item.avatar || "https://i.pravatar.cc/150?img=12",
+                      }}
+                      className="w-12 h-12 rounded-full mr-4 bg-gray-200"
+                    />
+                    <View className="flex-col flex-1 mr-2">
+                      <View className="flex-row justify-between items-center mb-1">
+                        <Text
+                          className="font-[Montserrat-Bold] text-[16px] text-[#1F2937]"
+                          numberOfLines={1}
+                        >
+                          {item.name}
+                        </Text>
+                        {item.time && (
+                          <Text className="text-xs text-gray-400 font-[Montserrat-Regular]">
+                            {formatDistanceToNow(new Date(item.time), {
+                              addSuffix: false,
+                            }).replace("about ", "")}
+                          </Text>
+                        )}
+                      </View>
 
-              {item.unread && (
-                <View className="w-3 h-3 bg-red-500 rounded-full mr-1" />
-              )}
-            </TouchableOpacity>
-          ))}
-        </View>
+                      <Text
+                        numberOfLines={1}
+                        className={`text-sm font-[Montserrat-Medium] ${
+                          item.unreadCount > 0
+                            ? "text-[#111] font-bold"
+                            : "text-gray-500"
+                        }`}
+                      >
+                        {item.lastMessage}
+                      </Text>
+                    </View>
+                  </View>
+
+                  {item.unreadCount > 0 && (
+                    <View className="w-5 h-5 bg-blue-500 rounded-full items-center justify-center ml-2">
+                      <Text className="text-white text-[10px] font-bold">
+                        {item.unreadCount}
+                      </Text>
+                    </View>
+                  )}
+                </TouchableOpacity>
+              ))
+            )}
+          </View>
+        )}
       </ScrollView>
     </View>
   );
