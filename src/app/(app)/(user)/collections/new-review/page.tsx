@@ -63,7 +63,7 @@ export default function NewReviewPage() {
               phoneticsUkAudio: w.phonetics?.uk?.audio || "",
               phoneticsUsText: w.phonetics?.us?.text || "",
               phoneticsUsAudio: w.phonetics?.us?.audio || "",
-              synonyms: w.synonyms || "", 
+              synonyms: w.synonyms || "",
               idiomsCollocations: w.idiomsCollocations || [],
               phrasalVerbs: w.phrasalVerbs || [],
               source: w.sourceUrl,
@@ -78,7 +78,7 @@ export default function NewReviewPage() {
     }
   }, []);
 
-  const handleEditWord = (index: number, updatedWord: UIWord) => {
+  const handleEditWord = async (index: number, updatedWord: UIWord) => {
     const newWords = [...words];
     newWords[index] = updatedWord;
     setWords(newWords);
@@ -125,7 +125,7 @@ export default function NewReviewPage() {
       localStorage.removeItem("newCollectionData");
 
       if (res.data && res.data.collectionId) {
-        router.push(`/collections/${res.data.name }`);
+        router.push(`/collections/${res.data.name}`);
       } else {
         router.push("/collections");
       }
@@ -204,7 +204,7 @@ export default function NewReviewPage() {
           <WordCard
             key={`${word.word}-${idx}`}
             wordData={word}
-            onEdit={(updatedWord) => handleEditWord(idx, updatedWord)}
+            onEdit={async (updatedWord) => handleEditWord(idx, updatedWord)}
             onDelete={() => handleDeleteWord(idx)}
           />
         ))}
