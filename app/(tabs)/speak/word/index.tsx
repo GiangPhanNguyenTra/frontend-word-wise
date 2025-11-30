@@ -1,79 +1,75 @@
-"use client";
-
 import Heading from "@/components/Heading";
-import LearnSelectionModal from "@/components/LearnSelectionModal";
-import { router, useLocalSearchParams } from "expo-router";
+import { getUserCollections } from "@/services/collectionService"; // API lấy danh sách collection
+import { Collection } from "@/types";
+import { router, useFocusEffect } from "expo-router";
 import { Play } from "lucide-react-native";
-import { useEffect, useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { useCallback, useState } from "react";
+import {
+  ActivityIndicator,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function PracticeWordScreen() {
   const words = [
-    {
-      id: 1,
-      label: "Random 5 Words",
-      bg: "white",
-      color: "#EBAD25",
-      route: "/(tabs)/learn/collection/learn/quiz?limit=5",
-    },
-    {
-      id: 2,
-      label: "Random 10 Words",
-      bg: "white",
-      color: "#EBAD25",
-      route: "/(tabs)/learn/collection/learn/quiz?limit=10",
-    },
-    {
-      id: 3,
-      label: "Random 15 Words",
-      bg: "white",
-      color: "#EBAD25",
-      route: "/(tabs)/learn/collection/learn/quiz?limit=15",
-    },
-    {
-      id: 4,
-      label: "Random 20 Words",
-      bg: "white",
-      color: "#EBAD25",
-      route: "/(tabs)/learn/collection/learn/quiz?limit=20",
-    },
+    { id: 1, label: "Random 5 Words", limit: 5 },
+    { id: 2, label: "Random 10 Words", limit: 10 },
+    { id: 3, label: "Random 15 Words", limit: 15 },
   ];
 
-  const collections = [
-    { id: 1, title: "Collections Toeic" },
-    { id: 2, title: "Collections Ielts" },
-    { id: 3, title: "Collections Toefl" },
-  ];
-
-  const { tab: initialTab } = useLocalSearchParams<{ tab?: "random" | "collection" }>();
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [tab, setTab] = useState<"random" | "collection">("random");
-  const [learnModalVisible, setLearnModalVisible] = useState(false);
 
-  useEffect(() => {
-    if (initialTab === "random" || initialTab === "collection") {
-      setTab(initialTab);
-    }
-  }, [initialTab]);
+  // Modal để chọn bài học trong collection (nếu cần mở rộng sau này)
+  // Hiện tại logic collection sẽ chuyển thẳng sang practice với toàn bộ từ trong đó
+
+  useFocusEffect(
+    useCallback(() => {
+      getUserCollections()
+        .then(setCollections)
+        .finally(() => setIsLoading(false));
+    }, [])
+  );
+
+  const handleRandomSelect = (limit: number) => {
+    router.push({
+      pathname: "/(tabs)/speak/word/practice",
+      params: { type: "random", limit: limit.toString() },
+    });
+  };
+
+  const handleCollectionSelect = (col: Collection) => {
+    router.push({
+      pathname: "/(tabs)/speak/word/practice",
+      params: { type: "collection", collectionName: col.name },
+    });
+  };
 
   return (
     <View className="flex-1 bg-[#F6F6F6]">
-      <Heading title="Practice Words" onBack={() => router.replace('/(tabs)/speak')}/>
+      <Heading
+        title="Practice Words"
+        onBack={() => router.replace("/(tabs)/speak")}
+      />
 
       <ScrollView>
         <View className="mt-4 px-6 items-center justify-center">
-          <Text className="font-[Montserrat-Bold] text-xl mb-6 text-center">
+          <Text className="font-[Montserrat-Bold] text-xl mb-6 text-center text-[#1F2937]">
             Choose how you want {"\n"} to practice today.
           </Text>
 
           {/* Tab Switch */}
-          <View className="flex-row mb-4 rounded-full border border-[#2563EB] overflow-hidden bg-white">
+          <View className="flex-row mb-6 rounded-full border border-[#2563EB] overflow-hidden bg-white w-full">
             {["random", "collection"].map((t) => {
               const isActive = tab === t;
               return (
                 <TouchableOpacity
                   key={t}
                   onPress={() => setTab(t as any)}
-                  className={`flex-1 py-2 ${isActive ? "bg-[#2563EB]" : "bg-white"}`}
+                  className={`flex-1 py-3 ${isActive ? "bg-[#2563EB]" : "bg-white"}`}
                 >
                   <Text
                     className={`text-center font-[Montserrat-Bold] ${
@@ -93,17 +89,12 @@ export default function PracticeWordScreen() {
               {words.map((item) => (
                 <TouchableOpacity
                   key={item.id}
-                  onPress={() => setLearnModalVisible(true)}
+                  onPress={() => handleRandomSelect(item.limit)}
                   className="w-full flex-row items-center justify-between rounded-[20px] p-4 mb-4 shadow-sm bg-white"
-                  style={{
-                    shadowColor: "#000",
-                    shadowOpacity: 0.05,
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowRadius: 4,
-                    elevation: 2,
-                  }}
                 >
-                  <Text className="text-base font-[Montserrat-Bold]">{item.label}</Text>
+                  <Text className="text-base font-[Montserrat-Bold] text-[#1F2937]">
+                    {item.label}
+                  </Text>
                   <View className="rounded-full p-2">
                     <Play size={24} color="#EBAD25" fill="#EBAD25" />
                   </View>
@@ -112,47 +103,35 @@ export default function PracticeWordScreen() {
             </>
           ) : (
             <>
-              {collections.map((item) => (
-                <TouchableOpacity
-                  key={item.id}
-                  onPress={() => setLearnModalVisible(true)}
-                  className="w-full flex-row items-center justify-between rounded-[20px] p-4 mb-4 shadow-sm bg-white"
-                  style={{
-                    shadowColor: "#000",
-                    shadowOpacity: 0.05,
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowRadius: 4,
-                    elevation: 2,
-                  }}
-                >
-                  <View>
-                    <Text className="text-base font-[Montserrat-Bold]">{item.title}</Text>
-                  </View>
-                </TouchableOpacity>
-              ))}
+              {isLoading ? (
+                <ActivityIndicator color="#2563EB" />
+              ) : collections.length === 0 ? (
+                <Text className="text-gray-500 mt-4">
+                  No collections found.
+                </Text>
+              ) : (
+                collections.map((item) => (
+                  <TouchableOpacity
+                    key={item.id}
+                    onPress={() => handleCollectionSelect(item)}
+                    className="w-full flex-row items-center justify-between rounded-[20px] p-4 mb-4 shadow-sm bg-white"
+                  >
+                    <View>
+                      <Text className="text-base font-[Montserrat-Bold] text-[#1F2937]">
+                        {item.name}
+                      </Text>
+                      <Text className="text-xs text-gray-400">
+                        {item.wordCount} words
+                      </Text>
+                    </View>
+                    <View className="rounded-full p-2">
+                      <Play size={20} color="#2563EB" fill="#2563EB" />
+                    </View>
+                  </TouchableOpacity>
+                ))
+              )}
             </>
           )}
-
-          <LearnSelectionModal
-            visible={learnModalVisible}
-            onClose={() => setLearnModalVisible(false)}
-            onConfirm={(selected) => {
-              console.log("Selected to learn:", selected);
-              setLearnModalVisible(false);
-              router.push({
-                pathname: "/(tabs)/speak/word/practice",
-                params: {
-                  selected: JSON.stringify(selected),
-                },
-              });
-            }}
-            options={[
-              { id: "All", label: "All" },
-              { id: "today", label: "Today's Words" },
-              { id: "new", label: "New words" },
-              { id: "tolearn", label: "To learn" },
-            ]}
-          />
         </View>
       </ScrollView>
     </View>

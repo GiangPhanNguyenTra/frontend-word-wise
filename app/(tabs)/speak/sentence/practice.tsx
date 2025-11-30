@@ -1,195 +1,314 @@
-"use client";
-
 import Heading from "@/components/Heading";
 import ProgressCard from "@/components/ProgressCard";
-import { router, useFocusEffect, useLocalSearchParams, useNavigation } from "expo-router";
-import * as Speech from "expo-speech";
-import { Frown, Laugh, Mic, Volume2 } from "lucide-react-native";
-import { useCallback, useState } from "react";
-import { Pressable, Text, TouchableOpacity, View } from "react-native";
+import PronunciationCard from "@/components/PronunciationCard";
+import {
+  checkPronunciation,
+  getExampleSentences,
+  savePronunciationResult,
+} from "@/services/pronunciationService";
+import { startRecording, stopRecording } from "@/utils/recorder";
+import { Audio } from "expo-av";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { Frown, Laugh, Mic, RotateCw, Square } from "lucide-react-native";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
+import * as Progress from "react-native-progress";
+import Toast from "react-native-toast-message";
 
-type Sentence = {
-  id: number;
-  sentence: string;
-  phonetic: string;
-};
+// Import sounds
+const SoundGood = require("@/assets/sounds/good.wav");
+const SoundOkay = require("@/assets/sounds/okay.wav");
+const SoundBad = require("@/assets/sounds/bad.wav");
 
-const mockSentences: Sentence[] = [
-  { id: 1, sentence: "Hello, nice to meet you.", phonetic: "/həˈloʊ, naɪs tə ˈmiːt juː/" },
-  { id: 2, sentence: "How are you doing today?", phonetic: "/haʊ ɑːr juː ˈduːɪŋ təˈdeɪ/" },
-  { id: 3, sentence: "I really like learning English.", phonetic: "/aɪ ˈrɪəli laɪk ˈlɜːrnɪŋ ˈɪŋɡlɪʃ/" },
-  { id: 4, sentence: "Let's go for a walk outside.", phonetic: "/lɛts ɡoʊ fɔːr ə wɔːk ˈaʊtsaɪd/" },
-];
-
-export default function PracticeScreen() {
-  const navigation = useNavigation();
-  useFocusEffect(
-    useCallback(() => {
-      navigation.getParent()?.setOptions({ tabBarStyle: { display: "none" } });
-      return () => navigation.getParent()?.setOptions({ tabBarStyle: undefined });
-    }, [navigation])
-  );
-
+export default function PracticeSentenceScreen() {
+  const router = useRouter();
+  // Nhận tham số count từ màn hình chọn số lượng
   const { count } = useLocalSearchParams<{ count?: string }>();
-  const questionCount = count ? parseInt(count, 10) : 3; // mặc định 3 nếu không truyền
 
-  const total = questionCount;
-  const seletetedSentence = mockSentences.slice(0, total);
-
+  const [queue, setQueue] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const currentSentence = seletetedSentence[currentIndex];
-  const displayIndex = currentIndex + 1;
-  const [result, setResult] = useState<null | { score: number; correct: boolean }>(null);
-  const [results, setResults] = useState<{ id: number; score: number; correct: boolean }[]>([]);
-  const [isRecording, setIsRecording] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [recording, setRecording] = useState<Audio.Recording | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const learnedCount = results.length;
-  const progressPercent = Math.max(0, Math.min((learnedCount / total) * 100, 100));
+  const [result, setResult] = useState<any>(null);
+  const [userAudioUri, setUserAudioUri] = useState<string | null>(null);
+  const [sessionResults, setSessionResults] = useState<any[]>([]);
 
-  const speak = (text: string) => {
-    Speech.speak(text, { language: "en", rate: 0.9 });
-  };
+  useEffect(() => {
+    const init = async () => {
+      try {
+        const num = count ? parseInt(count, 10) : 3; // Mặc định 3 câu nếu không chọn
+        const data = await getExampleSentences(num);
 
-  const handleRecord = async () => {
-    if (!currentSentence) return;
+        const formattedQueue = data.map((item) => ({
+          id: Math.random().toString(),
+          text: item.real_transcript[0], // Câu mẫu
+          ipa: item.ipa_transcript,
+        }));
 
-    setIsRecording(true);
-    setResult(null);
+        setQueue(formattedQueue);
+      } catch (error) {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Failed to load sentences",
+        });
+        router.back();
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    init();
+  }, []);
 
-    // Giả lập đang ghi âm trong 2s
-    setTimeout(() => {
-      setIsRecording(false);
-      const randomScore = Math.floor(Math.random() * 100);
-      const correct = randomScore >= 70;
-      const newResult = { id: currentSentence.id, score: randomScore, correct };
-      setResult({ score: randomScore, correct });
-      setResults((prev) => [...prev, newResult]);
-    }, 2000);
-  };
+  const playFeedbackSound = async (score: number) => {
+    try {
+      let soundFile;
+      if (score >= 80) soundFile = SoundGood;
+      else if (score >= 50) soundFile = SoundOkay;
+      else soundFile = SoundBad;
 
-  const handleNext = () => {
-    setResult(null);
-
-    if (currentIndex < total - 1) {
-      setCurrentIndex((prev) => prev + 1);
-    } else {
-      const correctCount = [...results, result!].filter((r) => r?.correct).length;
-      const accuracy = Math.round((correctCount / total) * 100);
-
-      router.push({
-        pathname: "/(tabs)/speak/sentence/result",
-        params: {
-          correct: correctCount,
-          total,
-          accuracy,
-        },
-      });
+      const { sound } = await Audio.Sound.createAsync(soundFile);
+      await sound.playAsync();
+    } catch (e) {
+      // Ignore
     }
   };
 
-  if (!currentSentence) return null;
+  const handleRecordToggle = async () => {
+    if (recording) {
+      setIsProcessing(true);
+      try {
+        const base64 = await stopRecording(recording);
+        const uri = recording.getURI();
+        setUserAudioUri(uri);
+        setRecording(null);
+
+        if (base64 && currentItem) {
+          const aiResult = await checkPronunciation(currentItem.text, base64);
+          setResult(aiResult);
+
+          const score = parseFloat(aiResult.pronunciation_accuracy);
+          playFeedbackSound(score);
+        }
+      } catch (error) {
+        Toast.show({ type: "error", text1: "Error", text2: "Analysis failed" });
+      } finally {
+        setIsProcessing(false);
+      }
+    } else {
+      setResult(null);
+      setUserAudioUri(null);
+      const newRec = await startRecording();
+      if (newRec) setRecording(newRec);
+    }
+  };
+
+  const handleRetry = () => {
+    setResult(null);
+    setUserAudioUri(null);
+  };
+
+  const handleNext = () => {
+    if (result && currentItem) {
+      setSessionResults((prev) => [
+        ...prev,
+        {
+          sentenceId: currentItem.id,
+          userAudioUrl: "temp_base64",
+          score: parseFloat(result.pronunciation_accuracy),
+          feedback: {
+            overall: "Keep going!",
+            problemSounds: [],
+            missedWords: [],
+          },
+        },
+      ]);
+    }
+
+    setResult(null);
+    setUserAudioUri(null);
+
+    if (currentIndex < queue.length - 1) {
+      setCurrentIndex((prev) => prev + 1);
+    } else {
+      finishSession();
+    }
+  };
+
+  const finishSession = async () => {
+    setIsLoading(true);
+    try {
+      const totalScore = sessionResults.reduce((sum, r) => sum + r.score, 0);
+      const avgScore =
+        sessionResults.length > 0 ? totalScore / sessionResults.length : 0;
+
+      const payload = {
+        session_summary: {
+          totalSentences: queue.length,
+          completed: sessionResults.length,
+          avgScore: Math.round(avgScore),
+        },
+        results: sessionResults,
+      };
+
+      await savePronunciationResult(payload);
+
+      router.replace({
+        pathname: "/(tabs)/speak/sentence/result",
+        params: {
+          accuracy: Math.round(avgScore).toString(),
+          total: queue.length.toString(),
+          correct: sessionResults
+            .filter((r) => r.score >= 70)
+            .length.toString(),
+        },
+      });
+    } catch (error) {
+      router.replace("/(tabs)/speak");
+    }
+  };
+
+  if (isLoading)
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" color="#2563EB" />
+      </View>
+    );
+
+  const currentItem = queue[currentIndex];
+  if (!currentItem) return null;
+
+  const analysisData = result
+    ? {
+        words: result.real_transcripts.split(" "),
+        scores: result.pair_accuracy_category.split(" "),
+        is_letter_correct_all_words: result.is_letter_correct_all_words,
+      }
+    : undefined;
+
+  const score = result
+    ? Math.round(parseFloat(result.pronunciation_accuracy))
+    : 0;
+
+  let statusColor = "#DC2626";
+  let bgStatus = "bg-[#FEE2E2]";
+  let statusText = "Needs Improvement";
+  let statusMessage = "Try to articulate more clearly.";
+  let IconStatus = Frown;
+
+  if (score >= 80) {
+    statusColor = "#16A34A";
+    bgStatus = "bg-[#D5FFD9]";
+    statusText = "Excellent!";
+    statusMessage = "You sound like a native speaker.";
+    IconStatus = Laugh;
+  } else if (score >= 50) {
+    statusColor = "#EAB308";
+    bgStatus = "bg-[#FEF3C7]";
+    statusText = "Not Bad!";
+    statusMessage = "You are getting there, keep practicing.";
+    IconStatus = Laugh;
+  }
 
   return (
     <View className="flex-1 bg-[#F6F6F6] px-4">
-      <Heading title={`${displayIndex}/${total}`} />
+      <Heading title={`Sentence ${currentIndex + 1}/${queue.length}`} />
 
-      {/* Progress bar */}
-      <View className="w-full h-[4px] bg-gray-200 rounded-full mb-4">
-        <View
-          className="h-full bg-[#2563EB] rounded-full"
-          style={{ width: `${progressPercent}%` }}
+      <View className="mt-4 mb-6">
+        <Progress.Bar
+          progress={(currentIndex + 1) / queue.length}
+          width={null}
+          color="#2563EB"
+          unfilledColor="#E5E7EB"
+          borderWidth={0}
+          height={6}
         />
       </View>
 
-      <View className="bg-white rounded-[16px] flex-1 px-6">
-        <TouchableOpacity
-          onPress={() => speak(currentSentence.sentence)}
-          className="flex-col items-left mb-3 mt-6"
-        >
-          <Volume2 size={22} color="#2563EB" />
-          <Text className="mt-10 text-2xl font-[Montserrat-Bold] text-[#111]">
-            {currentSentence.sentence}
-          </Text>
-        </TouchableOpacity>
-        <Text className="text-[#939393] font-[Montserrat-SemiBold] mb-6">
-          {currentSentence.phonetic}
-        </Text>
-      </View>
+      <View className="flex-1">
+        <PronunciationCard
+          text={currentItem.text}
+          ipa={currentItem.ipa}
+          userIpa={result?.ipa_transcript}
+          userAudioUri={userAudioUri}
+          analysis={analysisData}
+        />
 
-      {/* Feedback box */}
-      {result && (
-        <View
-          className={`w-full rounded-[16px] px-5 py-4 mt-6 ${
-            result.correct ? "bg-[#D5FFD9]" : "bg-[#FEE2E2]"
-          }`}
-        >
-          <View className="flex-row flex-wrap items-center justify-between gap-3">
-            {result.correct ? (
-              <Laugh color="#55BA5D" />
-            ) : (
-              <Frown color="#FF4040" />
-            )}
-
-            {/* Text Box */}
-            <View className="flex-1 min-w-[60%]">
-              <Text
-                className={`text-lg font-[Montserrat-Bold] mb-1 ${
-                  result.correct ? "text-[#16A34A]" : "text-[#DC2626]"
-                }`}
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                {result.correct ? "Great!" : "Oh no!"}
-              </Text>
-
-              <Text
-                className={`font-[Montserrat-Medium] ${
-                  result.correct ? "text-[#14532D]" : "text-[#7F1D1D]"
-                }`}
-                style={{ flexWrap: "wrap" }}
-              >
-                {result.correct
-                  ? "You sound very close to a native speaker!"
-                  : "Try again slowly and focus on tricky sounds."}
-              </Text>
+        {result && (
+          <View
+            className={`w-full rounded-[24px] px-6 py-5 mt-6 flex-row items-center justify-between ${bgStatus}`}
+          >
+            <View className="flex-row items-center gap-4 flex-1">
+              <IconStatus color={statusColor} size={40} />
+              <View className="flex-1">
+                <Text
+                  className={`text-lg font-[Montserrat-Bold]`}
+                  style={{ color: statusColor }}
+                >
+                  {statusText}
+                </Text>
+                <Text
+                  className="text-gray-600 text-xs font-[Montserrat-Medium] mt-1"
+                  style={{ flexWrap: "wrap" }}
+                >
+                  {statusMessage}
+                </Text>
+              </View>
             </View>
 
-            {/* Progress Card */}
-            <View className="ml-2">
-              <ProgressCard compact percent={result.score} color={result.correct ? "#16A34A" : "#DC2626"}/>
+            <View>
+              <ProgressCard compact percent={score} color={statusColor} />
             </View>
           </View>
-        </View>
-      )}
+        )}
+      </View>
 
-      <View className="pb-20">
-        <View className="items-center mt-4">
-          <Pressable
-            onPress={handleRecord}
-            disabled={isRecording}
-            className={`w-[70px] h-[70px] rounded-full items-center justify-center ${
-              isRecording ? "bg-[#93C5FD]" : "bg-[#2563EB]"
-            }`}
-          >
-            <Mic size={32} color="white" />
-          </Pressable>
-          <Text className="text-gray-500 mt-4 font-[Montserrat-Medium]">
-            {isRecording ? "Listening..." : "Press and Hold to talk"}
-          </Text>
-        </View>
-        <View className="items-center justify-center">
-          <TouchableOpacity
-            onPress={handleNext}
-            disabled={!result}
-            className={`mt-10 w-[160px] py-3 rounded-full ${
-              result ? "bg-[#2563EB]" : "bg-gray-300"
-            }`}
-          >
-            <Text className="text-white text-center font-[Montserrat-Bold] text-lg">
-              Next
+      <View className="pb-10">
+        {!result ? (
+          <View className="items-center">
+            <Text className="text-gray-400 mb-4 font-[Montserrat-Medium]">
+              {recording ? "Recording..." : "Press and Hold to talk"}
             </Text>
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity
+              onPress={handleRecordToggle}
+              disabled={isProcessing}
+              className={`w-20 h-20 rounded-full items-center justify-center shadow-lg border-[6px] border-white ${
+                recording ? "bg-red-500" : "bg-[#2563EB]"
+              }`}
+            >
+              {isProcessing ? (
+                <ActivityIndicator color="white" />
+              ) : recording ? (
+                <Square size={32} color="white" fill="white" />
+              ) : (
+                <Mic size={32} color="white" />
+              )}
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View className="flex-col gap-4">
+            <TouchableOpacity
+              onPress={handleNext}
+              className="w-full bg-[#2563EB] h-14 rounded-full items-center justify-center shadow-lg shadow-blue-200"
+            >
+              <Text className="text-white font-[Montserrat-Bold] text-lg">
+                Next Sentence
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={handleRetry}
+              className="w-full h-14 flex-row items-center justify-center gap-2"
+            >
+              <RotateCw size={18} color="#9CA3AF" />
+              <Text className="text-gray-500 font-[Montserrat-Bold] text-base">
+                Retry
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </View>
   );

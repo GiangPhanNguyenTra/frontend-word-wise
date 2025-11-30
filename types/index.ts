@@ -113,3 +113,41 @@ export interface Friend {
   username: string;
   avatarUrl: string | null;
 }
+
+export interface PronunciationExample {
+  real_transcript: string[];
+  ipa_transcript: string;
+  transcript_translation?: string;
+}
+
+export interface PronunciationResult {
+  real_transcript: string;
+  ipa_transcript: string;
+  pronunciation_accuracy: string; // "91"
+  real_transcripts: string;
+  matched_transcripts: string;
+  real_transcripts_ipa: string;
+  matched_transcripts_ipa: string;
+  pair_accuracy_category: string; // "0 0 2 0" (0: good, 1: ok, 2: bad)
+  start_time: string;
+  end_time: string;
+  is_letter_correct_all_words: string; // "11111 00 11"
+}
+
+export interface SavePronunciationRequest {
+  session_summary: {
+    totalSentences: number;
+    completed: number;
+    avgScore: number;
+  };
+  results: {
+    sentenceId: string;
+    userAudioUrl: string;
+    score: number;
+    feedback: {
+      overall: string;
+      problemSounds: string[];
+      missedWords: string[];
+    };
+  }[];
+}
