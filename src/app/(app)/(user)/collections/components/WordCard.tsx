@@ -1,4 +1,6 @@
 "use client";
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

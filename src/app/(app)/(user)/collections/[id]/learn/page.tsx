@@ -1,4 +1,6 @@
 "use client";
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Button } from "@/components/ui/button";

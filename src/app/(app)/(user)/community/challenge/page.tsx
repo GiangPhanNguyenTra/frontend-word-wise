@@ -1,5 +1,6 @@
 "use client";
-
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

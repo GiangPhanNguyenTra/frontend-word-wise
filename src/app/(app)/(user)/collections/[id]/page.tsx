@@ -1,5 +1,6 @@
 "use client";
-
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 import { useState, useEffect, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { format } from "date-fns";

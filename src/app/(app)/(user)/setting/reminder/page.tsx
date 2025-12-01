@@ -1,7 +1,8 @@
 // app/setting/reminder/page.tsx
 
 "use client";
-
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

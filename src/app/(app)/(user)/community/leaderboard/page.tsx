@@ -1,4 +1,6 @@
 "use client";
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 
 import { useEffect, useRef, useState } from "react";
 import { Award, RefreshCw, Home, User, Loader2 } from "lucide-react";

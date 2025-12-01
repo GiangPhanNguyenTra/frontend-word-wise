@@ -1,5 +1,6 @@
 "use client";
-
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 import { useEffect, useState } from "react";
 import { MessageSquare, Check, X, Search, UserPlus, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";

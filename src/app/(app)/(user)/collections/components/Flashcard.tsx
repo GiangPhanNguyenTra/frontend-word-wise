@@ -1,4 +1,7 @@
 "use client";
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+
 import { useState } from "react";
 import { Volume2 } from "lucide-react";
 import { ApiWord } from "@/types/collection";

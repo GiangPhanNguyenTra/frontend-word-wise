@@ -1,5 +1,6 @@
 "use client";
-
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 import { useEffect, useState, useRef } from "react";
 import { ArrowLeft, Clock, Star, Copy, Users, UserPlus } from "lucide-react";
 import Link from "next/link";

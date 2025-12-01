@@ -1,5 +1,6 @@
 "use client";
-
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { formatDistanceToNow, format } from "date-fns";
