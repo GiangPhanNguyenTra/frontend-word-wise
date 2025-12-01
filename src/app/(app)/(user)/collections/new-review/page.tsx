@@ -1,7 +1,9 @@
 "use client";
+
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
-import { useEffect, useState, useMemo } from "react";
+
+import { useEffect, useState, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { CircleArrowLeft, Search, Loader2 } from "lucide-react";
@@ -12,9 +14,8 @@ import { WordCard } from "../components/WordCard";
 import { createCollectionWithWords } from "@/services/collectionService";
 import { ApiWord } from "@/types/collection";
 
-// Định nghĩa Interface UIWord tương thích với WordCard và CollectionDetailPage
 interface UIWord {
-  id: number; // Tạm thời dùng index hoặc ID giả
+  id: number;
   word: string;
   type: string;
   meaning: string;
@@ -32,7 +33,7 @@ interface UIWord {
   source?: string;
 }
 
-export default function NewReviewPage() {
+function ReviewContent() {
   const params = useSearchParams();
   const router = useRouter();
   const title = params.get("title") || "";
@@ -47,10 +48,9 @@ export default function NewReviewPage() {
       try {
         const parsed = JSON.parse(stored);
         if (parsed.enrichedWords && Array.isArray(parsed.enrichedWords)) {
-          // Map từ ApiWord sang UIWord
           const mappedWords: UIWord[] = parsed.enrichedWords.map(
             (w: ApiWord, idx: number) => ({
-              id: idx, // ID tạm
+              id: idx,
               word: w.wordText,
               type: w.partOfSpeech,
               meaning: w.wordVn,
@@ -211,5 +211,19 @@ export default function NewReviewPage() {
         ))}
       </div>
     </div>
+  );
+}
+
+export default function NewReviewPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center w-full h-screen">
+          <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
+        </div>
+      }
+    >
+      <ReviewContent />
+    </Suspense>
   );
 }

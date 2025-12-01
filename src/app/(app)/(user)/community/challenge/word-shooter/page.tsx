@@ -1,7 +1,7 @@
 "use client";
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import Link from "next/link";
 import { ArrowLeft, Copy, Users, Loader2, UserPlus } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -37,7 +37,7 @@ const SOCKET_URL =
   process.env.NEXT_PUBLIC_CORE_SERVICE_API?.replace("/api/v1", "/ws") ||
   "http://localhost:8080/ws";
 
-export default function WordShooterPage() {
+function WordShooterContent() {
   const router = useRouter();
   const { user } = useAuth();
   const searchParams = useSearchParams();
@@ -453,5 +453,19 @@ export default function WordShooterPage() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function WordShooterPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center w-full h-screen">
+          <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
+        </div>
+      }
+    >
+      <WordShooterContent />
+    </Suspense>
   );
 }

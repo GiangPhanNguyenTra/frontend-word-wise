@@ -2,7 +2,7 @@
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, Suspense } from "react";
 import { Award, RefreshCw, Home, User, Loader2 } from "lucide-react";
 import Chart from "chart.js/auto";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -10,7 +10,7 @@ import { getLeaderboard } from "@/services/gameService";
 import { LeaderboardData } from "@/types/game";
 import { toast } from "sonner";
 
-export default function LeaderboardPage() {
+function LeaderboardContent() {
   const [activeTab, setActiveTab] = useState("fill-the-blank");
   const [data, setData] = useState<LeaderboardData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -50,7 +50,6 @@ export default function LeaderboardPage() {
 
   useEffect(() => {
     if (!data || !data.currentUser) return;
-    // Only show confetti if user is top 1
     if (data.currentUser.rank === 1) {
       const createConfetti = () => {
         if (!confettiContainer.current) return;
@@ -99,7 +98,7 @@ export default function LeaderboardPage() {
           {
             label: "Score",
             data: data.chartData.scores,
-            backgroundColor: ["#2563EB", "#3B82F6", "#60A5FA"],
+            backgroundColor: ["#2563EB", "#3B82F6", "#60A5FA", "#FACC15"],
             borderRadius: 8,
           },
         ],
@@ -241,7 +240,6 @@ export default function LeaderboardPage() {
           })}
         </div>
 
-        {/* Chart */}
         <div className="w-full bg-white rounded-2xl shadow-sm p-6 mb-8 h-64">
           <canvas ref={chartRef}></canvas>
         </div>
@@ -305,5 +303,19 @@ export default function LeaderboardPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LeaderboardPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-slate-50">
+          <Loader2 className="w-10 h-10 animate-spin text-[#2563EB]" />
+        </div>
+      }
+    >
+      <LeaderboardContent />
+    </Suspense>
   );
 }

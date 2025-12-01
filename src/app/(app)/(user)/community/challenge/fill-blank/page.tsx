@@ -1,8 +1,16 @@
 "use client";
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
-import { useEffect, useState, useRef } from "react";
-import { ArrowLeft, Clock, Star, Copy, Users, UserPlus } from "lucide-react";
+import { useEffect, useState, useRef, Suspense } from "react";
+import {
+  ArrowLeft,
+  Clock,
+  Star,
+  Copy,
+  Users,
+  UserPlus,
+  Loader2,
+} from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,7 +43,7 @@ const SOCKET_URL =
   process.env.NEXT_PUBLIC_CORE_SERVICE_API?.replace("/api/v1", "/ws") ||
   "http://localhost:8080/ws";
 
-export default function FillBlankPage() {
+function FillBlankContent() {
   const router = useRouter();
   const { user } = useAuth();
   const searchParams = useSearchParams();
@@ -595,5 +603,19 @@ export default function FillBlankPage() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function FillBlankPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center w-full h-screen">
+          <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
+        </div>
+      }
+    >
+      <FillBlankContent />
+    </Suspense>
   );
 }
