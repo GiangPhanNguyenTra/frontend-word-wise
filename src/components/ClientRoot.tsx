@@ -8,7 +8,7 @@ import {
   disconnectGlobalSocket,
 } from "@/services/socketService";
 
-function SocketInitializer() {
+function SocketInitializer(): React.ReactNode {
   const { user } = useAuth();
 
   useEffect(() => {
