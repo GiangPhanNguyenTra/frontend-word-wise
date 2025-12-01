@@ -10,7 +10,7 @@ export default function RootAppLayout({
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <main className="flex-grow w-full">{children}</main>
-      <AppFooter />
+      {/* <AppFooter /> */}
     </div>
   );
 }

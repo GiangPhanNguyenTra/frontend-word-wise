@@ -42,3 +42,20 @@ export async function updateUserSettings(settings: UserSettings) {
   const data = await response.json();
   return data.data;
 }
+
+export async function getTokenForExtension() {
+  if (!BASE_URL) throw new Error("API URL is not defined");
+
+  const response = await fetch(`${BASE_URL}/auth/extension-token`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to get extension token");
+  }
+
+  const data = await response.json();
+  return data.data.token;
+}

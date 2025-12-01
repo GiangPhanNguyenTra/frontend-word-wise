@@ -10,6 +10,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { updateUserInfo, changePassword } from "@/services/userService";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import ConnectExtensionButton from "@/components/setting/ConnectExtensionButton";
 
 export default function SettingPage() {
   const { user, updateUser } = useAuth();
@@ -341,6 +342,21 @@ export default function SettingPage() {
                 {isEditingPassword ? "Save" : "Edit"}
               </Button>
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="shadow-sm border border-gray-200">
+        <CardContent className="p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Extension Integration
+          </h2>
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p className="text-sm text-gray-500">
+              Connect your account with the WordWise Chrome Extension to
+              synchronize your vocabulary and settings.
+            </p>
+            <ConnectExtensionButton />
           </div>
         </CardContent>
       </Card>
