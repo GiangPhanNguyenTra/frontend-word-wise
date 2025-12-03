@@ -4,83 +4,83 @@
     <meta charset="UTF-8" />
     <title>Practice</title>
     <style>
-      .wwise-btn-primary {
-        transition: background-color 0.2s ease-in-out;
+      body {
+        width: 24rem;
+        padding: 1.25rem;
+        background: white;
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        margin: 0;
+        box-sizing: border-box;
       }
-      .wwise-btn-primary:hover {
-        background-color: #2563eb !important;
+      .tab-btn {
+        flex: 1;
+        padding: 0.75rem 0;
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        color: #9ca3af;
+        font-weight: 500;
+        cursor: pointer;
+        transition: 0.2s;
       }
-      .wwise-link-btn:hover {
-        text-decoration: underline !important;
+      .tab-btn:hover {
+        color: #2563eb;
       }
-      .practice-option-btn {
-        transition: background-color 0.2s ease-in-out,
-          border-color 0.2s ease-in-out;
+      .tab-btn.active {
+        color: #2563eb;
+        border-color: #2563eb;
       }
-      .practice-option-btn:hover {
-        border-color: #93c5fd !important;
-        background-color: #eff6ff !important;
+      .char-hint {
+        display: inline-flex;
+        width: 2rem;
+        height: 2.5rem;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        background: #f3f4f6;
+        border-radius: 4px;
+        margin: 2px;
       }
       .char-input {
         width: 2rem;
-        height: 2.25rem;
+        height: 2.5rem;
         text-align: center;
-        font-size: 1.125rem;
-        font-weight: 500;
-        border-radius: 0.375rem;
+        font-size: 1.1rem;
         border: 1px solid #d1d5db;
+        border-radius: 4px;
+        margin: 2px;
         outline: none;
+        cursor: pointer;
         caret-color: transparent;
       }
-      .char-input.focused {
+      .char-input:focus {
         border-color: #3b82f6;
         box-shadow: 0 0 0 2px #bfdbfe;
       }
-      .char-hint {
-        width: 2rem;
-        height: 2.25rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.125rem;
-        font-weight: 500;
-        color: #1f2937;
+      .char-opt {
+        transition: transform 0.1s;
+      }
+      .char-opt:active {
+        transform: scale(0.95);
       }
     </style>
   </head>
-  <body
-    style="
-      padding: 1.25rem;
-      background-color: #ffffff;
-      border-radius: 0.5rem;
-      width: 24rem;
-      font-family: ui-sans-serif, system-ui, sans-serif;
-      box-sizing: border-box;
-    "
-  >
-    <h1
+  <body>
+    <div
       style="
-        color: #2563eb;
-        font-weight: 600;
-        font-size: 1.25rem;
-        margin: 0 0 1rem 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
       "
     >
-      Word Wise
-    </h1>
-    <h2
-      style="
-        font-weight: 700;
-        font-size: 1.125rem;
-        margin: 0 0 0.5rem 0;
-        color: #1f2937;
-      "
-    >
-      Practice
-      <span id="progress-counter" style="color: #9ca3af; font-size: 0.875rem"
+      <h2 style="color: #2563eb; margin: 0; font-size: 1.25rem">Practice</h2>
+      <span
+        id="progress-counter"
+        style="color: #6b7280; font-size: 0.9rem; font-weight: 500"
         >(0/0)</span
       >
-    </h2>
+    </div>
 
     <div
       style="
@@ -90,101 +90,78 @@
       "
     >
       <button
+        class="tab-btn"
         data-tab-target="translation"
-        style="
-          flex: 1;
-          color: #2563eb;
-          border-bottom-width: 2px;
-          border-color: #2563eb;
-          padding: 0.5rem 0;
-          background-color: transparent;
-          border-top: none;
-          border-left: none;
-          border-right: none;
-          cursor: pointer;
-          margin-bottom: -1px;
-          font-size: 0.875rem;
-        "
+        style="color: #2563eb; border-color: #2563eb"
       >
         Translation
       </button>
-      <button
-        data-tab-target="definition"
-        style="
-          flex: 1;
-          color: #9ca3af;
-          padding: 0.5rem 0;
-          background-color: transparent;
-          border: none;
-          border-bottom: 2px solid transparent;
-          cursor: pointer;
-          font-size: 0.875rem;
-        "
-      >
-        Definition
-      </button>
-      <button
-        data-tab-target="fill-blank"
-        style="
-          flex: 1;
-          color: #9ca3af;
-          padding: 0.5rem 0;
-          background-color: transparent;
-          border: none;
-          border-bottom: 2px solid transparent;
-          cursor: pointer;
-          font-size: 0.875rem;
-        "
-      >
-        Fill blank
-      </button>
+      <button class="tab-btn" data-tab-target="definition">Definition</button>
+      <button class="tab-btn" data-tab-target="fill-blank">Fill Blank</button>
     </div>
 
+    <!-- Translation View -->
     <div id="translation-content">
-      <p style="text-align: center; font-size: 1.125rem; margin: 0 0 1.5rem 0">
-        Translate to English<br /><span
-          style="font-weight: 700; font-size: 1.25rem"
-        ></span>
+      <p style="text-align: center; color: #4b5563; margin-bottom: 0.5rem">
+        Translate this word:
       </p>
+      <h3
+        style="
+          text-align: center;
+          color: #111827;
+          font-size: 1.5rem;
+          margin: 0 0 1.5rem 0;
+        "
+      >
+        <span style="border-bottom: 2px dashed #9ca3af"></span>
+      </h3>
       <input
         type="text"
-        placeholder="Type the English word ..."
+        placeholder="Type answer here..."
         style="
           width: 100%;
+          padding: 0.75rem;
           border: 1px solid #d1d5db;
           border-radius: 0.5rem;
-          padding: 0.75rem;
-          margin-bottom: 1rem;
-          box-sizing: border-box;
           font-size: 1rem;
+          box-sizing: border-box;
+          outline: none;
         "
       />
     </div>
 
+    <!-- Definition View -->
     <div id="definition-content" style="display: none">
-      <p style="text-align: center; font-size: 1rem; margin: 0 0 1.5rem 0">
-        What is the definition of
-        <span style="font-weight: 700; font-size: 1.125rem"></span>?
+      <p style="text-align: center; color: #4b5563; margin-bottom: 1rem">
+        Choose definition for:
+        <span
+          style="font-weight: 700; color: #2563eb; font-size: 1.1rem"
+        ></span>
       </p>
-      <div style="display: flex; flex-direction: column; gap: 0.75rem"></div>
+      <div style="display: flex; flex-direction: column; gap: 0.5rem"></div>
     </div>
 
+    <!-- Fill Blank View -->
     <div id="fill-blank-content" style="display: none">
       <p
         style="
+          font-size: 0.95rem;
+          color: #374151;
           text-align: center;
-          font-size: 1rem;
-          margin: 0 0 1.5rem 0;
+          margin-bottom: 1.5rem;
           line-height: 1.5;
+          font-style: italic;
+          background: #f9fafb;
+          padding: 0.5rem;
+          border-radius: 0.375rem;
         "
       ></p>
       <div
         id="fill-blank-inputs"
         style="
           display: flex;
-          justify-content: center;
-          gap: 0.25rem;
           flex-wrap: wrap;
+          justify-content: center;
           margin-bottom: 1.5rem;
         "
       ></div>
@@ -192,8 +169,8 @@
         id="fill-blank-options"
         style="
           display: flex;
-          justify-content: center;
           flex-wrap: wrap;
+          justify-content: center;
           gap: 0.5rem;
         "
       ></div>
@@ -202,40 +179,41 @@
     <div
       id="action-container"
       style="
+        margin-top: 2rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-top: 1.5rem;
       "
     >
       <button
         class="wwise-link-btn"
         style="
-          color: #3b82f6;
-          background: transparent;
+          background: none;
           border: none;
+          color: #6b7280;
           cursor: pointer;
-          padding: 0.25rem;
+          font-size: 0.9rem;
         "
       >
-        Try another
+        Skip
       </button>
       <button
         class="wwise-btn-primary"
         style="
-          background-color: #3b82f6;
-          color: #ffffff;
-          border-radius: 0.5rem;
-          padding: 0.5rem 1rem;
+          background: #2563eb;
+          color: white;
+          padding: 0.6rem 1.5rem;
           border: none;
+          border-radius: 0.5rem;
           cursor: pointer;
-          font-size: 0.875rem;
-          font-weight: 500;
+          font-weight: 600;
+          font-size: 0.95rem;
         "
       >
-        Check answer
+        Check
       </button>
     </div>
+
+    <script src="practice.js"></script>
   </body>
-  <script defer src="practice.js"></script>
 </html>

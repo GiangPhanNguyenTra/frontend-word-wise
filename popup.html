@@ -4,95 +4,63 @@
     <meta charset="UTF-8" />
     <title>Word Wise</title>
     <style>
-      .wwise-btn-primary {
-        transition: background-color 0.2s ease-in-out;
+      body {
+        width: 24rem;
+        padding: 1.25rem;
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        background-color: #ffffff;
+        margin: 0;
       }
-      .wwise-btn-primary:hover {
-        background-color: #2563eb !important;
-      }
-      .wwise-tag {
-        cursor: pointer;
-        transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
-      }
-      .wwise-tag.selected {
-        background-color: #dbeafe !important;
-        color: #1d4ed8 !important;
+      .menu-btn {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 0;
+        margin-bottom: 0.75rem;
+        text-align: center;
+        color: white;
+        text-decoration: none;
+        border-radius: 0.5rem;
         font-weight: 500;
+        transition: opacity 0.2s;
+      }
+      .menu-btn:hover {
+        opacity: 0.9;
       }
     </style>
   </head>
-  <body
-    style="
-      width: 24rem;
-      padding: 1.25rem;
-      font-family: ui-sans-serif, system-ui, sans-serif;
-      background-color: #ffffff;
-    "
-  >
-    <div id="main-menu-view">
-      <div style="text-align: center">
-        <h1
-          style="
-            color: #2563eb;
-            font-weight: 600;
-            font-size: 1.25rem;
-            margin-bottom: 0.5rem;
-          "
-        >
-          Word Wise
-        </h1>
-        <p style="color: #4b5563; font-size: 0.875rem">
-          Smart Vocabulary Assistant
-        </p>
-      </div>
-      <div
-        style="
-          margin-top: 1.5rem;
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-        "
+  <body>
+    <div style="text-align: center; margin-bottom: 1.5rem">
+      <h1
+        style="color: #2563eb; font-weight: 600; font-size: 1.5rem; margin: 0"
       >
-        <a
-          href="pages/add-word.html"
-          style="
-            background-color: #3b82f6;
-            color: #ffffff;
-            border-radius: 0.5rem;
-            padding: 0.5rem 0;
-            text-align: center;
-            text-decoration: none;
-          "
-          >Add New Word</a
-        >
-        <a
-          href="pages/recommendation.html"
-          style="
-            background-color: #6366f1;
-            color: #ffffff;
-            border-radius: 0.5rem;
-            padding: 0.5rem 0;
-            text-align: center;
-            text-decoration: none;
-          "
-          >Recommendation</a
-        >
-        <a
-          href="pages/practice.html"
-          style="
-            background-color: #22c55e;
-            color: #ffffff;
-            border-radius: 0.5rem;
-            padding: 0.5rem 0;
-            text-align: center;
-            text-decoration: none;
-          "
-          >Practice</a
-        >
-      </div>
+        Word Wise
+      </h1>
+      <p style="color: #6b7280; font-size: 0.875rem; margin-top: 0.25rem">
+        Smart Vocabulary Assistant
+      </p>
     </div>
 
-    <div id="add-word-view" style="display: none"></div>
+    <nav>
+      <a
+        href="pages/add-word.html"
+        class="menu-btn"
+        style="background-color: #3b82f6"
+        >Add New Word</a
+      >
+      <a
+        href="pages/recommendation.html"
+        class="menu-btn"
+        style="background-color: #6366f1"
+        >Daily Recommendations</a
+      >
+      <a
+        href="pages/practice.html"
+        class="menu-btn"
+        style="background-color: #22c55e"
+        >Practice Session</a
+      >
+    </nav>
+
     <script src="popup.js"></script>
   </body>
 </html>

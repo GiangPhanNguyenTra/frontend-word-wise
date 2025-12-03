@@ -1,25 +1,28 @@
 {
   "manifest_version": 3,
   "name": "WordWise Extension",
-  "version": "1.0",
+  "version": "1.1",
   "description": "Smart English vocabulary assistant",
   "permissions": [
     "contextMenus",
     "scripting",
     "activeTab",
     "storage",
-    "tabs",
-    "alarms"
+    "alarms",
+    "notifications"
   ],
   "background": {
     "service_worker": "background.js"
   },
   "host_permissions": [
-    "https://fe-word-wise.onrender.com/",
-    "https://overluxuriously-kinematographical-annemarie.ngrok-free.dev/"
+    "https://core-word-wise.onrender.com/*",
+    "https://overluxuriously-kinematographical-annemarie.ngrok-free.dev/*"
   ],
   "externally_connectable": {
-    "matches": ["https://fe-word-wise.onrender.com/*"]
+    "matches": [
+      "https://fe-word-wise.onrender.com/*",
+      "http://localhost:3000/*"
+    ]
   },
   "content_scripts": [
     {
