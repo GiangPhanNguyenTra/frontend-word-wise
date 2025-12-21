@@ -69,10 +69,10 @@ export default function TodayPage() {
                 title: article.title,
                 description: article.desc,
                 category: article.src,
-                publishDate: format(
-                  new Date(article.published_date),
-                  "MMMM dd, yyyy"
-                ),
+                publishDate: article.published_date
+                  ? format(new Date(article.published_date), "MMMM dd, yyyy")
+                  : format(currentDate, "MMMM dd, yyyy"),
+
                 articleUrl: article.link,
               }}
             />
@@ -81,9 +81,10 @@ export default function TodayPage() {
                 Vocabulary Highlights
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
-                {article.list_words.map((vocab, vIndex) => (
-                  <VocabularyCard key={vIndex} vocab={vocab} />
-                ))}
+                {Array.isArray(article.list_words) &&
+                  article.list_words.map((vocab, vIndex) => (
+                    <VocabularyCard key={vIndex} vocab={vocab} />
+                  ))}
               </div>
             </div>
             {index < articles.length - 1 && <hr className="border-gray-200" />}

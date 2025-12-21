@@ -74,7 +74,8 @@ function DefinitionMatchContent() {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [isInviteOpen, setIsInviteOpen] = useState(false);
 
-  const stompClientRef = useRef<any>(null);
+  const stompClientRef = useRef<any | null>(null);
+
 
   useEffect(() => {
     if (joinCode) {
