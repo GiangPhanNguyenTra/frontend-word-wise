@@ -84,7 +84,7 @@ export function ForgotPasswordForm() {
       toast.success("Resend successful", {
         description: "New verification code sent.",
       });
-      setCountdown(30);
+      setCountdown(300);
       setCanResend(false);
     } catch (error: unknown) {
       const message =
